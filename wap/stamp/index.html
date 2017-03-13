@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" id="root">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <title>采砖大盗</title>
+    <link rel="stylesheet" type="text/css" href="css/public.css">
+    <script src="../jslib/jquery.js" type="text/javascript"></script>
+    <!-- <script type="text/javascript" src="//static.soufunimg.com/common_m/m_activity/stamp/js/share.js" charset='utf-8'></script>
+    <script type="text/javascript" src="//static.soufunimg.com/common_m/m_activity/stamp/js/createjs.js" charset='utf-8'></script> -->
+</head>
+
+<body>
+    <div id="main">
+        <section id="wrapper">
+            <div class="title">
+                <h1>采砖大盗</h1>
+                <h2>20秒决定你住什么房</h2>
+            </div>
+            <div id="enter" class="start"><a>进入游戏</a></div>
+        </section>
+
+        <section id="mainBody" style="display:none;">
+            <div id="gameZone"></div>
+            <div id="timer">20'00''</div>
+        </section>
+
+        <div id="float" class="float" style="display:none;">
+            <div class="hint"><p>从最下边的彩砖开始</p><p>20秒内抢到最多的彩砖</p><p>点到白砖会out哦！</p></div>
+            <div id="gameBegin" class="start upper"><a>预备，开始！</a></div>
+        </div>
+
+        <section id="result" style="display:none;">
+            <div id="report">
+                <div class="score">本次成绩：<span id="thisTime">1000</span></div>
+                <div class="text"><p id="textAlt">100平面的别墅，豪华舒适，适合一家人进行居住。</p></div>
+                <div class="best">最佳成绩: <span id="best">1500</span></div>
+            </div>
+            <div id="button">
+                <div class="again" id="onceMore"><a>重来</a></div>
+                <div class="zhishi"><a href="//m.fang.com/zhishi/xf/">盗亦有道</a></div>
+                <div class="share"><a>嘚瑟一下</a></div>
+            </div>
+            <div id="code">
+                <img src="//static.soufunimg.com/common_m/m_activity/stamp/images/code.jpg">
+            </div>
+        </section>
+
+        <div id="timeOver" style="display:none;">时间到！</div>
+        <div id="shareFloat" class="float"></div>
+    </div>
+    <script type="text/javascript" src="js/index.js" charset='utf-8'></script>
+    <input type="hidden"  id="appid" value="wx89446f186b6eda93">
+    <input type="hidden"  id="timestamp" value="1486354800">
+    <input type="hidden"  id="nonceStr" value="999bcbee-d7c4-4a98-8c3b-79beb58e19a4">
+    <input type="hidden"  id="signature" value="4466b76e1f3f34aa35c0ee85bd2d782c29a825e8">
+<!-- 微信分享 -->
+<script>
+// 微信配置
+
+/*
+wx.config({
+    debug: false,
+    // 公众号的唯一标识
+    appId: $('#appid').val(),
+    // 生成签名的时间戳
+    timestamp: $('#timestamp').val(),
+    // 生成签名的随机串
+    nonceStr: $('#nonceStr').val(),
+    // 签名
+    signature: $('#signature').val(),
+    // 事件列表
+    jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage']
+});
+setWinMsg();
+function setWinMsg(num) {
+    // var num = $('#resNum').val();
+    if (num) {
+        window.desc = '我20秒抢到'+num+'平米的房，你呢？';
+    }else {
+        window.desc = '20秒，看你能住多大的房。';
+    }
+    window.link = "//"+window.location.host+"/activityshow/stamp/index.jsp";
+    window.title = '采砖大盗';
+    window.imgUrl = location.protocol+'//static.soufunimg.com/common_m/m_activity/stamp/images/share.jpg';
+    //window.callbackLink = "//"+window.location.host+"/activityshow/handBill/end.jsp?targ="+targ+"&channel=rentcenter&vesion="+vesion+"&city="+city;
+    wx.ready(function () {
+        // 分享到朋友圈
+        wx.onMenuShareTimeline({
+            title: desc,
+            link: link,
+            imgUrl: imgUrl,
+            success: function () {
+            }
+        });
+        // 分享到朋友
+        wx.onMenuShareAppMessage({
+            title: title,
+            desc: desc,
+            link: link,
+            imgUrl: imgUrl,
+            success: function () {
+            }
+        });
+
+    });
+}
+*/
+
+</script>
+</body>
+</html>

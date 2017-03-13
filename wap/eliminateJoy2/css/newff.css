@@ -1,0 +1,217 @@
+@charset "utf-8";
+/* CSS Document */
+
+* {margin:0; padding:0;-webkit-tap-highlight-color: rgba(0,0,0,0); -webkit-box-sizing: border-box; -moz-box-sizing: border-box; -ms-box-sizing: border-box; box-sizing: border-box;}
+html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6 { -webkit-text-size-adjust:none;}
+body {font-family:Arial, "Microsoft Yahei"; background:#3a4254 url(../images/bg.jpg) no-repeat; background-size:100%;}
+form, img, table, td{ border:0;}
+ul, ol, li { list-style-type:none; display: block;}
+h1, h2, h3, h4, h5, h6,i{ font-size:100%; font-weight:normal; font-style:normal;}
+input, textarea, img { vertical-align:middle; font-family:Arial, "Microsoft Yahei";}
+a{ text-decoration:none; border:0; color:#fff;}
+html,body{ height: 100%;}
+.clearfix:after{ clear: both; content: "\200B"; display: block; height: 0;}
+.clearfix{ *zoom: 1;}
+/* flex */
+.flexbox{ display: box; display: -webkit-box; display: -moz-box; display: -ms-box; -webkit-box-orient:horizontal; box-orient:horizontal;}
+.flexbox > *{ display: block; box-flex:1; -webkit-box-flex:1; -moz-box-flex:1; -ms-box-flex:1;}
+body:not(:-moz-handler-blocked) .flexbox { width: 100%;} /*for FF*/
+
+.main{ position:relative; width:100%; height:100%;}/*2017.1.18*/
+/*音乐*/
+.music {position:absolute; top:1rem; right:0.7rem; z-index: 1;}
+.music a{ display:block; width:1.7rem; height:1.8rem; background:url(../images/music_on.png) no-repeat; background-size:100%;}
+.music a i{ display:none;}
+.music a.cls i{ display:block; width:1.7rem; height:1.8rem; background:url(../images/music_off.png) no-repeat; background-size:100%;}
+/*关卡和时间*/
+.top{ padding:0.75rem 0 0 1.75rem;}
+.top .round{ float:left; width:4.8rem; height:2.2rem;}
+.top .round.one{ background:url(../images/round1.png) no-repeat; background-size:100%;}
+.top .round.two{ background:url(../images/round2.png) no-repeat; background-size:100%;}
+.top .round.three{ background:url(../images/round3.png) no-repeat; background-size:100%;}
+.top .time{ float:left; padding-left:1.1rem; margin-left:1.15rem; width:7.1rem; height:2.2rem; font-size:0.75rem; line-height:2.2rem; color:#fff; background:url(../images/time_bg.png) no-repeat; background-size:100%;
+text-shadow:#442204 0.05rem 0 0,#442204 0 0.065rem 0,#442204 -0.05rem 0 0,#442204 0 -0.05rem 0;
+-webkit-text-shadow:#442204 0.05rem 0 0,#442204 0 0.065rem 0,#442204 -0.05rem 0 0,#442204 0 -0.05rem 0;
+-moz-text-shadow:#442204 0.05rem 0 0,#442204 0 0.065rem 0,#442204 -0.05rem 0 0,#442204 0 -0.05rem 0;}
+/*游戏区域*/
+.gameBox{ margin:0 auto; margin-bottom:1.7rem; width:17.3rem; background:#c72c2c; border-radius:1em; box-shadow:0 0.15rem 0 0 #b42828;}
+.gameBox ul{ margin:0 auto; padding:0.7rem 0 0 0.7rem; width:17.25rem;}
+.gameBox li{ float:left; margin:0 0.65rem 0.65rem 0; width:3.5rem; height:3.95rem;}
+.gameBox li:nth-child(4n){margin-right:0;}
+.gameBox li.kong{ background:url(../images/kong.png) no-repeat; background-size:100%;}
+.gameBox li a{ display:block; width:3.5rem; height:3.95rem;}
+.gameBox li a.fu{ background:url(../images/img1.png) no-repeat; background-size:100%;}/*福字*/
+.gameBox li a.fa{ background:url(../images/img2.png) no-repeat; background-size:100%;}/*麻将发财*/
+.gameBox li a.yb{ background:url(../images/img3.png) no-repeat; background-size:100%;}/*元宝*/
+.gameBox li a.ji{ background:url(../images/img4.png) no-repeat; background-size:100%;}/*公鸡*/
+.gameBox li a.hb{ background:url(../images/img5.png) no-repeat; background-size:100%;}/*红包*/
+.gameBox li a.dl{ background:url(../images/img6.png) no-repeat; background-size:100%;}/*灯笼*/
+.gameBox li a.fan{ background:url(../images/fanm.png) no-repeat; background-size:100%;}/*反面*/
+.gameBox.one{ margin-top:4.25rem; height:18.9rem; overflow:hidden;}
+.gameBox.two{ margin-top:1.15rem; height:23.5rem; overflow:hidden;}
+.gameBox.three{ margin-top:0.4rem; height:28.1rem; overflow:hidden;}
+
+/*游戏开始界面*/
+.begin{ position:absolute; top:0; left:0; width:100%; min-height:29.6rem; background:url(../images/begin.png) no-repeat; background-size:100%;}
+.logo{ position:absolute; top:0.7rem; left:0.45rem; width:5.1rem; height:1rem; background:url(../images/logo.png) no-repeat; background-size:100%;}
+.begin .hfBox{ position:absolute; top:15.75rem; left:1.9rem; width:15rem; height:6rem; background:url(../images/hf.png) no-repeat; background-size:100%;}
+.begin .btnBox{ position:absolute;top:21rem; left:50%; margin-left:-4.2rem; width:8.4rem;}
+.begin .btnBox a{ display:block; margin:0 auto;}
+.begin .btnBox .paly{ width:8.4rem; height:2.75rem; background:url(../images/btn_begin.png) no-repeat; background-size:100%;}
+.begin .btnBox .gamerule{ margin-top:0.4rem; width:5.15rem; height:2rem; background:url(../images/btn_rule.png) no-repeat; background-size:100%;}
+.pdB{ margin-top:0.5rem; padding-bottom:2rem; width:100%; height:2rem;}
+.zscp{ position:absolute; bottom:0.5rem; left:0; width:100%; font-size:0.63rem; color:#fff; text-align:center;}
+
+/*loading界面*/
+.loadBg{ background:#3a4254;}
+.loadBox{ position:absolute; top:9rem; left:50%; margin-left:-6.1rem; padding:0.2rem; width:12.2rem; height:1.15rem; background:url(../images/loading_bg.png) no-repeat; background-size:100%;}
+.loadBox .jd{ position:relative; width:0; height:0.75rem; background:#a5e24d; border-radius:1em;}
+.loadBox .jd span{ display:block; position:absolute; top:-3.75rem; right:-0.5rem; width:2.45rem; height:3.55rem; background:url(../images/loading_b.png) no-repeat; background-size:100%;}
+.loadBox .loadingWz{ position:absolute; top:0; left:0; width:12.2rem; height:1.15rem; background:url(../images/loading.png) no-repeat 4.8rem center; background-size:2.6rem 0.45rem;}
+.loadBox .loadingWz span{ display:block; float:left; margin-left:7.45rem; font-size:0.5rem; line-height:1.2rem; color:#fff;text-shadow:#22712a 0.05rem 0 0,#22712a 0 0.065rem 0,#22712a -0.05rem 0 0,#22712a 0 -0.05rem 0;
+-webkit-text-shadow:#22712a 0.05rem 0 0,#22712a 0 0.065rem 0,#22712a -0.05rem 0 0,#22712a 0 -0.05rem 0;
+-moz-text-shadow:#22712a 0.05rem 0 0,#22712a 0 0.065rem 0,#22712a -0.05rem 0 0,#22712a 0 -0.05rem 0;}
+
+/*弹层*/
+.page{ position:fixed;left:0;top:0;bottom:0;right:0;background:rgba(0,0,0,.69);}
+/*游戏规则和排行榜*/
+.rankBox{ position:absolute;width:14.75rem;height:19.5rem;left:50%;margin:4.5rem 0 0 -7.37rem;padding:3.15rem 1.2rem 0; background:url(../images/rankBox.png) no-repeat; background-size:100%; z-index:11;}/*2016.1.18*/
+.rankBox .close{ position:absolute; width:1.7rem; height:1.7rem; top:.85rem; right:0;background:url(../images/close_icon.png) no-repeat;background-size:100%;}
+.rankBox h2{position:absolute;width:4.15rem;height:1.1rem;top:.28rem;left:36.5%;}
+.rankBox h2.tit-phb{background:url(../images/tit_phb.png) no-repeat;background-size:100%;}
+.rankBox h2.tit-yxgz{background:url(../images/tit_yxgz.png) no-repeat;background-size:100%;}
+.rankBox .tab{width:10.5rem;margin:0 auto;}
+.rankBox .tab li{ display:block; float:left;width:50%;height:1.75rem;}
+.rankBox .tab li a{ display:block;width:100%;height:100%;}
+.rankBox .tab li:nth-child(1) a{ background:url(../images/rule-b2.png) no-repeat; background-size:100%;}
+.rankBox .tab li:nth-child(2) a{ background:url(../images/rank2.png) no-repeat; background-size:100%;}
+.rankBox .tab li:nth-child(1) a.cur{ background:url(../images/rule-b.png) no-repeat; background-size:100%;}
+.rankBox .tab li:nth-child(2) a.cur{ background:url(../images/rank.png) no-repeat; background-size:100%;}
+.inover-box{width:12rem;height:6.6rem;margin:0 auto;background:rgba(230,200,133,.11);overflow:auto;box-shadow:0 0 .8rem rgba(213,174,112,1) inset;border-radius:.3rem;}
+.inover-box.gz{height:8.7rem;margin:.85rem auto .6rem;padding:.6rem 0;}/*2017.1.16*/
+.inover-box.gz > div{width:11.3rem;height:11.5rem;margin-left:.4rem; }/*2017.1.16*/
+.inover-box.gz .word p{font-size:0.7rem; color:#565367; margin-bottom:0.5rem;}/*2017.1.16*/
+.inover-box.gz .word p i{ color:#fd0a38;}/*2017.1.16*/
+.hd-time{ width:100%; font-size:0.7rem; color:#83868f; text-align:center;}/*2017.1.16*/
+.nowRank{text-align:center;}
+.nowRank p{display:inline-block;height:1.75rem;padding-left:3.75rem;margin:.55rem auto .45rem auto;font-size:0.6rem; color:#d93242;background:url(../images/pmw_bg.png) no-repeat;background-size:3.5rem auto;}
+.table-tit{width:12rem;height:.8rem;margin:.3rem auto;background:url(../images/pmw_bg2.png) no-repeat;background-size:100%;}
+.rankList{ margin:0 auto; width:11rem; font-size:0.65rem; color:#83868f;padding:.4rem 0 .3rem;}
+.rankList li{ width:100%; height:1rem; line-height:1rem;}
+.rankList li span{ display:block; float:left; width:42%; text-align:center;}
+.rankList li span:first-child{ width:25%;}
+.rankList li span:last-child{ width:31%;}
+.btnBegin2{ display:block; margin:0 auto; margin-top:0.4rem; width:5.85rem; height:1.95rem; background:url(../images/btn_begin2.png) no-repeat; background-size:100%;}
+
+/*恭喜入围/成功/失败*/
+.congrats{ position:absolute; width:14.65rem; height:16rem;left:50%;margin:6rem 0 0 -7.33rem;padding:3.25rem 1.25rem 0.35rem 1.25rem; background:url(../images/tzcg_bg.png) no-repeat; background-size:100%;}/*2016.1.18*/
+.congrats .rank{ position:absolute; width:4rem; height:1.65rem; right:0.6rem; top:0;margin-top:-2.4rem;margin-right:-1.5rem; background:url(../images/rank_btn.png) no-repeat;background-size:100%;}
+.congrats .close{ position:absolute; width:1.7rem; height:1.7rem; top:.85rem; right:0;background:url(../images/close_icon.png) no-repeat;background-size:100%;}
+.congrats .score{ font-size:0.6rem; line-height:1.15rem; color:#f33e3e;text-align:center;padding-top:.2rem;}
+.congrats .score p{display:inline-block;height:1.15rem;min-width:6.2rem;padding-left:4rem;text-align:left;}
+.congrats .score p:first-child{background:url(../images/score.png) .1rem center no-repeat;background-size:3.75rem auto;}
+.congrats .score p:last-child{background:url(../images/best.png) .1rem center no-repeat;background-size:3.75rem auto;}
+.congrats .best{ margin-top:3.55rem;padding-left:6.3rem;}
+.congrats .best span{display:block;color:#f33e3e; font-size:0.7rem; font-weight:bold;text-shadow: #3a230a 0.05rem 0 0,#3a230a 0 0.065rem 0,#3a230a -0.05rem 0 0,#3a230a 0 -0.05rem 0;}
+.btnBox{ padding:1.6rem 0 0 0;}
+.btnBox .btn1{display:block;float:left;width:5.8rem;height:1.85rem; background:url(../images/btn_yq.png) no-repeat; background-size:100%;margin-right:.4rem;}
+.btnBox .btn2{display:block;float:left;width:5.8rem;height:1.85rem; background:url(../images/btn_again.png) no-repeat; background-size:100%;}
+.congrats.style2{height:19.4rem;margin-top:4.5rem;padding:3.1rem 1.25rem 0.35rem 1.25rem; background:url(../images/rw_bg.png) no-repeat; background-size:100%;}/*2016.1.18*/
+.congrats .best2{text-align:center; margin-top:.8rem;}
+.congrats .best2 span{display:inline-block;height:1.4rem;line-height:1.4rem;padding-left:1.75rem;color:#f8cf3e; font-size:1rem; font-weight:bold;text-shadow: #436c90 0.05rem 0 0,#436c90 0 0.065rem 0,#436c90 -0.05rem 0 0,#436c90 0 -0.05rem 0;background:url(../images/jb_icon.png) no-repeat;background-size:1.4rem auto;}
+.congrats ul{width:8.5rem;margin:0 auto; padding:.8rem 0 0;}
+.congrats ul li{ margin-bottom:.4rem;}
+.congrats ul li:last-child{ margin-bottom:0;}
+.congrats ul li .ipt{ width:100%; height:1.5rem; border-radius:.25rem; background:#fff; box-shadow: 1px 1px .2rem rgba(0,0,0,.3) inset;}
+.congrats ul li .ipt input{ margin:0.34rem 4%; width:92%;border:0; outline:none; font-size:0.65rem;}
+.congrats ul li input::-webkit-input-placeholder { color:#c6babd;}
+.congrats .submit{display:block; margin:0 auto; margin-top:3.8rem; width:5.85rem; height:1.9rem; background:url(../images/submit.png) no-repeat; background-size:100%;}
+.congrats.style3{width:11.15rem;height:13.5rem;margin-left:-5.58rem;margin-top:4rem;padding:1.8rem 1.25rem 0.35rem 1.25rem; background:url(../images/tj_bg.png) no-repeat; background-size:100%;}/*2016.1.18*/
+.congrats.style3 .close{top:.25rem;}
+.congrats .share-btn{display:block; margin:0 auto; margin-top:6.1rem; width:5.85rem; height:1.9rem; background:url(../images/share.png) no-repeat; background-size:100%;}
+.congrats.style4{width:14.75rem;height:19.5rem;margin:5rem 0 0 -7.37rem;padding:5rem 2.3rem 0; background:url(../images/fail_bg.png) no-repeat; background-size:100%;}/*2016.1.18*/
+.congrats.style4 > div{width:10.15rem;height:13.1rem;display:table-cell;vertical-align: middle;text-align:center;margin:0 auto;}
+.congrats.style4 > div img{max-width:100%;max-height:100%;}
+
+.updown{-webkit-animation:updown 2s linear both infinite;animation:updown 2s linear both infinite;-moz-animation:updown 2s linear both infinite;-o-animation:updown 2s linear both infinite;}
+@-webkit-keyframes updown {
+  0%, 100% {-webkit-transform: translate3d(0, 0, 0);transform: translate3d(0, 0, 0);}
+  10%, 30%, 50%, 70%, 90% {-webkit-transform: translate3d( 0,-5px, 0);transform: translate3d( 0,-5px, 0);}
+  20%, 40%, 60%, 80% {-webkit-transform: translate3d( 0,0px, 0);transform: translate3d( 0,0px, 0);}
+}
+@keyframes updown {
+  0%, 100% {-webkit-transform: translate3d(0, 0, 0);transform: translate3d(0, 0, 0);}
+  10%, 30%, 50%, 70%, 90% {-webkit-transform: translate3d( 0,-5px, 0);transform: translate3d( 0,-5px, 0);}
+  20%, 40%, 60%, 80% {-webkit-transform: translate3d( 0,0px, 0);transform: translate3d( 0,0px, 0);}
+}
+
+/* yf: 翻牌效果; */
+.flipBack {
+    -webkit-animation: flipBack 0.1s;
+    -moz-animation: flipBack 0.1s;
+    animation: flipBack 0.1s;
+    -webkit-transform: rotateY(0deg);
+    -moz-transform: rotateY(0deg);
+    -ms-transform: rotateY(0deg);
+    -o-transform: rotateY(0deg);
+    transform: rotateY(0deg);
+}
+
+@-webkit-keyframes flipBack {
+    0% {
+        -webkit-transform: rotateY(0deg);
+    }
+    100% {
+        -webkit-transform: rotateY(90deg);
+    }
+}
+
+.flipFront {
+    -webkit-animation: flipFront 0.1s;
+    -moz-animation: flipFront 0.1s;
+    animation: flipFront 0.1s;
+    -webkit-transform: rotateY(0deg);
+    -moz-transform: rotateY(0deg);
+    -ms-transform: rotateY(0deg);
+    -o-transform: rotateY(0deg);
+    transform: rotateY(0deg);
+}
+
+@-webkit-keyframes flipFront {
+    0% {
+        -webkit-transform: rotateY(90deg);
+    }
+    100% {
+        -webkit-transform: rotateY(0deg);
+    }
+}
+
+.level1, .level2 {
+    display: none;
+}
+
+.msg {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    z-index: 1999;
+    text-align: center;
+    width: 6rem;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 0.5rem;
+    margin-left: -3rem;
+    border-radius: 0.4rem;
+    color: #fff;
+    font-size: 14px;
+    display: none;
+}
+.fromTop {
+    -webkit-animation: moveFromTop .6s ease both;
+    animation: moveFromTop .6s ease both;
+}
+@-webkit-keyframes moveFromTop {
+    from { -webkit-transform: translateY(-40%);opacity: 1.0;     }
+}
+@keyframes moveFromTop {
+    from { -webkit-transform: translateY(-40%); transform: translateY(-40%); }
+}

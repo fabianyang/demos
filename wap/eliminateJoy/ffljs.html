@@ -1,0 +1,168 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>翻翻乐</title>
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <script>
+    (function(doc, win) {
+        var docEl = doc.documentElement,
+            resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+            recalc = function() {
+                var clientWidth = docEl.clientWidth;
+                if (!clientWidth) return;
+                docEl.style.fontSize = 20 * (clientWidth / 375) + 'px';
+            };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+    </script>
+</head>
+
+<body>
+    <div class="page" style="display: none">
+        <div class="logo"><span></span></div>
+        <div class="music">
+            <a class="circle"></a>
+        </div>
+        <div class="topBox">
+            <div class="time">20"000</div>
+            <div class="round round1"></div>
+            <!--round2第二关  round3第三关-->
+        </div>
+        <div class="main">
+            <ul class="clearfix">
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <!--第二关多四个-->
+                <li class="level1">
+                    <a class="fan"></a>
+                </li>
+                <li class="level1">
+                    <a class="fan"></a>
+                </li>
+                <li class="level1">
+                    <a class="fan"></a>
+                </li>
+                <li class="level1">
+                    <a class="fan"></a>
+                </li>
+                <!--第三关再多四个-->
+                <li class="level2">
+                    <a class="fan"></a>
+                </li>
+                <li class="level2">
+                    <a class="fan"></a>
+                </li>
+                <li class="level2">
+                    <a class="fan"></a>
+                </li>
+                <li class="level2">
+                    <a class="fan"></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="page">
+        <div class="congrats js_box">
+            <div class="logo"><span></span></div>
+            <div class="music">
+                <a class="circle"></a>
+            </div>
+            <a class="rank js_btnRank">排行榜</a>
+            <a class="close"></a>
+            <div class="tit">恭喜入围</div>
+            <div class="score">
+                <p class="js_textScore">您的成绩为：XX秒</p>
+                <p class="js_textBest">最佳成绩为：XX秒</p>
+            </div>
+            <div class="best js_textRank">当前排名：<span>NO.XX</span></div>
+            <ul>
+                <li>
+                    <input type="text" name="userName" placeholder="姓名">
+                </li>
+                <li>
+                    <input type="tel" name="userPhone" placeholder="手机号">
+                </li>
+            </ul>
+            <div class="import">*请填写手机号，如不填写，则视为自动放弃抽奖资格</div>
+            <a class="submit js_btnSubmit"></a>
+        </div>
+        <div class="congrats js_box" style="display: none">
+            <div class="logo"><span></span></div>
+            <div class="music">
+                <a class="circle"></a>
+            </div>
+            <a class="rank js_btnRank">排行榜</a>
+            <a class="close"></a>
+            <div class="tit">挑战成功</div>
+            <div class="score">
+                <p class="js_textScore">您的成绩为：XX秒</p>
+                <p class="js_textBest">最佳成绩为：XX秒</p>
+            </div>
+            <div class="best js_textRank">当前排名：暂未上榜</div>
+            <div class="best">
+                Ps 获奖名单将以最佳成绩依次排序
+            </div>
+            <div class="btnBox">
+                <a class="btn1 js_btnShare"></a>
+                <a class="btn2 js_btnBegin"></a>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="../jslib/jquery.js"></script>
+    <script type="text/javascript" src="js/ffljs.js"></script>
+</body>
+
+</html>

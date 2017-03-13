@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <style>
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+    }
+
+    canvas {
+        display: block;
+    }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <script type="text/javascript" src="ball.js"></script>
+    <script type="text/javascript" src="brick.js"></script>
+    <script type="text/javascript" src="game.js"></script>
+    <script type="text/javascript">
+    /**
+    1、弹力
+    k=F/x
+    F是弹簧的“弹力”
+    k是劲度系数又称弹性系数 、倔强系数
+    x是弹簧长度的变化量
+    2、滑动摩擦力
+    F =μN
+    μ叫动摩擦因数，也叫滑动摩擦系数，它只跟材料、接触面粗糙程度有关，注意跟接触面积无关；
+    N为正压力。
+    3、压力
+    压力 F=P（压强）*S（受力面积）
+    压强 P=F（压力）/S（受力面积）
+    液体中 P=密度*g（重力常数9.8N/kg）*h（到液面高度）
+    质量 m=密度*v（体积）
+    4、重力
+    G=mg g为重力加速度,大小为9.8N/kg
+    5、速度与力
+    v=vo+at=vo+(F/m)t=vo+Ft/m
+    所以：v=vo+Ft/m 或：F=(v-vo)m/t
+    6、m(质量）=p（密度）V （体积）m(质量）=G（重力）/g（9.8N/kg)
+
+    子弹穿过一个木板,速度减少八分之一.问,同样的木板还能穿透几个.
+    穿过木板速度减小源于木板内部摩擦力做的负功
+    设摩擦力f,板厚d,子弹质量m,初速度v,根据动能定理就有
+    -fd=m(7v/8)²/2-mv²/2
+    则fd=15mv²/128
+    初动能mv²/2=64mv²/128
+    所以可以穿过4块木板,卡在第五块木板里
+    */
+    </script>
+</body>
+
+</html>

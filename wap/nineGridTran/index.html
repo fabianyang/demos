@@ -1,0 +1,545 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>你的好运都靠拼</title>
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    html,
+    body,
+    form,
+    fieldset,
+    p,
+    div,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        -webkit-text-size-adjust: none;
+    }
+
+    body {
+        font-family: Arial, "Microsoft Yahei";
+        background: #260000;
+    }
+
+    form,
+    img,
+    table,
+    td {
+        border: 0;
+    }
+
+    ul,
+    ol,
+    li {
+        list-style-type: none;
+        display: block;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-size: 100%;
+        font-weight: normal;
+    }
+
+    input,
+    textarea,
+    img {
+        vertical-align: middle;
+        font-family: Arial, "Microsoft Yahei";
+    }
+
+    @media screen and (max-device-width: 320px) {
+        body {
+            -webkit-text-size-adjust: none
+        }
+    }
+
+    @media screen and (max-device-width: 480px) {
+        body {
+            -webkit-text-size-adjust: none
+        }
+    }
+
+    @media only screen and (-webkit-min-device-pixel-ratio: 2) {
+        body {
+            -webkit-text-size-adjust: none
+        }
+    }
+
+    @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+        body {
+            -webkit-text-size-adjust: none
+        }
+    }
+
+    a {
+        color: #3c3f46;
+        text-decoration: none;
+    }
+
+    input,
+    textarea,
+    button {
+        -webkit-appearance: none;
+    }
+
+    input[type="radio"] {
+        -webkit-appearance: radio;
+    }
+
+    input[type="checkbox"] {
+        -webkit-appearance: checkbox;
+    }
+
+    html,
+    body {
+        height: 100%;
+    }
+    /*canvas*/
+
+    .tuBox {
+        position: absolute;
+        top: 5.95rem;
+        left: 2.1rem;
+        width: 11.75rem;
+        height: 11.75rem;
+        z-index: 98;
+    }
+
+    .tuBox canvas {
+        width: 100%;
+        height: 100%;
+    }
+    /*背景内容*/
+
+    .page2 {
+        width: 100%;
+        height: 25rem;
+        background: #ff433d url(images/bg2.png) no-repeat;
+        background-size: 100%;
+        overflow: hidden;
+    }
+
+    .top {
+        height: 5.15rem;
+    }
+    /*时间*/
+
+    .time {
+        float: left;
+        margin-left: 1.5rem;
+        margin-top: 0.6rem;
+        padding-top: 1px;
+        width: 5.5rem;
+        height: 4.35rem;
+        background: url(images/pic-djs.png) no-repeat;
+        background-size: 5.5rem 4.35rem;
+    }
+
+    .time span {
+        display: block;
+        margin: 1.9rem 0 0 2.2rem;
+        width: 1.55rem;
+        height: 0.9rem;
+        font-size: 0.9rem;
+        color: #0f0200;
+        text-align: center;
+        overflow: hidden;
+    }
+    /*参考图*/
+
+    .cktBox {
+        position: relative;
+        float: left;
+        margin-left: 1.3rem;
+        margin-top: 0.4rem;
+        width: 6.15rem;
+        height: 4.75rem;
+    }
+
+    .ckt {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 6.15rem;
+        height: 4.75rem;
+        background: url(images/pic-ckt.png) no-repeat;
+        background-size: 6.15rem 4.75rem;
+        z-index: 12;
+    }
+
+    .cktBox img {
+        position: absolute;
+        top: 0.18rem;
+        left: 1.25rem;
+        width: 4rem;
+        height: 4rem;
+        z-index: 11;
+    }
+    /*拼图区域 start*/
+
+    .pinCon {
+        position: relative;
+        margin-top: -0.6rem;
+        margin-left: 1.5rem;
+        margin-bottom: 0.37rem;
+        width: 13.7rem;
+        height: 14.8rem;
+    }
+
+    .pinBk {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 13.9rem;
+        height: 13.75rem;
+        background: url(images/pin-bk.png) no-repeat;
+        background-size: 13.9rem 13.75rem;
+        z-index: 2;
+    }
+    /*边框底部云彩*/
+
+    .pinBotm {
+        position: absolute;
+        top: 12rem;
+        left: 1.5rem;
+        width: 10.2rem;
+        height: 3.05rem;
+        background: url(images/pic-yun2.png) no-repeat;
+        background-size: 10.2rem 2.75rem;
+        z-index: 1;
+    }
+    /*拼图区域 end*/
+    /*换一换按钮*/
+
+    .btnBox .mt24 {
+        margin-top: 0.6rem;
+    }
+
+    .btnBox > p a {
+        display: block;
+        margin: 0 auto;
+    }
+
+    .change {
+        width: 6.6rem;
+        height: 2.15rem;
+        background: url(images/btn-change.png) no-repeat;
+        background-size: 6.6rem auto;
+    }
+
+    .rule {
+        width: 3.5rem;
+        height: 1rem;
+        background: url(images/rule.png) no-repeat;
+        background-size: 3.5rem auto;
+    }
+    /*弹框--遮罩层*/
+
+    .shade {
+        position: fixed;
+        display: none;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background: rgba(0, 0, 0, .7);
+        z-index: 99;
+    }
+    /*弹框--登录*/
+
+    .tkBox {
+        position: absolute;
+        display: none;
+        top: 50%;
+        left: 50%;
+        margin-top: -6.48rem;
+        margin-left: -6.5rem;
+        display: none;
+        width: 12.95rem;
+        height: 12.95rem;
+        background: url(images/bk-bg.png) no-repeat;
+        background-size: 12.95rem;
+        z-index: 102;
+    }
+    /*内容区域白颜色背景*/
+
+    .conBg {
+        position: absolute;
+        display: none;
+        top: 50%;
+        left: 50%;
+        margin-top: -5.9rem;
+        margin-left: -5.9rem;
+        width: 11.8rem;
+        height: 11.8rem;
+        background: #fff;
+        border-radius: 0.5rem;
+        z-index: 101;
+    }
+    /*边框底部云彩*/
+
+    .tkBottom {
+        position: absolute;
+        display: none;
+        top: 50%;
+        left: 50%;
+        margin-top: 4.8rem;
+        margin-left: -3.9rem;
+        width: 8rem;
+        height: 3.05rem;
+        background: url(images/pic-yun.png) no-repeat;
+        background-size: 8rem 3.05rem;
+        z-index: 100;
+    }
+    /*活动规则*/
+
+    .btn-close {
+        display: block;
+        position: absolute;
+        top: -2.3rem;
+        right: -0.75rem;
+        width: 1.4rem;
+        height: 1.4rem;
+        background: url(images/close.png) no-repeat;
+        background-size: 1.4rem;
+    }
+
+    .con {
+        position: absolute;
+        display: none;
+        top: 0;
+        left: 0;
+        margin-top: 0.6rem;
+        margin-left: 0.6rem;
+        width: 11.75rem;
+        height: 11.8rem;
+        z-index: 103;
+    }
+
+    .con .hd-rule {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .con .hd-rule .pic-rule {
+        margin: 0 auto;
+        margin-top: 1.5rem;
+        width: 8.6rem;
+        height: 1.1rem;
+        background: url(images/pic-rule.png);
+        background-size: 8.6rem 1.1rem;
+    }
+
+    .con p {
+        padding-left: 0.75rem;
+        padding-right: 0.5rem;
+        padding-bottom: 0.5rem;
+        font-size: 0.65rem;
+        color: #010101;
+        line-height: 1.5em;
+    }
+
+    .btn-pin {
+        display: block;
+        margin: 0 auto;
+        width: 4.1rem;
+        height: 1.4rem;
+        background: url(images/btn-pin.png) no-repeat center;
+        background-size: 4rem 1.3rem;
+    }
+
+    .con p.btnCss {
+        padding-left: 0;
+        padding-right: 0;
+        text-align: center;
+        margin-top: 0.2rem;
+    }
+    /*再次挑战和去抽奖*/
+
+    .imgBox {
+        width: 100%;
+        text-align: center;
+    }
+
+    .imgBox .img1 {
+        margin: 0 auto;
+        margin-top: 0.75rem;
+        width: 7.25rem;
+        height: 7.75rem;
+        background: url(images/fail.png) no-repeat;
+        background-size: 7.25rem 7.75rem;
+    }
+
+    .imgBox .img2 {
+        margin: 0 auto;
+        margin-top: 1.25rem;
+        width: 7.25rem;
+        height: 7rem;
+        background: url(images/win.png) no-repeat;
+        background-size: 7.25rem 7rem;
+    }
+
+    .btnBox .again,
+    .btnBox .get,
+    .btnBox .draw {
+        display: inline-block;
+        margin-top: 0.8rem;
+        width: 4.1rem;
+        height: 1.4rem;
+    }
+
+    .again {
+        margin-left: 1.55rem;
+        background: url(images/btn-again.png) no-repeat center;
+        background-size: 4rem 1.3rem;
+    }
+
+    .get {
+        margin-left: 0.25rem;
+        background: url(images/btn-get.png) no-repeat center;
+        background-size: 4rem 1.3rem;
+    }
+
+    .draw {
+        margin-left: 3.85rem;
+        background: url(images/btn-draw.png) no-repeat center;
+        background-size: 4rem 1.3rem;
+    }
+    /*倒计时*/
+
+    .yuanBg {
+        width: 5rem;
+        height: 5rem;
+        line-height: 5rem;
+        border-radius: 50%;
+        -webkit-border-radius: 50%;
+        -moz-border-radius: 50%;
+        background: rgba(0, 0, 0, .9);
+        font-size: 4.5rem;
+        color: #fff;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        margin-top: -2.5rem;
+        margin-left: -2.5rem;
+        text-align: center;
+    }
+    </style>
+    <script>
+        (function(doc, win) {
+            var docEl = doc.documentElement,
+                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                recalc = function() {
+                    var clientWidth = docEl.clientWidth;
+                    if (!clientWidth) return;
+                    docEl.style.fontSize = 20 * (clientWidth / 320) + 'px';
+                };
+
+            if (!doc.addEventListener) return;
+            win.addEventListener(resizeEvt, recalc, false);
+            doc.addEventListener('DOMContentLoaded', recalc, false);
+        })(document, window);
+    </script>
+    <script src="../jslib/jquery.js" type="text/javascript"></script>
+    <script charset="utf-8" src="../jslib/requestanimationframe.js" type="text/javascript"></script>
+</head>
+
+<body>
+    <div class="tuBox canvas_panel_js">
+        <canvas id="canvas_js"></canvas>
+        <!--<img src="images/img1-1.jpg">-->
+    </div>
+    <div class="page2">
+        <div class="top">
+            <div class="time"><span class="count_time_js">60S</span></div>
+            <div class="cktBox">
+                <div class="ckt"></div>
+                <img src="images/page3.jpg">
+            </div>
+        </div>
+        <div class="pinCon">
+            <div class="pinBotm"></div>
+            <div class="pinBox"></div>
+            <div class="pinBk"></div>
+        </div>
+        <div class="btnBox">
+            <p>
+                <a class="change change_img_js"></a>
+            </p>
+            <p class="mt24">
+                <a class="rule"></a>
+            </p>
+        </div>
+    </div>
+    <div class="shade" style="display:block;">
+        <div class="tkBottom"></div>
+        <div class="conBg"></div>
+        <div class="tkBox" style="display:none;">
+            <!--活动规则 -->
+            <div class="con rule_panel_js" style="display:none;">
+                <a class="btn-close"></a>
+                <h3 class="hd-rule"><div class="pic-rule"></div></h3>
+                <p>1. 滑动图片，可进行图片位置交换</p>
+                <p>2. 用户在规定时间内完成拼图，即可参与抽奖，100%中奖。</p>
+                <p>3. 本活动解释权归房天下所有。</p>
+                <p class="btnCss">
+                    <a class="btn-pin"></a>
+                </p>
+            </div>
+            <!--再次挑战 -->
+            <div class="con replay_panel_js" style="display:none;">
+                <div class="imgBox">
+                    <div class="img1"></div>
+                </div>
+                <div class="btnBox">
+                    <a class="again again_but_js"></a>
+                    <a class="get get_but_js"></a>
+                </div>
+            </div>
+            <!--去抽奖 -->
+            <div class="con snow_panel_js" style="display:none;">
+                <div class="imgBox">
+                    <div class="img2"></div>
+                </div>
+                <div class="btnBox">
+                    <a class="draw"></a>
+                </div>
+            </div>
+        </div>
+        <!--倒计时-->
+        <div class="yuanBg">
+            <div class="cent time_out_js">3</div>
+        </div>
+    </div>
+    <input class="trans_img_js" type="hidden" value="images/page3.jpg" />
+    <input class="trans_imgnum_js" type="hidden" value="3" />
+    <script>
+    // var dataForWeixin = {
+    //     TLImg: location.protocol + 'images/nggshare.jpg',
+    //     url: location.protocol + '//' + window.location.host + '/activityshow/nineGridTran/handle/ngtGuide.jsp?pageNum=7&ver=5',
+    //     title: '你的好运都靠拼',
+    //     desc: '玩限时拼图，抢买房福利',
+    // };
+    // $('#soufunclient').html("1$" + dataForWeixin.desc + "$" + dataForWeixin.url + "$" + dataForWeixin.TLImg);
+    </script>
+    <script charset="UTF-8" src="js/NgtImg.js"></script>
+    <script charset="UTF-8" src="js/ngtTrans.js"></script>
+</body>
+
+</html>

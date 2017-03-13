@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" name='viewport' content='width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no'>
+	<title></title>
+	<link rel="stylesheet" href="css/style.css">
+	<script src='../jslib/jquery.js'></script>
+	<script src="js/iscroll.js"></script>
+	<script>
+		$(function(){
+			var bdHeight= $(window).height(),bdWidth= $(window).width();
+
+			$('.room-img').css({'height':bdHeight,'width':bdHeight*1.6})
+
+			var myScroll = new iScroll("wrapper",{
+				hScroll:true,//左右滑动
+				vScroll:false,//上下滑动
+				hScrollbar:false,//左右滚动条
+				vScrollbar:false,//上下滚动条
+				topOffset:bdHeight*1.6 - bdWidth,
+				x:-bdHeight*1.6+bdWidth
+			});
+
+		});
+	</script>
+</head>
+<body>
+	<div id='wrapper' class="container" style='background:#fff;'>
+		<div class="livingroom-wrapper scroll" style='left:'>
+			<a class="wall"></a>
+			<a class="tv" style="z-index: 8;"></a>
+			<a class="light"></a>
+			<a class="hammer"></a>
+			<a class="window"></a>
+			<a class="sofa"></a>
+			<a class="l-door"></a>
+			<div class="outer" style='top: 50%;left:16%;'><a class="outer1 l-animate"></a></div>
+			<img src="images/living-room3.jpg" alt="" class="room-img">
+			<img src="images/chuizi.png" alt="" class="cz">
+			<img src="images/yjy2.png" style='top: 8.5%;left: 81%; width: 10%; display:none;' alt="" class='yjy2 label_one_js'>
+			<img src="images/yjy1.png" style='top: 33%;left: 49%; display:none;' alt="" class='yjy1 label_two_js'>
+			<div class="flicker star_two_js" style='left: 35%;top: 53%;display:none;'></div>
+			<div class="flicker star_one_js" style='left: 80%;top: 46%;'></div>
+		</div>
+		<img src="images/kt-inf1.png" alt="" class="room-intro show_one_js show_panel_js" style='left:4%;display:none;'>
+		<img src="images/kt-inf2.png" alt="" class="room-intro show_two_js show_panel_js" style='left:4%;display:none;'>
+		<img src="images/hint.png" alt="" class="hint show_panel_js" style="display:none;">
+		<img src="images/hdkgc.png" alt="" class="hint-intro show_panel_js" style="display:none;">
+		<img src="images/kt-ht4.png" alt="" class="hint1 show_panel_js" style="display:none;">
+		<img src="images/kt-ht1.png" alt="" class="hint3 show_panel_js" style="display:none;">
+		<img src="images/kt-ht2.png" alt="" class="hint4 show_panel_js" style="display:none;">
+		<img src="images/kt-ht3.png" alt="" class="hint5 show_panel_js" style="display:none;">
+	</div>
+	<div class="show_panel_js layer_panel_js"></div>
+
+	<input class="user_id_js" type="hidden" value=""/>
+	<script src='js/lvingRoom.js' charset="utf-8"></script>
+</body>
+</html>

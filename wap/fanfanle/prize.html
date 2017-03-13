@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>好运翻翻乐</title>
+    <link rel="stylesheet" href="css/css.css">
+    <script src="js/jquery.js"></script>
+</head>
+
+<body class="bgcolor">
+    <header class="header">
+        <div class="left">
+            <a href="javascript:;" onclick="history.back(-1)" class="back"><i></i></a>
+        </div>
+        <div class="cent">
+            <span>我的奖品</span>
+        </div>
+        <div class="head-icon">
+        </div>
+        <div class="clear"></div>
+    </header>
+    <div class="main">
+        <div class="crumbs">共20个</div>
+        <div class="prize">
+            <ul>
+                <li>
+                    <div class="lpic"><img src="images/pic01.jpg"></div>
+                    <div class="rtext">
+                        <h2>500M流量包</h2>
+                        <p>中奖时间：2014-08-13</p>
+                    </div>
+                    <input class="winId" style="display: none" value="10122">
+                </li>
+                <li>
+                    <div class="lpic"><img src="images/pic02.jpg"></div>
+                    <div class="rtext">
+                        <h2>500M流量包</h2>
+                        <p>中奖时间：2014-08-13</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="lpic"><img src="images/pic03.jpg"></div>
+                    <div class="rtext">
+                        <h2>500M流量包</h2>
+                        <p>中奖时间：2014-08-13</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <script>
+    // 获取url中的参数
+    function getUrlParam(name) {
+        // 构造一个含有目标参数的正则表达式对象
+        var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)');
+        // 匹配目标参数
+        var r = window.location.search.substr(1).match(reg);
+        // 返回参数值
+        if (r !== null) {
+            return unescape(r[2]);
+        }
+        return null;
+    }
+    $(function() {
+        $('li:has(.winId)').on('click', function() {
+            var url = 'http://' + window.location.hostname + '/huodongAC.d?class=FanfanleHc&m=getMyPrize';
+            var id = $(this).find('.winId').val();
+            window.location.href = url + '&lotteryId=' + getUrlParam('lotteryId') + '&winId=' + id;
+        });
+    });
+    </script>
+</body>
+
+</html>

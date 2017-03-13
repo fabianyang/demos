@@ -1,0 +1,167 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui" />
+    <title>好运翻翻乐</title>
+    <link rel="stylesheet" href="css/css.css">
+    <link rel="stylesheet" href="css/flip.css">
+    <script type="text/javascript">
+    (function(doc, win) {
+        var docEl = doc.documentElement,
+            resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+            recalc = function() {
+                var clientWidth = docEl.clientWidth;
+                if (!clientWidth) return;
+                docEl.style.fontSize = 20 * (clientWidth / 320) + 'px';
+                if (clientWidth >= 640) {
+                    docEl.style.fontSize = 40 + 'px'
+                };
+            };
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+    </script>
+    <script src="../jslib/jquery.js" type="text/javascript"></script>
+</head>
+
+<body>
+    <input id="isStop" style="display: none" value="0 ">
+    <input id="isLogin" style="display: none" value="1 ">
+    <input id="isBindPhone" style="display: none" value="1">
+    <input id="lotteryId" style="display: none" value="51">
+    <input id="canWin" style="display: none" value="true">
+    <input id="noWinReason" style="display: none" value="">
+    <input id="prizeListSize" style="display: none" value="8">
+    <input id="surplusPlayCount" style="display: none" value="">
+    <input id="totalCount" style="display: none" value="">
+    <input id="count" style="display: none" value="">
+    <input id="imgPath" style="display: none" value="./">
+    <!-- <input id="imgPath" style="display: none" value="//static.soufunimg.com/common_m/m_activity/happyFlip/"> -->
+    <div class="wbBox">
+        <div class="title01">我的积分 : 128积分</div>
+        <div class="conbox">
+            <ul>
+                <li class="l01">
+                    <div class="back"></div>
+                    <div class="Npic"><img data-id="259" data-type="point" src="images/pic03.jpg" width="100%"></div>
+                    <div class="Ntext">100积分</div>
+                </li>
+                <li class="l02">
+                    <div class="back"></div>
+                    <div class="Npic"><img data-id="260" data-type="point" src="images/pic03.jpg" width="100%"></div>
+                    <div class="Ntext">20积分</div>
+                </li>
+                <li class="l03">
+                    <div class="back"></div>
+                    <div class="Npic"><img data-id="261" data-type="things" src="images/pic07.jpg" width="100%"></div>
+                    <div class="Ntext">苹果7</div>
+                </li>
+                <li class="l04">
+                    <div class="back"></div>
+                    <div class="Npic"><img data-id="262" data-type="point" src="images/pic03.jpg" width="100%"></div>
+                    <div class="Ntext">10积分</div>
+                </li>
+                <li class="l05 start">
+                    <div class="stpic"><img src="" width="100%"></div>
+                    <div class="sttext">免费翻2次</div>
+                </li>
+                <!--<li class="l05">
+           <div class="stpic"><img src="images/lack.png" width="100%"></div>
+             <div class="sttext">积分不足</div>
+        </li>-->
+                <li class="l06">
+                    <div class="back"></div>
+                    <div class="Npic"><img data-id="263" data-type="package" src="images/pic05.jpg" width="100%"></div>
+                    <div class="Ntext">1G流量</div>
+                </li>
+                <li class="l07">
+                    <div class="back"></div>
+                    <div class="Npic"><img data-id="264" data-type="things" src="images/pic06.jpg" width="100%"></div>
+                    <div class="Ntext">年货礼包</div>
+                </li>
+                <li class="l08">
+                    <div class="back"></div>
+                    <div class="Npic"><img data-id="265" data-type="point" src="images/pic03.jpg" width="100%"></div>
+                    <div class="Ntext">3积分</div>
+                </li>
+                <li class="l09">
+                    <div class="back"></div>
+                    <div class="Npic"><img data-id="266" data-type="other" src="images/pic09.jpg" width="100%"></div>
+                    <div class="Ntext">再玩一次</div>
+                </li>
+            </ul>
+        </div>
+        <div class="bottom flexbox">
+            <a href="/huodongAC.d?class=FanfanleHc&m=getActivityRules&lotteryId=51"><img src="images/but01.png"></a>
+            <a href="/huodongAC.d?m=getWinList&class=FanfanleHc&lotteryId=51"><img src="images/but02.png"></a>
+            <!-- <h1>&lotteryId=51</h1> -->
+        </div>
+    </div>
+    <div class="Popupbox js_win">
+        <div class="Popupboxnr">
+            <a class="close"></a>
+            <div class="tr01">
+                <div class="prizes">
+                </div>
+                <div class="nname">
+                </div>
+            </div>
+            <div class="buttr flexbox">
+                <a href="/huodongAC.d?class=FanfanleHc&m=getMyPrize&lotteryId=51"><img src="images/but04.png"></a>
+                <a href="javascript:;" class="js_agian"><img src="images/but05.png"></a>
+            </div>
+        </div>
+    </div>
+    <div class="Popupbox js_lose">
+        <div class="Popupboxnr">
+            <a class="close no1"></a>
+            <div class="tr01 no1"></div>
+            <div class="buttr flexbox">
+                <a href="javascript:;" class="no1"><img src="images/but06.png"></a>
+            </div>
+        </div>
+    </div>
+    <div class="Popupbox js_noChargeCount">
+        <div class="Popupboxnr">
+            <a class="close no1"></a>
+            <div class="tr01 no22"></div>
+            <div class="buttr flexbox">
+                <a href="javascript:;" class="no1"><img src="images/rcbtn01.png"></a>
+            </div>
+        </div>
+    </div>
+    <div class="Popupbox js_noPlayCount">
+        <div class="Popupboxnr">
+            <a class="close no1"></a>
+            <div class="tr01 no23"></div>
+        </div>
+    </div>
+    <div class="msg fromTop">
+        <p></p>
+    </div>
+    <script>
+    // var shareInfo = 'none';
+    // if (shareInfo == 'none') {
+    //     var dataForWeixin = {
+    //         TLImg: location.protocol + 'images/share.jpg',
+    //         url: location.protocol + '//' + (document.location.host) + '/huodongAC.d?class=FanfanleHc&m=getLotteryInfo&lotteryId=51&city=bj',
+    //         title: "好运翻翻乐",
+    //         desc: "好运会传染，快来试试你的手气"
+    //     };
+    // } else {
+    //     var dataForWeixin = {
+    //         TLImg: "",
+    //         url: "",
+    //         title: "",
+    //         desc: "",
+    //     };
+    // }
+    // $('#soufunclient').html("1$" + dataForWeixin.desc + "$" + dataForWeixin.url + "$" + dataForWeixin.TLImg); //app分享
+    </script>
+    <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+</body>
+
+</html>

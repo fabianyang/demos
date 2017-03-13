@@ -1,0 +1,407 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="gbk">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>购房嘉年华</title>
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    html,
+    body,
+    form,
+    fieldset,
+    p,
+    div,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        -webkit-text-size-adjust: none;
+    }
+
+    img {
+        border: 0;
+        vertical-align: middle;
+        pointer-events: none;
+    }
+
+    ul,
+    ol,
+    li {
+        list-style-type: none;
+        display: block;
+    }
+
+    @media screen and (max-device-width: 320px) {
+        body {
+            -webkit-text-size-adjust: none
+        }
+    }
+
+    @media screen and (max-device-width: 480px) {
+        body {
+            -webkit-text-size-adjust: none
+        }
+    }
+
+    @media only screen and (-webkit-min-device-pixel-ratio: 2) {
+        body {
+            -webkit-text-size-adjust: none
+        }
+    }
+
+    @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+        body {
+            -webkit-text-size-adjust: none
+        }
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    html,
+    body {
+        height: 100%;
+    }
+
+    .clearfix:after {
+        clear: both;
+        content: "\200B";
+        display: block;
+        height: 0;
+    }
+
+    .clearfix {
+        *zoom: 1;
+    }
+
+    body {
+        font-family: Arial, "Microsoft Yahei";
+        background: #ffed6f;
+    }
+
+    header {
+        width: 100%;
+    }
+
+    header img {
+        width: 100%;
+    }
+
+    .pdb8 {
+        padding-bottom: 8px;
+    }
+
+    .get1 {
+        display: block;
+        margin: 5px 2%;
+        width: 96%;
+    }
+
+    .get1 img {
+        width: 100%;
+    }
+
+    .link {
+        margin: 5px 2%;
+        width: 96%;
+    }
+
+    .link a {
+        display: inline-block;
+    }
+
+    .link a.one {
+        width: 59%;
+        float: left;
+    }
+
+    .link a.two {
+        width: 39.4%;
+        float: right;
+    }
+
+    .link a.three {
+        width: 39.4%;
+        float: left;
+    }
+
+    .link a.four {
+        width: 59%;
+        float: right;
+    }
+
+    .link a img {
+        width: 100%;
+    }
+    /*.noPointer{ pointer-events:none;}*/
+
+    .shade {
+        display: none;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        background: rgba(0, 0, 0, .6);
+    }
+
+    .tsBox {
+        margin-top: 25%;
+        width: 100%;
+        height: 100%;
+        background: url(images/tk.png) no-repeat;
+        background-size: 100%;
+    }
+
+    .shade .opencon {
+        width: 300px;
+        background: #fff;
+        border-radius: 5px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin: -115px 0 0 -150px
+    }
+
+    .shade .close {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        right: 4px;
+        top: 126px;
+        background: url(../images/close.png) no-repeat;
+        background-size: 100%;
+        text-indent: -9999px;
+        cursor: pointer
+    }
+
+    .opencon .openList {
+        padding: 13px 20px 20px 20px;
+    }
+
+    .opencon .openList h3 {
+        font-size: 24px;
+        color: #fc6769;
+        text-align: center;
+        margin-bottom: 8px;
+        font-weight: normal;
+    }
+
+    .opencon .openList dl {
+        padding: 3px 0px;
+        display: table;
+        width: 100%;
+        line-height: 40px;
+        border-bottom: 1px solid #f4f4f4;
+    }
+
+    .opencon .openList dt {
+        display: table-cell;
+        vertical-align: top;
+        width: 84px;
+        font-size: 14px;
+        color: #83868f
+    }
+
+    .opencon .openList dd {
+        position: relative;
+        display: table-cell;
+        text-align: left;
+        font-size: 14px;
+    }
+
+    .opencon .openList .ipt-text {
+        background-color: #fff;
+        color: #0c0d0e;
+        border: 0px;
+        line-height: inherit;
+        font-size: 14px;
+        width: 100%;
+        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        text-indent: 4px;
+    }
+
+    .opencon .openList .ipt-text:focus {
+        color: #0c0d0e;
+        background-color: #fff;
+    }
+
+    .opencon .openList .ipt-text::-webkit-input-placeholder {
+        color: #b3b6be;
+        font-size: 15px;
+    }
+
+    .opencon .openList .textarea {
+        height: 75px;
+        line-height: 22px;
+        font-size: 12px;
+        overflow: auto;
+        border: 1px solid #f4f4f4;
+        color: #b3b6be;
+        padding: 5px 10px;
+    }
+
+    .opencon .openList .btn-ok,
+    .opencon .openList .btn-oka {
+        width: 168px;
+        height: 24px;
+        text-decoration: none;
+        line-height: 24px;
+        font-size: 12px;
+        border: 1px solid #f66;
+        border-radius: 2px;
+        text-align: center;
+        cursor: pointer;
+        background-color: #fff;
+        color: #f66 !important;
+        margin: 8px 0 0 5px;
+    }
+
+    .opencon .openList .btn-oka {
+        border: 1px solid #cccfd8;
+        color: #b3b6be!important
+    }
+
+    .opencon .openList .btn-tj {
+        margin: 18px auto 0;
+        display: inline-block;
+        width: 111px;
+        height: 40px;
+        line-height: 40px;
+        font-size: 14px;
+        border: none;
+        border-radius: 3px;
+        text-align: center;
+        cursor: pointer;
+        background-color: #df3031;
+        color: #fff !important;
+        text-decoration: none;
+        margin-right: 0px
+    }
+
+    .opencon .openList .hui {
+        margin-right: 32px;
+        background-color: #cccfd8
+    }
+    /* flex */
+
+    .flexbox {
+        display: box;
+        display: -webkit-box;
+        display: -moz-box;
+        display: -ms-box;
+        -webkit-box-orient: horizontal;
+        box-orient: horizontal;
+    }
+
+    .flexbox > * {
+        display: block;
+        box-flex: 1;
+        -webkit-box-flex: 1;
+        -moz-box-flex: 1;
+        -ms-box-flex: 1;
+    }
+
+    .msg {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        z-index: 1999;
+        text-align: center;
+        width: 6rem;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 0.5rem;
+        margin-left: -3rem;
+        border-radius: 0.4rem;
+        color: #fff;
+        font-size: 14px;
+        display: none;
+    }
+
+    .fromTop {
+        -webkit-animation: moveFromTop .6s ease both;
+        animation: moveFromTop .6s ease both;
+    }
+
+    @-webkit-keyframes moveFromTop {
+        from {
+            -webkit-transform: translateY(-40%);
+            opacity: 1.0;
+        }
+    }
+
+    @keyframes moveFromTop {
+        from {
+            -webkit-transform: translateY(-40%);
+            transform: translateY(-40%);
+        }
+    }
+    </style>
+    <script type="text/javascript" src="../jslib/jquery.js"></script>
+    <script type="text/javascript" src="../jslib/smsLogin.js"></script>
+</head>
+
+<body>
+    <header><img src="images/head.jpg"></header>
+    <div class="pdb8">
+        <!--<a class="get1"><img src="images/get01.png"></a>-->
+        <a class="get1 noPointer js_coupon"><img src="images/get02.png"></a>
+        <div class="clearfix link">
+            <a class="one" href="javascript:;"><img src="images/pic01.png"></a>
+            <a class="two" href="javascript:;"><img src="images/pic02.png"></a>
+        </div>
+        <a class="get1" href="javascript:;"><img src="images/pic03.png"></a>
+        <div class="clearfix link">
+            <!--<a class="three"><img src="images/get03.png"></a>-->
+            <a class="three noPointer js_gift"><img src="images/get04.png"></a>
+            <a class="four" href="#"><img src="images/pic04.png"></a>
+        </div>
+    </div>
+    <div class="shade" style="display:none;">
+        <div class="tsBox fromTop" style="display:none;"></div>
+        <div class="opencon fromTop" style="display: none;">
+            <div class="openList">
+                <h3><i>领奖品</i></h3>
+                <dl>
+                    <dd>
+                        <div class="flexbox">
+                            <input name="phone" type="tel" class="ipt-text js_sms_phone" placeholder="请输入手机号">
+                            <a href="javascript:;" class="btn-ok js_sms_btn">获取验证码</a>
+                            <!--<a href="javascript:;" class="btn-oka">重新获取59S</a>--></div>
+                    </dd>
+                </dl>
+                <dl>
+                    <dd>
+                        <input name="code" type="tel" class="ipt-text js_sms_code" placeholder="输入验证码">
+                    </dd>
+                </dl>
+                <a href="javascript:void(0);" class="btn-tj hui js_close">放 弃</a>
+                <a href="javascript:void(0);" class="btn-tj js_login">登 录</a>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" id="status" value="off">
+    <input type="hidden" id="voucher" value="2">
+    <input type="hidden" id="homeVoucher" value="2">
+    <input type="hidden" id="mFtpPath" value="./">
+    <div class="msg fromTop">
+        <p></p>
+    </div>
+    <script type="text/javascript" src="js/index.js"></script>
+</body>
+
+</html>

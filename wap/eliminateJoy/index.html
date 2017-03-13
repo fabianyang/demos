@@ -1,0 +1,265 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>翻翻乐</title>
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <script>
+    (function(doc, win) {
+        var docEl = doc.documentElement,
+            resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+            recalc = function() {
+                var clientWidth = docEl.clientWidth;
+                if (!clientWidth) return;
+                docEl.style.fontSize = 20 * (clientWidth / 375) + 'px';
+            };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+    </script>
+</head>
+
+<body>
+    <div class="page">
+        <div class="loading">
+            <div class="logo"><span></span></div>
+            <div class="music">
+                <a class="circle"></a>
+            </div>
+            <div class="older swinging"></div>
+            <div class="txt"></div>
+            <div class="load_jd">
+                <div class="js_barLoading now"><span></span></div>
+            </div>
+        </div>
+    </div>
+    <div class="page" style="display: none">
+        <div class="bg">
+            <div class="header"></div>
+            <div class="old"></div>
+            <div class="con_bg">
+                <a class="btnBegin js_btnBegin"></a>
+                <a class="btnRule js_btnRuler"></a>
+                <span>房天下知识资讯组出品</span>
+            </div>
+        </div>
+        <div class="logo"><span></span></div>
+        <div class="music">
+            <a class="circle"></a>
+        </div>
+    </div>
+    <div class="page" style="display: none">
+        <div class="logo"><span></span></div>
+        <div class="music">
+            <a class="circle"></a>
+        </div>
+        <div class="topBox">
+            <div class="time">20"000</div>
+            <div class="round round1"></div>
+            <!--round2第二关  round3第三关-->
+        </div>
+        <div class="main">
+            <ul class="clearfix">
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <li>
+                    <a class="js_card fan"></a>
+                </li>
+                <!--第二关多四个-->
+                <li class="level1">
+                    <a class="fan"></a>
+                </li>
+                <li class="level1">
+                    <a class="fan"></a>
+                </li>
+                <li class="level1">
+                    <a class="fan"></a>
+                </li>
+                <li class="level1">
+                    <a class="fan"></a>
+                </li>
+                <!--第三关再多四个-->
+                <li class="level2">
+                    <a class="fan"></a>
+                </li>
+                <li class="level2">
+                    <a class="fan"></a>
+                </li>
+                <li class="level2">
+                    <a class="fan"></a>
+                </li>
+                <li class="level2">
+                    <a class="fan"></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="page" style="display: none">
+        <div class="congrats js_box" style="display: none">
+            <div class="logo"><span></span></div>
+            <div class="music">
+                <a class="circle"></a>
+            </div>
+            <a class="rank js_btnRank">排行榜</a>
+            <a class="close"></a>
+            <div class="tit">恭喜入围</div>
+            <div class="score">
+                <p class="js_textScore">您的成绩为：XX秒</p>
+                <p class="js_textBest">最佳成绩为：XX秒</p>
+            </div>
+            <div class="best js_textRank">当前排名：<span>NO.XX</span></div>
+            <ul>
+                <li>
+                    <div class="ipt"><input type="text" name="userName" placeholder="姓名"></div>
+                </li>
+                <li>
+                    <div class="ipt"><input type="tel" name="userPhone" placeholder="手机号"></div>
+                </li>
+            </ul>
+            <div class="import">*请填写手机号，如不填写，则视为自动放弃抽奖资格</div>
+            <a class="submit js_btnSubmit"></a>
+        </div>
+        <div class="congrats js_box" style="display: none">
+            <div class="logo"><span></span></div>
+            <div class="music">
+                <a class="circle"></a>
+            </div>
+            <a class="rank js_btnRank">排行榜</a>
+            <a class="close"></a>
+            <div class="tit">挑战成功</div>
+            <div class="score">
+                <p class="js_textScore">您的成绩为：XX秒</p>
+                <p class="js_textBest">最佳成绩为：XX秒</p>
+            </div>
+            <div class="best js_textRank">当前排名：暂未上榜</div>
+            <div class="best">
+                Ps 获奖名单将以最佳成绩依次排序
+            </div>
+            <div class="btnBox">
+                <a class="btn1 js_btnShare"></a>
+                <a class="btn2 js_btnBegin"></a>
+            </div>
+        </div>
+    </div>
+    <div class="page" style="display: none">
+        <div class="logo"><span></span></div>
+        <div class="music">
+            <a class="circle"></a>
+        </div>
+        <div class="rankBox js_box" style="display: none">
+            <a class="close"></a>
+            <ul class="tab clearfix">
+                <li>
+                    <a class="js_btnRuler cur"></a>
+                </li>
+                <li>
+                    <a class="js_btnRank"></a>
+                </li>
+            </ul>
+            <div class="con">
+                <p>1. 游戏共三关，每关开始前有五秒时间可记牌，时间一到，时间一到，所有牌背时间一到，所有牌背时间一到，所所有牌背</p>
+                <p>2. 前一名成功闯关者可获得<span>保温杯</span>一个，前2-3名可获得<span>午睡枕</span>一个，前4-6名可获得<span>20元话费</span>。</p>
+                <p>3. 闯关失败者可以选择重新闯关。</p>
+                <p>4. 同一手机号码（地址）只能颁奖一次。</p>
+                <p>活动时间：
+                    <br>即日至12月25日24点整</p>
+            </div>
+            <a class="btnBegin2 js_btnBegin"></a>
+        </div>
+        <div class="rankBox js_box" style="display: none">
+            <a class="close"></a>
+            <ul class="tab clearfix">
+                <li>
+                    <a class="js_btnRuler"></a>
+                </li>
+                <li>
+                    <a class="js_btnRank cur"></a>
+                </li>
+            </ul>
+            <div class="nowRank">
+                <!-- rankNo begin -->
+                <p class="js_textRank">当前排名：<span>No.XX</span></p>
+                <!-- rankNo end -->
+                <p class="xx">（只显示前6名）</p>
+            </div>
+            <ul class="rankList js_listRank">
+                <li><span>排名</span><span>用户</span><span>时间</span></li>
+                <!-- rank begin -->
+                <li><span>NO.1</span><span>158****1234</span><span class="red">30"000s</span></li>
+                <li><span>NO.2</span><span>158****1234</span><span class="red">30"000s</span></li>
+                <li><span>NO.3</span><span>158****1234</span><span class="red">30"000s</span></li>
+                <li><span>NO.4</span><span>158****1234</span><span class="red">30"000s</span></li>
+                <li><span>NO.5</span><span>158****1234</span><span class="red">30"000s</span></li>
+                <li><span>NO.6</span><span>158****1234</span><span class="red">30"000s</span></li>
+                <!-- rank end -->
+            </ul>
+            <a class="btnBegin2 js_btnBegin"></a>
+        </div>
+    </div>
+    <div class="msg">
+        <p></p>
+    </div>
+    <img id="share" src="images/share.png" style="display: none">
+    <input type="hidden" value="" id="historyBack">
+    <div class="js_shareMask" style="display: none; position: fixed; top: 0px; width: 100%; height: 100%; z-index: 1000; background: rgba(0, 0, 0, 0.6);">
+        <div class="share-img" style="position: absolute;right: 40px;top: 20px;">
+            <img src="images/zc-share.png" width="124">
+        </div>
+    </div>
+    <input type="hidden" value="./" id="imgPath">
+    <input type="hidden" value="" id="userPhone">
+    <input type="hidden" value="begin" id="canPlay">
+    <script type="text/javascript" src="../jslib/jquery.js"></script>
+    <script type="text/javascript" src="../jslib/weixinshare.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+</body>
+
+</html>

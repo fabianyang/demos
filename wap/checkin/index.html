@@ -1,0 +1,155 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>打卡活动</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <section class="yzcdd_index">
+        <img src="images/banner_daka.jpg" class="top" />
+        <div class="tp_top">
+            <a href="javascript:void(0);" class="js_ruler_btn"><img src="images/daka_gz.png" /></a>
+        </div>
+        <div class="con">
+            <ul>
+                <li class="weiling">
+                    <span class="weiling">1天</span>
+                    <a href="javascript:void(0);">
+                        <i>领取</i>
+                        <b>5积分</b>
+                        <img src="images/fir01.png" class="fir">
+                        <span>立即打卡</span>
+                    </a>
+                </li>
+                <li class="weiling">
+                    <span class="weiling">2天</span>
+                    <a href="javascript:void(0);">
+                        <i>领取</i>
+                        <b>15积分</b>
+                        <img src="images/sec01.png" class="sec">
+                        <span>立即打卡</span>
+                    </a>
+                </li>
+                <li class="weiling">
+                    <span class="weiling">3天</span>
+                    <a href="javascript:void(0);">
+                        <i>领取</i>
+                        <b>20积分</b>
+                        <img src="images/thr01.png" class="thr">
+                        <span>立即打卡</span>
+                    </a>
+                </li>
+                <li class="weiling">
+                    <span class="weiling">4天</span>
+                    <a href="javascript:void(0);">
+                        <i>领取</i>
+                        <b class="teshu">1200元<u>装修礼包</u></b>
+                        <img src="images/fou01.png" class="fou">
+                        <span>立即打卡</span>
+                    </a>
+                </li>
+                <li class="weiling">
+                    <span class="weiling">5天</span>
+                    <a href="javascript:void(0);">
+                        <i>领取</i>
+                        <b style="font-size: 1.1rem;">100积分</b>
+                        <img src="images/five01.png" class="five">
+                        <span>立即打卡</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="cj"><span>幸运抽奖</span></div>
+        <ul class="xycj">
+            <li>
+                <img src="images/jiang01.png" alt="">
+                <p>50积分/次</p>
+                <a href="javascript:void(0);">我要</a>
+            </li>
+            <li>
+                <img src="images/jiang01.png" alt="">
+                <p>50积分/次</p>
+                <a href="javascript:void(0);">我要</a>
+            </li>
+            <li>
+                <img src="images/jiang01.png" alt="">
+                <p>50积分/次</p>
+                <a href="javascript:void(0);">我要</a>
+            </li>
+        </ul>
+    </section>
+    <!--弹窗遮罩-->
+    <div class="zuopenbox js_cover" style="display: none;">
+        <input type="hidden" id="num" value="4">
+        <!--领奖品弹窗-->
+        <div class="opencon js_prize fromTop" style="display: none;">
+            <div class="openList">
+                <h3><i>领奖品</i></h3>
+                <dl>
+                    <dd>
+                        <div class="flexbox">
+                            <input name="phone" type="tel" class="ipt-text js_sms_phone" placeholder="请输入手机号">
+                            <a href="#" class="btn-ok js_sms_btn">获取验证码</a>
+                            <!--<a href="#" class="btn-oka">重新获取59S</a>--></div>
+                    </dd>
+                </dl>
+                <dl>
+                    <dd>
+                        <input name="code" type="tel" class="ipt-text js_sms_code"placeholder="输入验证码">
+                    </dd>
+                </dl>
+                <a href="javascript:void(0)" class="btn-tj hui js_close">放 弃</a>
+                <a href="javascript:void(0)" class="btn-tj js_login">登 录</a>
+            </div>
+        </div>
+        <!--打卡成功提示弹窗-->
+        <div class="suc js_success fromTop" style="display: none;">
+            <a href="javascript:void(0)" class="close js_close"></a>
+            <div class="openList ">
+                <p>打卡成功!您已打卡1天
+                    <br>大礼在后面哦！</p>
+                <a href="javascript:void(0)" class="btn-tj">立 即 使 用</a>
+            </div>
+        </div>
+        <!--活动规则弹窗-->
+        <div class="guize js_ruler fromTop" style="display: none;">
+            <a href="javascript:void(0)" class="close js_close"></a>
+            <div class="openList ">
+                <h5>活动规则</h5>
+                <p>1.活动期间用户参与打卡，既有机会领取打卡礼物。
+                    <br> 2.活动期间同一用户每天只可打卡一次，打卡可间断进行。
+                    <br> 3.活动期间，用户只能完成一次为期5天的打卡。
+                </p>
+                <a href="javascript:void(0)" class="btn-tj js_close">我知道了</a>
+            </div>
+        </div>
+    </div>
+    <!--弹窗end-->
+    <div class="msg fromTop">
+      <p></p>
+    </div>
+    <script>
+    (function(doc, win) {
+        var docEl = doc.documentElement,
+            resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+            recalc = function() {
+                var clientWidth = docEl.clientWidth;
+                if (!clientWidth) return;
+                docEl.style.fontSize = 20 * (clientWidth / 320) + 'px';
+            };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+    </script>
+    <script type="text/javascript" src="../jslib/jquery.js"></script>
+    <script type="text/javascript" src="js/daka.js"></script>
+</body>
+
+</html>

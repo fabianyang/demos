@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" name='viewport' content='width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no'>
+	<title></title>
+	<link rel="stylesheet" href="css/style.css">
+	<script src="../jslib/jquery.js" type="text/javascript"></script>
+    <script src="js/iscroll.js"></script>
+
+	<script>
+
+		$(function(){
+			var bdHeight= $(window).height();
+
+			$('.room-img').css({'height':bdHeight,width:bdHeight*1.6})
+			$('.scroll').css({'height':bdHeight,width:bdHeight*1.6})
+
+			var myScroll = new iScroll("wrapper",{
+				hScroll:true,//左右滑动
+				vScroll:false,//上下滑动
+				hScrollbar:false,//左右滚动条
+				vScrollbar:false//上下滚动条
+			})
+			$('.container')[0].id;
+		})
+	</script>
+</head>
+<body>
+	<div id='wrapper'  class="container" style='background:#fff;'>
+		<div class="bedroom-wrapper scroll">
+			<a class="bed"></a>
+			<a class="dresser"></a>
+			<a class="chair"></a>
+			<a class="floor"></a>
+			<a class="b-door"></a>
+			<div class="outer" style='top: 55%;right: 18%;'><a class="outer2 r-animate"></a></div>
+			<img src="images/bedroom2.jpg" alt="" class="room-img">
+			<img src="images/chazuo.png" alt="" class="chazuo">
+			<img src="images/lsd.png" alt="" class="lsd">
+			<img src="images/yjy2.png" style='top: 67%;left: 92%; display:none;' alt="" class='yjy2 label_one_js'>
+			<img src="images/yjy1.png" style='top: 87%;left: 60%; display:none;' alt="" class='yjy1 label_two_js'>
+			<div class="flicker star_one_js" style='left: 35.3%;top: 69%;'></div>
+			<div class="flicker star_two_js" style='left: 66%;top: 52%;display:none;'></div>
+			<div style='clear: both;'></div>
+		</div>
+		<img src="images/ws-inf2.png" alt="" class="room-intro show_one_js show_panel_js" style='left: 5%;display:none;'>
+		<img src="images/ws-inf1.png" alt="" class="room-intro show_two_js show_panel_js" style='left: 5%;display:none;'>
+		<img src="images/hint.png" alt="" class="hint show_panel_js">
+		<img src="images/dianbi.png" alt="" class="hint-intro show_panel_js" style="display:none;">
+		<img src="images/ws-ht4.png" alt="" class="hint1 show_panel_js" style="display:none;">
+		<img src="images/ws-ht1.png" alt="" class="hint3 show_panel_js" style="display:none;">
+		<img src="images/ws-ht2.png" alt="" class="hint4 show_panel_js" style="display:none;">
+		<img src="images/ws-ht3.png" alt="" class="hint5 show_panel_js" style="display:none;">
+
+	</div>
+	<div class="show_panel_js layer_panel_js" style='display:none;'></div>
+
+	<input class="user_id_js" type="hidden" value=""/>
+
+	<input class="store_sum_js" type="hidden" value=""/>
+
+	<script src="js/bedRoom.js" charset="utf-8"></script>
+</body>
+<script>
+// var dataForWeixin={
+// 		  TLImg: location.protocol+'images/shareImg.jpg',
+// 	      url: "//m.test.fang.com/activityshow/backroom/redirect.jsp?ver=7",
+// 	      title: "慧眼识房，大家一起来找茬！",
+// 	      desc: "看一看你的验房功力有多深厚？",
+// 	      callback:function(){}
+// 	}
+</script>
+</html>

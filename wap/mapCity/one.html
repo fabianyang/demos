@@ -1,0 +1,617 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>十一，带着房价去旅行</title>
+    <style>
+    html {
+        font-family: "Helvetica Neue", Helvetica, STHeiTi, Arial, sans-serif;
+        -ms-text-size-adjust: 100%;
+        -webkit-text-size-adjust: 100%;
+        font-size: 62.5%;
+    }
+
+    body {
+        margin: 0;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #5b2617;
+        background-color: #fccf35;
+        height: 100%;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    article,
+    aside,
+    details,
+    figcaption,
+    figure,
+    footer,
+    header,
+    main,
+    nav,
+    section,
+    summary {
+        display: block;
+    }
+
+    audio,
+    canvas,
+    progress,
+    video {
+        display: inline-block;
+        vertical-align: baseline;
+    }
+
+    audio:not([controls]) {
+        display: none;
+        height: 0;
+    }
+
+    [hidden],
+    template {
+        display: none;
+    }
+
+    svg:not(:root) {
+        overflow: hidden;
+    }
+
+    a {
+        background: transparent;
+        text-decoration: none;
+        -webkit-tap-highlight-color: transparent;
+        color: #0088cc;
+    }
+
+    a:active {
+        outline: 0;
+    }
+
+    a:active {
+        color: #006699;
+    }
+
+    abbr[title] {
+        border-bottom: 1px dotted;
+    }
+
+    b,
+    strong {
+        font-weight: bold;
+    }
+
+    dfn {
+        font-style: italic;
+    }
+
+    mark {
+        background: #ff0;
+        color: #000;
+    }
+
+    small {
+        font-size: 80%;
+    }
+
+    sub,
+    sup {
+        font-size: 75%;
+        line-height: 0;
+        position: relative;
+        vertical-align: baseline;
+    }
+
+    sup {
+        top: -0.5em;
+    }
+
+    sub {
+        bottom: -0.25em;
+    }
+
+    img {
+        border: 0;
+        vertical-align: middle;
+    }
+
+    hr {
+        -moz-box-sizing: content-box;
+        box-sizing: content-box;
+        height: 0;
+    }
+
+    pre {
+        overflow: auto;
+        white-space: pre;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+
+    code,
+    kbd,
+    pre,
+    samp {
+        font-family: monospace, monospace;
+        font-size: 1em;
+    }
+
+    button,
+    input,
+    optgroup,
+    select,
+    textarea {
+        color: inherit;
+        font: inherit;
+        margin: 0;
+    }
+
+    button {
+        overflow: visible;
+    }
+
+    button,
+    select {
+        text-transform: none;
+    }
+
+    button,
+    html input[type="button"],
+    input[type="reset"],
+    input[type="submit"] {
+        -webkit-appearance: button;
+        cursor: pointer;
+    }
+
+    button[disabled],
+    html input[disabled] {
+        cursor: default;
+    }
+
+    button::-moz-focus-inner,
+    input::-moz-focus-inner {
+        border: 0;
+        padding: 0;
+    }
+
+    input {
+        line-height: normal;
+    }
+
+    input[type="checkbox"],
+    input[type="radio"] {
+        box-sizing: border-box;
+        padding: 0;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        height: auto;
+    }
+
+    input[type="search"] {
+        -webkit-appearance: textfield;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+
+    input[type="search"]::-webkit-search-cancel-button,
+    input[type="search"]::-webkit-search-decoration {
+        -webkit-appearance: none;
+    }
+
+    fieldset {
+        border: 1px solid #c0c0c0;
+        margin: 0 2px;
+        padding: 0.35em 0.625em 0.75em;
+    }
+
+    legend {
+        border: 0;
+        padding: 0;
+    }
+
+    textarea {
+        overflow: auto;
+        resize: vertical;
+    }
+
+    optgroup {
+        font-weight: bold;
+    }
+
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+    td,
+    th {
+        padding: 0;
+    }
+
+    html,
+    button,
+    input,
+    select,
+    textarea {
+        font-family: "Helvetica Neue", Helvetica, STHeiTi, Arial, sans-serif;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    figure,
+    form,
+    blockquote {
+        margin: 0;
+    }
+
+    ul,
+    ol,
+    li,
+    dl,
+    dd {
+        margin: 0;
+        padding: 0;
+    }
+
+    ul,
+    ol {
+        list-style: none outside none;
+    }
+
+    h1,
+    h2,
+    h3 {
+        font-weight: normal;
+    }
+
+    input::-moz-placeholder,
+    textarea::-moz-placeholder {
+        color: #cccccc;
+    }
+
+    input:-ms-input-placeholder,
+    textarea:-ms-input-placeholder {
+        color: #cccccc;
+    }
+
+    input::-webkit-input-placeholder,
+    textarea::-webkit-input-placeholder {
+        color: #cccccc;
+    }
+
+    * {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+
+    .clearfix:before,
+    .clearfix:after {
+        content: "";
+        display: table;
+    }
+
+    .clearfix:after {
+        clear: both;
+    }
+
+    .mt10 {
+        margin-top: 10px !important;
+    }
+
+    .mt15 {
+        margin-top: 15px !important;
+    }
+
+    .mt20 {
+        margin-top: 20px !important;
+    }
+
+    .mt50 {
+        margin-top: 50px !important;
+    }
+
+    .center {
+        text-align: center;
+    }
+
+    html,
+    body {
+        height: 100%;
+        font-size: 16px;
+    }
+
+    .none {
+        display: none;
+    }
+
+    .animated {
+        display: block !important;
+    }
+
+    .q_ym {
+        overflow: hidden;
+        min-height: 100%;
+    }
+
+    .z_top {
+        position: relative;
+        top: 1.2rem;
+        left: 10%;
+        width: 80%;
+        text-align: center;
+        z-index: 1
+    }
+
+    .top_deng {
+        position: absolute;
+        top: 1.2rem;
+        left: 90%;
+        text-align: center;
+        z-index: 1
+    }
+
+    .zo_mid {
+        position: relative;
+        top: 2.5rem;
+        text-align: center;
+        z-index: 1
+    }
+
+    .s_lo {
+        display: none;
+        position: absolute;
+        top: 1.2rem;
+        left: 10%;
+        width: 80%;
+        text-align: center;
+        z-index: 2
+    }
+
+    .s_home {
+        position: absolute;
+        width: 70%;
+        left: 15%;
+        text-align: center;
+        z-index: 3
+    }
+
+    .s_san {
+        position: absolute;
+        width: 30%;
+        left: 68%;
+        text-align: center;
+        z-index: 3
+    }
+
+    .z_end {
+        position: relative;
+        width: 100%;
+        height: 36rem;
+        top: 7rem;
+        background: #fccf35 url(images/x_ground.png) no-repeat;
+        background-size: 100% 100%;
+        overflow: hidden;
+        z-index: 0
+    }
+
+    .s_wen {
+        position: relative;
+        top: 8rem;
+        left: 2rem;
+        width: 80%;
+        text-align: center;
+        z-index: 1
+    }
+
+    .s_kai {
+        position: relative;
+        top: 9rem;
+        left: 2rem;
+        height: 4rem;
+        width: 80%;
+        background: url(images/bottom_kai.png) no-repeat;
+        background-size: 100% 100%;
+        overflow: hidden;
+        text-align: center;
+        z-index: 1
+    }
+
+    .s_kj_wen {
+        position: relative;
+        height: 1.7rem;
+        width: 100%;
+        left: 1rem;
+        top: 1.2rem;
+        text-align: left;
+        z-index: 1
+    }
+
+    .s_k_ul {
+        position: absolute;
+        max-height: 6.5rem;
+        width: 45%;
+        overflow-y: scroll;
+        left: 28%;
+        top: 15.5rem;
+        text-align: center;
+        color: #162999;
+        background-color: #F8DC29;
+        border-radius: 8px;
+        z-index: 5
+    }
+
+    .s_j_ul {
+        position: absolute;
+        max-height: 6.5rem;
+        width: 45%;
+        overflow-y: scroll;
+        left: 28%;
+        top: 19.5rem;
+        text-align: center;
+        color: #162999;
+        background-color: #F8DC29;
+        border-radius: 8px;
+        z-index: 5
+    }
+
+    .s_k_ul li {
+        border-bottom: 2px groove #ECEBEB;
+    }
+
+    .s_j_ul li {
+        border-bottom: 2px groove #ECEBEB;
+    }
+
+    .kjcity {
+        width: 50%;
+        line-height: 30px;
+        border: none;
+        text-align: center
+    }
+
+    .s_jie {
+        position: relative;
+        top: 9rem;
+        left: 2rem;
+        height: 4rem;
+        width: 80%;
+        background: url(images/bottom_kai.png) no-repeat;
+        background-size: 100% 100%;
+        overflow: hidden;
+        text-align: center;
+        z-index: 1
+    }
+
+    .s_but {
+        position: relative;
+        top: 12rem;
+        left: 2rem;
+        width: 80%;
+        text-align: center;
+        z-index: 1
+    }
+
+    .s_xinxin {
+        position: relative;
+        top: 9rem;
+        left: 0rem;
+        width: 100%;
+        text-align: center;
+        z-index: 1
+    }
+
+    .s_zxinxin {
+        position: absolute;
+        top: 0rem;
+        left: 0rem;
+        width: 10%;
+        text-align: center;
+        z-index: 1
+    }
+
+    .s_yxinxin {
+        position: absolute;
+        top: 0rem;
+        right: 0rem;
+        width: 10%;
+        text-align: center;
+        z-index: 1
+    }
+
+    @media screen and (min-height:568px) {
+        .fd-box {
+            top: auto;
+            bottom: 0;
+        }
+        .yunbox {
+            top: auto;
+            bottom: 220px;
+        }
+        .dian {
+            top: auto;
+            bottom: 0px;
+        }
+    }
+    </style>
+
+    <script src="../jslib/jquery.js" type="text/javascript"></script>
+</head>
+
+<body>
+    <div class="q_ym">
+        <div class="z_top">
+            <p><img src="images/top_lo2.png" width="100%"></p>
+        </div>
+        <span class="top_deng"><img src="images/top_deng.png" width="70%"></span>
+        <div class="zo_mid">
+            <div class="s_lo">
+                <img src="images/mid_lo.png" width="100%">
+            </div>
+            <div class="s_home">
+                <img src="images/mid_home.png" width="100%">
+            </div>
+            <div class="s_san">
+                <img src="images/mid_san.png" width="100%">
+            </div>
+        </div>
+        <div class="z_end">
+            <div class="s_wen">
+                <img src="images/bottom_wen2.png" width="100%">
+            </div>
+            <div class="s_kai">
+                <p class="s_kj_wen">
+                    <img src="images/bottom_kai_label.png" width="20%">
+                    <input id="kcity_js" class="kjcity" value="" />
+                    <input id="ksd_js" type="hidden" value="" />
+                </p>
+            </div>
+            <ul id="k_ul_js" class="s_k_ul none">
+            </ul>
+            <div class="s_jie">
+                <p class="s_kj_wen">
+                    <img src="images/bottom_jie_label.png" width="20%">
+                    <input id="jcity_js" class="kjcity" value="" />
+                    <input id="jsd_js" type="hidden" value="" />
+                </p>
+            </div>
+            <ul id="j_ul_js" class="s_j_ul none">
+            </ul>
+            <div class="s_but">
+                <a id="go_but_js"><img src="images/bottom_but.png" width="100%"></a>
+            </div>
+            <div class="s_xinxin">
+                <div class="s_zxinxin">
+                    <img src="images/t_lxin.png" width="100%">
+                </div>
+                <div class="s_yxinxin">
+                    <img src="images/t_rxin.png" width="100%">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/one.js" charset="utf-8"></script>
+    <script>
+    // var dataForWeixin = {
+    //     TLImg: location.protocol + 'images/wy_share2.jpg',
+    //     url: location.protocol + '//' + (document.location.host) + '/huodongAC.d?m=goHomePage&class=TravelWithHousePriceHc',
+    //     title: "十一，带着房价去旅行",
+    //     desc: "堵在路上不如在这儿买房，这些地方房价特别便宜"
+    // };
+    // $('#soufunclient').html("1$" + dataForWeixin.desc + "$" + dataForWeixin.url + "$" + dataForWeixin.TLImg); //app分享
+    </script>
+</body>
+
+</html>

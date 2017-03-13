@@ -1,0 +1,105 @@
+@charset "utf-8";
+* {
+    margin: 0;
+    padding: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6 {
+    -webkit-text-size-adjust: none;
+}
+
+body {
+    font-family: Arial, "黑体";
+}
+
+body.choose {
+    height: 100%;
+    overflow: hidden;
+}
+
+body:not(:-moz-handler-blocked) .flexbox {
+    width: 100%;
+}
+
+/*for FF*/
+form, img, table, td {
+    border: 0;
+}
+
+ul, ol, li {
+    list-style-type: none;
+    display: block;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-size: 100%;
+    font-weight: normal;
+}
+
+input, textarea, img {
+    vertical-align: middle;
+    font-family: Arial, "Microsoft Yahei";
+}
+
+@media screen and (max-device-width: 320px) {
+    body {
+        -webkit-text-size-adjust: none
+    }
+}
+
+@media screen and (max-device-width: 480px) {
+    body {
+        -webkit-text-size-adjust: none
+    }
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 2) {
+    body {
+        -webkit-text-size-adjust: none
+    }
+}
+
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+    body {
+        -webkit-text-size-adjust: none
+    }
+}
+
+a {
+    color: #3c3f46;
+    text-decoration: none;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+em, i {
+    font-style: normal;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+section, .whitebg {
+    background-color: #fff
+}
+
+input, textarea, button {
+    -webkit-appearance: none;
+    font-size: 14px;
+}
+
+input[type="radio"] {
+    -webkit-appearance: radio;
+}
+
+input[type="checkbox"] {
+    -webkit-appearance: checkbox;
+}

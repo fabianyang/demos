@@ -1,0 +1,189 @@
+
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>你适合在哪种房子里啪啪啪</title>
+    <link rel="stylesheet" href="//static.test.soufunimg.com/common_m/m_activity/PaPaPa/css/style.css">
+    <style type="text/css">
+        body>img{
+            display:none;
+        }
+    </style>
+    <script>
+    // resize
+    (function(doc, win) {
+        var docEl = doc.documentElement,
+            resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+            recalc = function () {
+                var clientWidth = docEl.clientWidth;
+                if (!clientWidth) return;
+                docEl.style.fontSize = 20 * (clientWidth / 320) + 'px';
+            };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+    </script>
+</head>
+
+<body class="result">
+ <!-- Loading -->
+    <div class="loading" id="loading">
+        <div id="loadNum">
+            <div id="loading-process">0</div>
+            <div class="loader-inner ball-clip-rotate-pulse">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+    </div>
+
+     <div id="container" style="display: none;">
+        <section class="" id="main" style="display: block;">
+            <div class="con3" style="padding-top: 1rem;">
+                <div class="tu2"><div class="renwu2">
+                    <div class="resultBox">
+                        <img src="" class="ren2" style="-webkit-transform: translate(0px, 0px) scale(1, 1) rotate(0deg)">
+                    </div>
+                </div>
+                <div class="youtu">
+                    <img src="//static.test.soufunimg.com/common_m/m_activity/PaPaPa/images/wutu.png">
+                </div>
+            </div>
+            <div class="des31">
+                <p>看您骨骼奇特，双眼炯炯有神，适合在南北通透，采光充足的房间里啪啪啪</p>
+            </div>
+            <div class="zaice flexbox">
+                <a href="javascript:void(0)" class="zai_ce"></a>
+                <!-- 我也要测 隐藏 -->
+                <a href="javascript:void(0)" class="zai_ce1" style="display: none;"></a>
+                <a href="javascript:void(0)" class="fenxiang"></a>
+            </div>
+            <div class="keyword">
+                <p>南北通透 临地铁 中式装修</p>
+            </div>
+            <div class="xuanfang">
+                <img src="//static.test.soufunimg.com/common_m/m_activity/PaPaPa/images/cejie1.png" class="cejie1">
+                <div class="xuan flexbox">
+                    <input type="text" placeholder="请输入城市" id="search">
+                    <a href="javascript:void(0)" class="search" id="searchbtn"></a>
+                    <div id="cityList" class="searcyList" style="display: none;">
+                        <ul id="cityUl">
+                            <li data-name="bj">北京</li>
+                            <li data-name="sh">上海</li>
+                            <li data-name="gz">广州</li>
+                            <li data-name="sz">深圳</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div><div class="erwei"><img src="//static.test.soufunimg.com/common_m/m_activity/PaPaPa/images/cejie_erwei.png" class="erwei"></div></section>
+        <div class="zhe" style="display: none;"><div class="fx"></div></div>
+        <div id="msg" class="msg">
+            <p>请输入正确的城市名称</p>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="//static.test.soufunimg.com/common_m/m_activity/public/jslib/jquery/2.1.4/jquery.js"></script>
+    <script type="text/javascript">
+    function getUrlParam(name){
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r!=null) return r[2];
+        return null;
+    }
+  //微信分享
+    var dataForWeixin = {
+        TLImg: location.protocol+'//static.test.soufunimg.com/common_m/m_activity/PaPaPa/images/share.jpg',
+        url: location.href,
+        title: '我适合在XXX里啪啪啪！你呢？',
+        desc: '我适合在XXX里啪啪啪！你呢？',
+        callback:function(){
+            $('.zhe').hide();
+            location.href.replace('&share=true','');
+        }
+    };
+    var url = location.href;
+    if(url.indexOf('test.fang.com')!=-1){
+        dataForWeixin.TLImg = location.protocol+'//static.test.soufunimg.com/common_m/m_activity/PaPaPa/images/share.jpg';//臂力测试结果页图片
+    }
+    var u = getUrlParam('u');
+    if(u){//分享图换成上传的图片，如果有的话
+        dataForWeixin.TLImg = location.protocol + u;//颜值测试结果页图片
+    }
+    //分享链接上加share=yes
+    if(dataForWeixin.url.indexOf('share')==-1){
+        dataForWeixin.url = dataForWeixin.url+'&share=yes';
+    }
+
+    //app分享内容维护
+    $('#soufunclient').html("1$"+dataForWeixin.desc+"$"+dataForWeixin.url+"$"+dataForWeixin.TLImg);
+    // preloader
+    var preloader = {
+        config: null,
+        index: 0,
+        load: function () {
+            var t = this.config[this.index]['type'];
+            var s = this.config[this.index]['src'];
+            if (t === 'js') {
+                this.loadJs(s);
+            }else if (t === 'image') {
+                this.loadImage(s);
+            }else if (t === 'audio') {
+                this.loadAudio(s);
+            }
+        },
+        loadImage: function (src) {
+            var image = document.createElement('img');
+            image.src = src;
+            image.onload = function () {
+                ++preloader.index;
+                preloader.refresh();
+            };
+        },
+        refresh: function () {
+            var p = Math.ceil(this.index / this.config.length * 100);
+            if(this.index !== this.config.length) {
+                document.getElementById('loading-process').innerHTML = p + '%';
+                this.load();
+            }else{
+                var elem = document.getElementById('loading');
+                elem.parentNode.removeChild(elem);
+                this.finish(function () {
+                    window.loadFn();
+                });
+            }
+        },
+        finish: function () {
+            document.getElementById('container').style.display = 'block';
+        }
+    };
+    preloader.config = [
+        {type: 'image', src: 'images/cejie1.png'},
+        {type: 'image', src: 'images/jieguo_bg1.jpg'},
+        {type: 'image', src: 'images/renwu2.png'},
+        {type: 'image', src: 'images/youtu.png'},
+        {type: 'image', src: 'images/zaice.png'},
+        {type: 'image', src: 'images/cejie_input.png'},
+        {type: 'image', src: 'images/fenxiang.png'},
+        {type: 'image', src: 'images/xuanfang.png'},
+        {type: 'image', src: 'images/cejie_key.png'},
+        {type: 'image', src: 'images/cejie_erwei.jpg'},
+        {type: 'image', src: 'images/jieguo_bg2.jpg'},
+        {type: 'image', src: 'images/ce_woyao.png'}
+    ];
+    document.addEventListener('DOMContentLoaded',function () {
+        preloader.load();
+    },false);
+
+    </script>
+    <script charset="utf-8" type="text/javascript" src="base.js"></script>
+</body>
+
+</html>

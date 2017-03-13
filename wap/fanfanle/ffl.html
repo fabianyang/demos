@@ -1,0 +1,119 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui" />
+    <title>好运翻翻乐</title>
+    <link rel="stylesheet" type="text/css" href="css/css.css" />
+    <link rel="stylesheet" type="text/css" href="css/flip.css" />
+    <script type="text/javascript" src="js/jquery.js"></script>
+</head>
+<body>
+    <div class="wbBox">
+        <div class="title01">我的积分 : 5000积分</div>
+        <div class="conbox">
+            <ul>
+                <li class="l01">
+                    <div class="back"></div>
+                    <div class="Npic front"><img src="images/pic01.jpg" width="100%"></div>
+                    <div class="Ntext front">500M流量包</div>
+                </li>
+                <li class="l02">
+                    <div class="back"></div>
+                    <div class="Npic front"><img src="images/pic05.jpg" width="100%"></div>
+                    <div class="Ntext front">保温杯保温杯</div>
+                </li>
+                <li class="l03">
+                    <div class="back"></div>
+                    <div class="Npic front"><img src="images/pic03.jpg" width="100%"></div>
+                    <div class="Ntext front">最多6个汉字</div>
+                </li>
+                <li class="l04">
+                    <div class="back"></div>
+                    <div class="Npic front"><img src="images/pic02.jpg" width="100%"></div>
+                    <div class="Ntext front">最多6个汉字</div>
+                </li>
+                <li class="l05 start">
+                    <div class="stpic"><img src="images/start.png" width="100%"></div>
+                    <!--<div class="stpic"><img src="images/return.png" width="100%"></div-->
+                    <div class="sttext">免费翻<em>5</em>次</div>
+                </li>
+                <!--<li class="l05">
+           <div class="stpic"><img src="images/lack.png" width="100%"></div>
+             <div class="sttext">积分不足</div>
+        </li>-->
+                <li class="l06">
+                    <div class="back"></div>
+                    <div class="Npic front"><img src="images/pic04.jpg" width="100%"></div>
+                    <div class="Ntext front">最多6个汉字</div>
+                </li>
+                <li class="l07">
+                    <div class="back"></div>
+                    <div class="Npic front"><img src="images/pic01.jpg" width="100%"></div>
+                    <div class="Ntext front">500M流量包</div>
+                </li>
+                <li class="l08">
+                    <div class="back"></div>
+                    <div class="Npic front"><img src="images/pic05.jpg" width="100%"></div>
+                    <div class="Ntext front">500M流量包</div>
+                </li>
+                <li class="l09">
+                    <div class="back"></div>
+                    <div class="Npic front"><img src="images/pic02.jpg" width="100%"></div>
+                    <div class="Ntext front">500M流量包</div>
+                </li>
+            </ul>
+        </div>
+        <div class="bottom flexbox">
+            <a href="./ruler.html"><img src="images/but01.png"></a>
+            <a href="./prize.html"><img src="images/but02.png"></a>
+        </div>
+    </div>
+    <div class="Popupbox js_win">
+        <div class="Popupboxnr">
+            <a class="close"></a>
+            <div class="tr01">
+                <div class="prizes"><img src="images/pic02.jpg"></div>
+            </div>
+            <div class="buttr flexbox">
+                <a href="./awardCenter.html"><img src="images/but04.png"></a>
+                <a href="javascript:;" class="js_agian"><img src="images/but05.png"></a>
+            </div>
+        </div>
+    </div>
+    <div class="Popupbox js_lose">
+        <div class="Popupboxnr">
+            <a class="close no1"></a>
+            <div class="tr01 no1"></div>
+            <div class="buttr flexbox">
+                <a href="javascript:;" class="no1"><img src="images/but06.png"></a>
+            </div>
+        </div>
+    </div>
+    <div class="msg fromTop">
+      <p></p>
+    </div>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script>
+    function a() {}
+    (function(doc, win) {
+        var docEl = doc.documentElement,
+            resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+            recalc = function() {
+                var clientWidth = docEl.clientWidth;
+                if (!clientWidth) return;
+                docEl.style.fontSize = 20 * (clientWidth / 320) + 'px';
+                if (clientWidth >= 640) {
+                    docEl.style.fontSize = 40 + 'px'
+                };
+            };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+    </script>
+</body>
+
+</html>

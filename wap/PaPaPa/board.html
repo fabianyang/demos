@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+    <title>你适合在哪种房子里啪啪啪</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style type="text/css">
+    body>img{
+        display:none;
+    }
+    </style>
+    <script>
+    (function(doc, win) {
+        var docEl = doc.documentElement,
+            resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+            recalc = function() {
+                var clientWidth = docEl.clientWidth;
+                if (!clientWidth) return;
+                docEl.style.fontSize = 20 * (clientWidth / 320) + 'px';
+            };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+    </script>
+    <style type="text/css">
+    canvas {
+        display: block;
+    }
+    </style>
+</head>
+
+<body>
+    <section>
+        <div class="con5">
+            <input type="hidden" value="" id="path"/>
+            <canvas id="canvas" ></canvas>
+            <!-- 倒计时 -->
+            <div class="djs" id="js_count">15</div>
+        </div>
+    </section>
+    <!-- 遮罩 -->
+    <div class="zhe" id="js_cover" style="display: none;">
+        <div class="jindu">
+            <!-- 此处默认置灰 加类名huil -->
+            <div class="huil">
+                <!-- 进度1 -->
+                <div class="jin jin1"></div>
+                <!-- 进度2 -->
+                <div class="jin jin2"></div>
+                <!-- 进度3 -->
+                <div class="jin jin3"></div>
+                <!-- 进度4 -->
+                <div class="jin jin4"></div>
+                <!-- 进度5 -->
+                <div class="jin jin5"></div>
+                <!-- 进度6 -->
+                <div class="jin jin6"></div>
+            </div>
+        </div>
+        <div class="djs_zi">
+            <div class="gang_shu">
+                <!-- 数字1 -->
+                <img src="images/one.png" id="js_img1" style="display: none">
+                <!-- 数字2 -->
+                <img src="images/two.png" id="js_img2" style="display: none;">
+                <!-- 数字3 -->
+                <img src="images/three.png" id="js_img3" style="display: none;">
+            </div>
+            <div class="gang_zi" id="js_text"></div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="../jslib/jquery.js"></script>
+    <script type="text/javascript" src="game.js?v"></script>
+</body>
+
+</html>
+

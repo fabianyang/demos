@@ -1,0 +1,73 @@
+
+
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="GBK" name='viewport' content='width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no'>
+	<title></title>
+	<link rel="stylesheet" href="css/style.css">
+	<script src="../jslib/jquery.js" type="text/javascript"></script>
+	<script src="js/iscroll.js"></script>
+	<script>
+		$(function(){
+			var bdHeight= $(window).height();
+
+			$('.room-img').css({'height':bdHeight,width:bdHeight*1.6})
+			$('.scroll').css({'height':bdHeight,width:bdHeight*1.6})
+
+			var myScroll = new iScroll("wrapper",{
+				hScroll:true,//左右滑动
+				vScroll:false,//上下滑动
+				hScrollbar:false,//左右滚动条
+				vScrollbar:false//上下滚动条
+			})
+
+
+		})
+	</script>
+</head>
+<body>
+	<div id='wrapper'  class="container" style='background:#fff;'>
+		<div class="kitchen-wrapper scroll">
+			<a class="ammeter"></a>
+			<a class="guo"></a>
+			<a class="cupboard"></a>
+			<a class="valve"></a>
+			<a class="stopcock"></a>
+			<a class="k-door"></a>
+			<div class="outer" style='top: 55%;right: 7%;'><a class="outer2 r-animate"></a></div>
+			<img src="images/kitchen3.jpg?ve=3" alt="" class="room-img">
+			<img src="images/dahuoqi.png" alt="" class="dhq" style=''>
+			<img src="images/yjy1.png" style='top: 34%;left: 1%; width: 10%;display:none;' alt="" class='yjy2 label_two_js'>
+			<img src="images/yjy3.png" style='top: 71%;left: 60%; width: 9%;display:none;' alt="" class='yjy2 label_three_js'>
+			<img src="images/yjy3.png" style='top: 41%;left: 48%;width: 10%;display:none;' alt="" class='yjy1 label_one_js'>
+			<div class="flicker star_one_js" style='left: 52%;top: 43%;'></div>
+			<div class="flicker star_two_js" style='left: 63%;top: 70%;display:none;'></div>
+		</div>
+		<img src="images/cf-inf1.png" alt="" class="room-intro show_one_js show_panel_js" style='left:4%;display:none;'>
+		<img src="images/cf-inf2.png" alt="" class="room-intro show_three_js show_panel_js" style='left:4%;display:none;'>
+		<img src="images/cf-inf3.png" alt="" class="room-intro show_two_js show_panel_js" style='left:4%;display:none;'>
+		<img src="images/hint.png" alt="" class="hint show_panel_js">
+		<img src="images/hddhq.png" alt="" class="hint-intro show_panel_js" style="display:none;">
+		<img src="images/cf-ht1.png" alt="" class="hint3 show_panel_js" style="display:none;">
+		<img src="images/cf-ht2.png" alt="" class="hint4 show_panel_js" style="display:none;">
+	</div>
+	<div class="show_panel_js layer_panel_js" style='display:none;'></div>
+
+	<input class="user_id_js" type="hidden" value=""/>
+
+	<input class="store_sum_js" type="hidden" value=""/>
+
+
+	<script src="js/kitchen.js?v=1.1" charset="utf-8"></script>
+</body>
+<script>
+var dataForWeixin={
+		  TLImg: location.protocol+'images/shareImg.jpg',
+	      url: "//m.test.fang.comactivityshow/backroom/kitchen.jsp?ver=7",
+	      title: "慧眼识房，大家一起来找茬！",
+	      desc: "看一看你的验房功力有多深厚？",
+	      callback:function(){}
+	}
+</script>
+</html>

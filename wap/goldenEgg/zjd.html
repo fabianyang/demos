@@ -1,0 +1,171 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>砸金蛋</title>
+    <link rel="stylesheet" type="text/css" href="css/zjd.css">
+    <script>
+    (function(doc, win) {
+        var docEl = doc.documentElement,
+            resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+            recalc = function() {
+                var clientWidth = docEl.clientWidth;
+                if (!clientWidth) return;
+                docEl.style.fontSize = 20 * (clientWidth / 320) + 'px';
+            };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+    </script>
+</head>
+
+<body>
+    <header><img src="images/head.jpg"></header>
+    <div class="main">
+        <ul class="clearfix">
+            <li>
+                <div><span></span></div>
+            </li>
+            <li>
+                <div><span></span></div>
+            </li>
+            <li>
+                <div><span></span></div>
+            </li>
+            <li>
+                <div><span></span></div>
+            </li>
+            <li>
+                <div><span></span></div>
+            </li>
+            <li>
+                <div><span></span></div>
+            </li>
+            <li>
+                <div><span></span></div>
+            </li>
+            <li>
+                <div><span></span></div>
+            </li>
+            <li>
+                <div><span></span></div>
+            </li>
+        </ul>
+        <div class="hammer" style="display:none;">
+            <!-- <div class="za">
+                <div class="out"></div>
+            </div> -->
+        </div>
+        <div class="btnBox">
+            <a class="myPri"></a>
+            <a class="gameRule"></a>
+        </div>
+    </div>
+    <!--登录框-->
+    <div class="float" style="display:none;">
+        <div class="loginBox">
+            <div class="close">
+                <a href="javascript:;"></a>
+            </div>
+            <ul>
+                <li class="flexbox">
+                    <div class="iptBox">
+                        <input type="tel" name="phone" placeholder="请输入电话号码">
+                    </div>
+                    <a class="btnYzm noClick">20s</a></li>
+                <!-- <a class="btnYzm">获取验证码</a> -->
+                <li>
+                    <div class="iptBox">
+                        <input type="tel" name="code" placeholder="验证码">
+                    </div>
+                </li>
+                <li>
+                    <a class="btnLogin"></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--活动规则-->
+    <div class="float" style="display:none;">
+        <div class="floatTop"></div>
+        <div class="ruleBox">
+            <div class="close">
+                <a href="javascript:;"></a>
+            </div>
+            <h3>活动规则</h3>
+            <div class="con">
+                <p>1）活动截止到2016年12月29日；（暂定）</p>
+                <p>2）转动游戏转盘，前进相应格数，按照每格的要求完成任务或获得相应积分；</p>
+                <p>3）抽取10名完成全部游戏的幸运用户赠送神秘礼物，中奖名单会在活动结束第二天公布；</p>
+                <p>4）每日仅有一次游戏机会；</p>
+                <p>4）每日仅有一次游戏机会；</p>
+                <p>4）每日仅有一次游戏机会；</p>
+                <p>4）每日仅有一次游戏机会；</p>
+            </div>
+        </div>
+    </div>
+    <!--领取成功-->
+    <div class="float" style="display:none;">
+        <div class="floatTop"></div>
+        <div class="getBox">
+            <div class="close">
+                <a href="javascript:;"></a>
+            </div>
+            <div class="con">
+                <p>恭喜您成功领取</p>
+                <p><span>200积分</span></p>
+                <p class="f14">工作人员将尽快与您联系！</p>
+            </div>
+        </div>
+    </div>
+    <!--领取成功-带按钮-->
+    <div class="float" style="display:none;">
+        <div class="floatTop"></div>
+        <div class="getBox">
+            <div class="close">
+                <a href="javascript:;"></a>
+            </div>
+            <div class="con">
+                <p>恭喜您成功领取</p>
+                <p><span>200积分</span></p>
+                <div class="btnBox2">
+                    <a class="see"></a>
+                    <a class="again"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--恭喜您中奖了-->
+    <div class="float" style="display:none;">
+        <div class="floatTop2"><span class="lh1 yao"></span><span class="lh2 yao"></span><span class="lh3 yao"></span></div>
+        <div class="floatTop2_g shan"></div>
+        <div class="floatTop2_xx shan"></div>
+        <div class="getBox2">
+            <p>恭喜您砸中了</p>
+            <p><span>200积分</span></p>
+            <div class="btnBox3">
+                <a class="get"></a>
+                <a class="again"></a>
+            </div>
+        </div>
+    </div>
+    <!--遗憾，未中奖-->
+    <div class="float" style="display:none;">
+        <div class="floatTop3"></div>
+        <div class="getBox2">
+            <p>好遗憾，是个空蛋</p>
+            <div class="btnBox4">
+                <a class="again"></a>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="../jslib/jquery.js"></script>
+    <script type="text/javascript" src="js/zjd.js"></script>
+</body>
+
+</html>
