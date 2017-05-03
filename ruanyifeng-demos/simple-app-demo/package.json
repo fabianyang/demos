@@ -1,0 +1,19 @@
+{
+  "name": "simple-app-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "server": "json-server db.json",
+    "build": "webpack app.js bundle.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jquery": "^3.2.1",
+    "json-server": "^0.9.6",
+    "webpack": "^2.4.1"
+  }
+}

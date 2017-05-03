@@ -1,0 +1,91 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<meta name="format-detection" content="telephone=no" />
+<title>测测我品味谁最懂</title>
+
+<link rel="stylesheet" href="css/css.css">
+  <script>
+        (function (doc, win) {
+          var docEl = doc.documentElement,
+            resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+            recalc = function () {
+              var clientWidth = docEl.clientWidth;
+              if (!clientWidth) return;
+              docEl.style.fontSize = 20 * (clientWidth / 320) + 'px';
+			  if(clientWidth >= 640){docEl.style.fontSize = 40 + 'px'};
+            };
+
+          if (!doc.addEventListener) return;
+          win.addEventListener(resizeEvt, recalc, false);
+          doc.addEventListener('DOMContentLoaded', recalc, false);
+        })(document, window);
+    </script>
+
+</head>
+
+<body style="background:#30405b;">
+
+<div class="main">
+	<div class="icon01">
+    	<span><i></i>出题</span>--<span><i class="no2"></i>分享</span>--<span class="cur"><i class="no3"></i>谁最懂你</span>
+    </div>
+    <div class="fxdiv">
+    	<div class="userpic"><img src="images/pic01.jpg" ></div>
+        <div class="usern">王小华小华</div>
+  </div>
+  <div class="hylist">
+  	<div class="tit">好友得分</div>
+    <div class="con">
+    	<ul>
+        	<li>
+            	<div class="img"><img src="images/pic02.jpg" ></div>
+                <div class="txt">
+                	<div class="num">88</div>
+                	<h3>王二的小屋</h3>
+                    <p>搅基初见成效，还需继续努力</p>
+                </div>
+            </li>
+        	<li>
+            	<div class="img"><img src="images/pic02.jpg" ></div>
+                <div class="txt">
+                	<div class="num">88</div>
+                	<h3>王二的小屋</h3>
+                    <p>搅基初见成效，还需继续努力</p>
+                </div>
+            </li>
+            <li>
+            	<div class="img"><img src="images/pic02.jpg" ></div>
+                <div class="txt">
+                	<div class="num">88</div>
+                	<h3>王二的小屋</h3>
+                    <p>搅基初见成效，还需继续努力</p>
+                </div>
+            </li>
+            <li>
+            	<div class="img"><img src="images/pic02.jpg" ></div>
+                <div class="txt">
+                	<div class="num">88</div>
+                	<h3>王二的小屋</h3>
+                    <p>搅基初见成效，还需继续努力</p>
+                </div>
+            </li>
+            <li>
+            	<div class="img"><img src="images/pic02.jpg" ></div>
+                <div class="txt">
+                	<div class="num">88</div>
+                	<h3>王二的小屋</h3>
+                    <p>搅基初见成效，还需继续努力</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+  </div>
+  <div class="ctrdiv"><img src="images/icon04.png"></div>
+  <a class="btn05">重新出题</a>
+</div>
+
+</body>
+</html>

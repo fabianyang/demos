@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>测测我品味谁最懂</title>
+    <link rel="stylesheet" href="css/css.css">
+    <script>
+    (function(doc, win) {
+        var docEl = doc.documentElement,
+            resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+            recalc = function() {
+                var clientWidth = docEl.clientWidth;
+                if (!clientWidth) return;
+                docEl.style.fontSize = 20 * (clientWidth / 320) + 'px';
+                if (clientWidth >= 640) {
+                    docEl.style.fontSize = 40 + 'px'
+                };
+            };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+    </script>
+</head>
+
+<body style="background:#d0daea;">
+    <div class="main">
+        <div class="div580">
+            <ul id="js_list">
+                <li class="odd">
+                    <div class="img"><img src="images/pic02.jpg"></div>
+                    <div class="txt">
+                        <div class="replycontent">
+                            <span class="arrow">&nbsp;</span>
+                            <div class="pic"><img src="images/icon06.png"> 我们是“臭味相投”的好基友？还是“最熟悉的陌生人”？你觉得我对生活品质的需求有多高？快来答题验证我们的感情！</div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="bbtn">
+            <p>
+                <a class="btnstyle"><img src="images/icon11.png"></a>
+                <a class="btnstyle"><img src="images/icon11a.png"></a>
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

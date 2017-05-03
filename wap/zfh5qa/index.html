@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>测测我品味谁最懂</title>
+    <link rel="stylesheet" href="css/css.css">
+    <script>
+    (function(doc, win) {
+        var docEl = doc.documentElement,
+            resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+            recalc = function() {
+                var clientWidth = docEl.clientWidth;
+                if (!clientWidth) return;
+                docEl.style.fontSize = 20 * (clientWidth / 320) + 'px';
+                if (clientWidth >= 640) {
+                    docEl.style.fontSize = 40 + 'px'
+                };
+            };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+    </script>
+</head>
+
+<body>
+    <div class="main bj01">
+        <div class="WiFi"><img src="images/WiFi.gif"></div>
+        <a href="javascript:;" class="btn01"><img src="images/btn01.png"></a>
+    </div>
+</body>
+
+</html>

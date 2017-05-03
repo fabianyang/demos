@@ -1,0 +1,110 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>测测我品味谁最懂</title>
+    <link rel="stylesheet" href="css/css.css">
+    <script>
+    (function(doc, win) {
+        var docEl = doc.documentElement,
+            resizeEvt = "orientationchange" in window ? "orientationchange" : "resize",
+            recalc = function() {
+                var clientWidth = docEl.clientWidth;
+                if (!clientWidth) return;
+                docEl.style.fontSize = 20 * (clientWidth / 320) + "px";
+                if (clientWidth >= 640) {
+                    docEl.style.fontSize = 40 + "px"
+                };
+            };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener("DOMContentLoaded", recalc, false);
+    })(document, window);
+    </script>
+</head>
+
+<body style="background:#d0daea;">
+    <div class="main">
+        <div class="div580">
+            <ul id="js_list">
+                <li class="odd">
+                    <div class="img"><img src="images/pic02.jpg"></div>
+                    <div class="txt">
+                        <div class="replycontent">
+                            <span class="arrow">&nbsp;</span>
+                            <div class="pic"><img src="images/icon06.png"> 我们是“臭味相投”的好基友？还是“最熟悉的陌生人”？你觉得我对生活品质的需求有多高？快来答题验证我们的感情！</div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="bbtn">
+            <p>
+                <a class="btnstyle"><img src="images/icon10.png"></a>
+                <a class="btnstyle"><img src="images/icon10a.png"></a>
+            </p>
+        </div>
+        <div class="bbtn">
+            <p>
+                <a class="btnstyle"><img src="images/icon11.png"></a>
+                <a class="btnstyle"><img src="images/icon11a.png"></a>
+            </p>
+        </div>
+    </div>
+    <ul id="js_template" style="display: none;">
+        <li class="odd">
+            <!-- odda 出题人头像图片 -->
+            <div class="img"><img src="images/pic02.jpg"></div>
+            <div class="txt">
+                <div class="replycontent">
+                    <span class="arrow">&nbsp;</span> <span class="js_text">一共5道题，请回答</span>
+                </div>
+            </div>
+        </li>
+        <li class="even">
+            <!-- 答题人头像图片 -->
+            <div class="img"><img src="images/pic02.jpg"></div>
+            <div class="txt">
+                <div class="replya"></div>
+            </div>
+        </li>
+        <li class="even">
+            <!-- 答题人头像图片 -->
+            <div class="img"><img src="images/pic02.jpg"></div>
+            <div class="txt">
+                <div class="reply"></div>
+            </div>
+        </li>
+        <li class="odd">
+            <!-- odda 出题人头像图片 -->
+            <div class="img"><img src="images/pic02.jpg"></div>
+            <div class="txt">
+                <div class="replycontent">
+                    <span class="arrow">&nbsp;</span>
+                    <div class="pic"><img src="images/icon06a.png" style="height:7.2rem;margin-bottom:0"> </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+    <script>
+
+   var answerItemArray = '[{"answer":true,"answerContent":"世界再怎么大，在家上网都能看","answerId":13,"itemContent":"旅游","itemId":6},{"answer":true,"answerContent":"买套房子投资自住两相宜","answerId":3,"itemContent":"买房","itemId":2},{"answer":true,"answerContent":"多肉，绿植，盆景，家里应有尽有","answerId":10,"itemContent":"花花草草","itemId":5},{"answer":true,"answerContent":"吃货的基本修养就是来者不拒","answerId":2,"itemContent":"吃饭","itemId":1},{"answer":false,"answerContent":"懒癌重度患者","answerId":7,"itemContent":"家务","itemId":3},{"answer":false,"answerContent":"多肉，绿植，盆景，家里应有尽有","answerId":10,"itemContent":"花花草草","itemId":5},{"answer":false,"answerContent":"我期待四海为家，邂逅各种美丽的景色和女房东","answerId":4,"itemContent":"买房","itemId":2},{"answer":false,"answerContent":"世界那么大，我想去看看","answerId":12,"itemContent":"旅游","itemId":6},{"answer":true,"answerContent":"强迫症患者，家里必须收拾的井井有条","answerId":6,"itemContent":"家务","itemId":3},{"answer":false,"answerContent":"喵星人汪星人快到碗里来","answerId":8,"itemContent":"宠物","itemId":4},{"answer":true,"answerContent":"吃货的基本修养就是来者不拒","answerId":2,"itemContent":"吃饭","itemId":1},{"answer":false,"answerContent":"世界再怎么大，在家上网都能看","answerId":13,"itemContent":"旅游","itemId":6},{"answer":false,"answerContent":"干（一声）死仙人掌任务已达成","answerId":11,"itemContent":"花花草草","itemId":5},{"answer":false,"answerContent":"强迫症患者，家里必须收拾的井井有条","answerId":6,"itemContent":"家务","itemId":3},{"answer":true,"answerContent":"铲屎官不是我想要的职业","answerId":9,"itemContent":"宠物","itemId":4}]';
+   console.log(JSON.parse(answerItemArray));
+   var subjectOpenId = "oPwQquBh0adN5znlsUuw8Antox_o";
+   var itemUUID = "0aceb12e-582e-43cd-8c7e-143d66876c7d";
+   var name = "A黄浩";
+   var openId = "oPwQquONieg_D6La60oYWCroKwxw";
+   var avatar = "http://wx.qlogo.cn/mmopen/c29W2EicrZdicaB3DP1FqwqMzMfG2JNP4vGTiacujxUBwVrwHd34icVzQ1apiasmicNbpDAOa7NkkxzaBBtmvb7Q06fAHxx7HkPia9Z/0";
+   var subjectMatter = "com.soufun.wap.po.WapLotteryIntimateSubjectmatter@7b5ec6dd";
+   
+    </script>
+    <script src="../jslib/jquery.js" charset="utf-8"></script>
+    <script src="../jslib/iscroll/2.0.0/iscroll-lite.js" charset="utf-8"></script>
+    <script src="answer.js"></script>
+</body>
+
+</html>
