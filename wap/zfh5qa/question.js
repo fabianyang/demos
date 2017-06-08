@@ -1,4 +1,4 @@
-$(function(){
+$(function () {
 
     var selectButton = $('.answer'),
         nextButton = $('.btn03').show(),
@@ -11,10 +11,10 @@ $(function(){
     var index = 1;
     var items = [],
         selected = [];
-    
-    (function(list) {
+
+    (function (list) {
         var item = {};
-        for(var i = 0; i < list.length; i++) {
+        for (var i = 0; i < list.length; i++) {
             if (!item.itemId) {
                 item = list[i];
             } else {
@@ -28,23 +28,23 @@ $(function(){
 
     var itemsCopy = items.concat();
 
-    var clearClass = function() {
+    var clearClass = function () {
         selectButton.removeClass('cur');
         nextButton.removeClass('active');
         finishButton.removeClass('active');
-    }
+    };
 
-    function randomInt(min, max) {   
-        var range = max - min ;   
-        var rand = Math.random();   
-        return (min + parseInt(rand * range));   
+    function randomInt(min, max) {
+        var range = max - min;
+        var rand = Math.random();
+        return (min + parseInt(rand * range));
     }
 
     function randomItem() {
         var random = randomInt(0, itemsCopy.length);
         var item = itemsCopy[random];
         itemsCopy.splice(random, 1);
-        
+
         itemSpan.text(item.itemContent);
         answerSpan.eq(0).text(item.answerContent[0]);
         answerSpan.eq(1).text(item.answerContent[1]);
@@ -52,7 +52,7 @@ $(function(){
         var button = index === 5 ? finishButton : nextButton;
         button.data({
             itemId: item.itemId
-        })
+        });
         selectButton.eq(0).data({
             answerId: item.answerId[0]
         });
@@ -69,25 +69,25 @@ $(function(){
     //     })
     // });
 
-    $('.btn02').on('click', function(){
+    $('.btn02').on('click', function () {
         clearClass();
         randomItem();
         if (!itemsCopy.length) {
             itemsCopy = items.concat();
         }
-    })
+    });
 
-    selectButton.on('click', function(){
+    selectButton.on('click', function () {
         var that = $(this);
         clearClass();
         that.addClass('cur');
         var button = index === 5 ? finishButton : nextButton;
         button.addClass('active').data({
             answerId: that.data().answerId
-        })
-    })
+        });
+    });
 
-    nextButton.on('click', function() {
+    nextButton.on('click', function () {
         var that = $(this);
         if (!that.hasClass('active')) {
             return false;
@@ -97,58 +97,69 @@ $(function(){
         if (index === 5) {
             nextButton.hide();
             finishButton.show();
-            $('.icon01').find('.cur').removeClass('cur').next().addClass('cur');
         }
         // 换题
         var data = that.data();
-        console.log(data);
+        // console.log(data);
         selected.push({
             id: data.itemId,
             askid: data.answerId
         });
 
         // 重新生成 items
-        items.forEach(function(item, index) {
+        items.forEach(function (item, index) {
             if (item.itemId === data.itemId) {
                 items.splice(index, 1);
             }
         });
         itemsCopy = items.concat();
-        console.log(items);
+        // console.log(items);
         randomItem();
-    })
+    });
 
-    finishButton.on('click', function(){
+    finishButton.on('click', function () {
         var that = $(this);
         if (!that.hasClass('active')) {
             return false;
         }
 
         var data = that.data();
-        console.log(data);
+        // console.log(data);
         selected.push({
             id: data.itemId,
             askid: data.answerId
         });
-        console.log(selected);
+        // console.log(selected);
 
         var item = {
-            'openId': openId,
-            'nickName': encodeURIComponent(encodeURIComponent(nickName)),
-            'headimgurl': headimgurl,
-            'item': selected
+            openId: openId,
+            nickName: encodeURIComponent(encodeURIComponent(nickName)),
+            headimgurl: headimgurl,
+            item: selected
         };
 
+
+        if (!localStorage.getItem('itemUUID')) {
+            // 显示蒙层，添加标记
+            $('.share').on('click', function() {
+                $(this).hide();
+                $('.icon01').find('.cur').removeClass('cur').next().addClass('cur');
+                localStorage.setItem('itemUUID', itemUUID);
+            }).show();
+        } else {
+            $('.icon01').find('.cur').removeClass('cur').next().addClass('cur');
+        }
+
         // ajax
-		var url = window.location.protocol + '//' + window.location.hostname + '/huodongAC.d?class=BosomFriendHc';
-		$.get(url + '&m=saveItem&Item=' + JSON.stringify(item), function(data){
-			var root = JSON.parse(data).root;
-			if (root.isSuccess === 'true') {
-                window.location.href = url + '&m=saveSelf&subjectOpenId=' + root.subjectOpenId + '&itemUUID=' + root.itemUUID
-			} else {
+        var url = window.location.protocol + '//' + window.location.hostname + '/huodongAC.d?class=BosomFriendHc';
+        $.get(url + '&m=saveItem&Item=' + JSON.stringify(item), function (data) {
+            var root = JSON.parse(data).root;
+            if (root.isSuccess === 'true') {
+                window.location.href = url + '&m=saveSelf&subjectOpenId=' + root.subjectOpenId + '&itemUUID=' + root.itemUUID;
+            } else {
                 alert('error');
             }
-		});
+        });
         that.off('click');
     });
-})
+});

@@ -23,7 +23,7 @@ em,i{font-style:normal;}
 .flol { float: left;}
 .flor { float: right;}
 img{ width: 100%;}
-.main{margin: 0 auto; max-width: 640px;height:100%;position:relative; overflow: hidden;}
+.main{margin: 0 auto; max-width: 640px;height:100%;position:relative;}
 .main.bj01{ background:url(../images/homebg.jpg) top center no-repeat;background-size:100%;}
 .main.bj02{ background:url(../images/bg.jpg) top center no-repeat;background-size:100%;}
 .main.bj03{ background:#30405b;}
@@ -87,7 +87,7 @@ overflow: hidden;}
 .bbtn{width:16rem;height:8.525rem; background:url(../images/icon09.png) no-repeat;background-size:100%; }
 .bbtn{position:absolute;left:0px;bottom:0px;} /* yangfan add */
 .bbtn p{padding-top:3.3rem;text-align:center;}
-.bbtn .btnstyle{width:6.925rem;height:4.25rem; display:inline-block;padding:0 5px;}
+.bbtn .btnstyle{width:6.925rem;height:2.25rem; display:inline-block;padding:0 5px;}
 .numdiv{width:14rem;height:8.875rem;margin:1.85rem auto 0; background:url(../images/icon12.png) no-repeat;background-size:100%; position:relative;}
 .numdiv .userpic{width:2.25rem;height:2.25rem; position:absolute;top:1.1rem;left:1.1rem;}
 .numdiv .userpics{width:1.2rem;height:1.2rem; position:absolute;top:2.15rem;left:5.4rem;}
@@ -97,9 +97,9 @@ overflow: hidden;}
 overflow: hidden;}
 .numdiv .num{width:3rem;height:1.5rem;line-height:1.5rem; text-align:center;position:absolute;top:6.1rem;left:1.3rem;color:#ff4d48;font-size:1.5rem;}
 .btnnr{height:2.55rem;margin:0.7rem 0;text-align:center;}
-.btnnr .btnstyle{width:6.925rem;height:4.25rem; display:inline-block;padding:0 5px;}
+.btnnr .btnstyle{width:6.925rem;height:2.25rem; display:inline-block;padding:0 5px;}
 .btn01{width:8.35rem;height:2.7rem; position:absolute;left:50%;top:20.45rem;margin-left:-4.175rem;animation: scaleout 1s infinite linear;
--webkit-animation: scaleout 1s infinite linear;}
+-webkit-animation: scaleout 1s infinite linear;transform:translateZ(0);-webkit-transform:translateZ(0);}
 .btn01 img{width:8.35rem;height:2.7rem;}
 .btn02{float:right;width:2.775rem;height:1.25rem; background:url(../images/btn02.png) no-repeat; background-size:100%; text-indent:-9999px; vertical-align:top}
 .btn03,.btn03.active{width:6.25rem;height:2.3rem; background:url(../images/btn03.png) no-repeat; background-size:100%; text-indent:-9999px; display:block;position:absolute;left:50%;margin-left:-3.125rem;bottom:2rem;}
@@ -109,11 +109,14 @@ overflow: hidden;}
 .btn05{width:5.825rem;height:2.225rem; background:url(../images/btn05.png) no-repeat; background-size:100%; text-indent:-9999px; display:block; margin:0 auto}
 @keyframes scaleout
 {
-    0% {transform: scale(0.95);-webkit-transform: scale(0.95);}
-    100% {transform: scale(1);-webkit-transform: scale(1);opacity: 0.9;}
+    0% {transform: scale(0.95);}
+    100% {transform: scale(1);}
 }
 @-webkit-keyframes scaleout
 {
-    0% {transform: scale(0.95);-webkit-transform: scale(0.95);}
-    100% {transform: scale(1);-webkit-transform: scale(1);opacity: 0.9;}
+    0% {-webkit-transform: scale(0.95);}
+    100% {-webkit-transform: scale(1);}
 }
+.share{position: fixed; width: 100%; height: 100%; left: 0; bottom: 0; background: rgba(0,0,0,.7); z-index: 9999;}
+.share .share-img{float: right; padding: 10px 10px 0 0;}
+.share-img img{width: 300px;}

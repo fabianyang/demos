@@ -1,0 +1,11 @@
+{
+  "name": "activity",
+  "version": "0.0.1",
+  "description": "This is an activity system",
+  "author": "blue",
+  "devDependencies": {
+    "del": "^1.2.0",
+    "gulp": "^3.9.0",
+    "gulp-uglify": "^1.2.0"
+  }
+}
