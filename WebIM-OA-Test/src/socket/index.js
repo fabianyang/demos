@@ -39,20 +39,46 @@ class Socket {
 
     syncGroup(id) {
         try {
-            // 同步组信息
-            if (id) {
-                if (util.isArray(id)) {
-                    this.syncGroupCount = id.length;
-                    id.forEach((v) => {
-                        this.core.syncGroup(v);
-                    });
-                } else {
-                    this.syncGroupCount = 1;
-                    this.core.syncGroup(id);
-                }
-            } else {
-                this.core.syncGroup();
+            if (util.isArray(id)) {
+                this.syncGroupCount = id.length;
+                id.forEach((v) => {
+                    this.core.socketGroupInfo(v);
+                });
             }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    getBuddyInfo(buddy) {
+        try {
+            this.core.postUserInfo(buddy.id.split(':')[1], {
+                [buddy.id]: buddy
+            });
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    getGroupInfo(group) {
+        try {
+            this.core.socketGroupInfo([group.id]);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    getRecentMessage(group) {
+        try {
+            this.core.socketGroupInfo(group.id);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    getHistory(data) {
+        try {
+            this.core.postHistory(data);
         } catch (e) {
             console.error(e);
         }

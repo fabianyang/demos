@@ -1,25 +1,25 @@
 <template>
     <div class="zuixiaohua" v-on:click="stateChange(['app', 'max'])">
-        <span class="num">198</span>
+        <span class="num" v-if="recent">{{ recent }}</span>
         <span>天下聊</span>
     </div>
 </template>
 
 <script>
-  import { mapMutations } from 'vuex';
-  import { VIEW_STATE_CHANGE } from '../store/mutations';
+  import { mapMutations, mapState } from 'vuex';
+  import { VIEW_STATE_CHANGE } from '../store/mutation-types';
 
     export default {
         name: 'min-im',
+        computed: {
+            ...mapState({
+                recent: state => state.recent.notice
+            })
+        },
         methods: {
             ...mapMutations({
                 'stateChange': VIEW_STATE_CHANGE // 映射 this.add() 为 this.$store.commit('increment')
             })
-        },
-        data() {
-            return {
-                msg: 'Welcome to Your Vue.js App'
-            }
         }
     }
 </script>

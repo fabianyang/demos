@@ -7,10 +7,15 @@ import {
     SOCKET_COUNT_UP,
     SOCKET_CONFIG_CHANGE,
     SOCKET_BUDDY_CHANGE,
+    SOCKET_MANAGER_CHANGE,
+    SOCKET_MATE_CHANGE,
     SOCKET_GROUP_CHANGE,
-    SOCKET_FOLLOW_CHANGE,
-    VIEW_CHAT_MSG_SUCCESS
-} from '../store/mutations';
+    SOCKET_CHAT_CHANGE,
+    SOCKET_NOTICE_CHANGE,
+    VIEW_CHAT_MSGKEY,
+    VIEW_CHAT_CHANGE,
+    SOCKET_RECENT_CHANGE
+} from '../store/mutation-types';
 
 events.on('socket:select', function () {
     console.log('controller selected');
@@ -40,11 +45,6 @@ events.on('socket:error', function () {
     store.commit(VIEW_INFO_CHANGE, 'error');
 });
 
-events.on('socket:receiveMessage', function () {
-    console.log('controller closed');
-    store.commit(VIEW_INFO_CHANGE, 'info');
-});
-
 /**
  * {
     "clienttype": "web",        客户端类型
@@ -62,83 +62,121 @@ events.on('socket:send:msg', function (data) {
     socket.sendMsg(data);
 });
 
-
 events.on('socket:receive:buddy', function (data) {
-    let list = [];
+    store.commit(SOCKET_BUDDY_CHANGE, data);
+});
 
-    data.forEach((v) => {
-        // 没有请求过信息的进行请求
-        if (v) {
-            list.push(v);
-        }
-    });
+events.on('socket:receive:manager', function (data) {
+    store.commit(SOCKET_MANAGER_CHANGE, data);
+});
 
-    store.commit(SOCKET_BUDDY_CHANGE, list);
+events.on('socket:receive:mate', function (data) {
+    store.commit(SOCKET_MATE_CHANGE, data);
+});
+
+events.on('socket:receive:group', function (data) {
+    store.commit(SOCKET_GROUP_CHANGE, data);
 });
 
 // 如果是同步联系人列表需要将所有联系人信息都返回以后才更新 store, 否则报错，并且更新视图频繁。
 
 
-let hasSyncGroupCount = 0,
-    tempSyncGroup = [],
-    tempSyncFollow = [];
-// v1 记录数量分开记录信息
-// tempSyncGroupInfo[data.id] = data;
-// if (!tempSyncGroupList.length) {
-//     tempSyncGroupList = [data.id];
-// }
-// if (++hasSyncGroupCount === socket.syncGroupCount) {
-//     store.commit(SOCKET_GROUP_CHANGE, tempSyncGroupList);
-//     store.commit(SOCKET_GROUP_CHANGE, tempSyncGroupInfo);
-//     hasSyncGroupCount = 0;
-//     tempSyncGroupInfo = {};
-//     tempSyncGroupList = [];
-//     console.log('同步联系人信息完成');
-// }
-events.on('socket:receive:group', function (data) {
-    // 同步信息
-    if (data.id) {
-        // 单条，没有批量同步情况
-        if (!tempSyncGroup.length) {
-            tempSyncGroup = [data];
-            if (data.folow) {
-                tempSyncFollow.push(data);
-            }
-        } else {
-            for (let i = 0; i < tempSyncGroup.length; i++) {
-                let tsg = tempSyncGroup[i];
-                if (tsg === data.id) {
-                    tempSyncGroup[i] = data;
-                    if (data.folow) {
-                        tempSyncFollow.push(data);
-                    }
-                    break;
-                }
-            }
-        }
+// let hasSyncGroupCount = 0,
+//     tempSyncGroup = [];
+// // v1 记录数量分开记录信息
+// // tempSyncGroupInfo[data.id] = data;
+// // if (!tempSyncGroupList.length) {
+// //     tempSyncGroupList = [data.id];
+// // }
+// // if (++hasSyncGroupCount === socket.syncGroupCount) {
+// //     store.commit(SOCKET_GROUP_CHANGE, tempSyncGroupList);
+// //     store.commit(SOCKET_GROUP_CHANGE, tempSyncGroupInfo);
+// //     hasSyncGroupCount = 0;
+// //     tempSyncGroupInfo = {};
+// //     tempSyncGroupList = [];
+// //     console.log('同步联系人信息完成');
+// // }
+// events.on('socket:receive:group', function (data) {
+//     // 同步信息
+//     if (data.id) {
+//         // 单条，没有批量同步情况
+//         if (!tempSyncGroup.length) {
+//             tempSyncGroup = [data];
+//         } else {
+//             for (let i = 0; i < tempSyncGroup.length; i++) {
+//                 let tsg = tempSyncGroup[i];
+//                 if (tsg === data.id) {
+//                     tempSyncGroup[i] = data;
+//                     break;
+//                 }
+//             }
+//         }
 
-        if (++hasSyncGroupCount === socket.syncGroupCount) {
-            store.commit(SOCKET_GROUP_CHANGE, tempSyncGroup);
-            hasSyncGroupCount = 0;
-            tempSyncGroup = 0;
-            if (tempSyncFollow.length) {
-                store.commit(SOCKET_FOLLOW_CHANGE, tempSyncFollow);
-                tempSyncFollow = [];
-            }
-            console.log('同步联系人信息完成');
-        }
-    } else {
-        // debugger;
-        data.forEach((v) => {
-            // 没有请求过信息的进行请求
-            if (v) {
-                tempSyncGroup.push(v);
-            }
-        });
-        socket.syncGroup(tempSyncGroup);
-    }
-});
+//         if (++hasSyncGroupCount === socket.syncGroupCount) {
+//             store.commit(SOCKET_GROUP_CHANGE, tempSyncGroup);
+//             hasSyncGroupCount = 0;
+//             tempSyncGroup = 0;
+//             console.log('同步联系人信息完成');
+//         }
+//     } else {
+//         // debugger;
+//         data.forEach((v) => {
+//             // 没有请求过信息的进行请求
+//             if (v) {
+//                 tempSyncGroup.push(v);
+//             }
+//         });
+//         socket.syncGroup(tempSyncGroup);
+//     }
+// });
 
 events.on('socket:receive:messagekey', function (key) {
-    store.commit(VIEW_CHAT_MSG_SUCCESS, key);
+    store.commit(VIEW_CHAT_MSGKEY, key);
+});
+
+events.on('socket:receive:chat', function (data) {
+    let msg = Object.assign(data, {
+        // 消息是否已读
+        isRead: false
+    });
+
+    store.commit(VIEW_CHAT_CHANGE, msg);
+    store.commit(SOCKET_CHAT_CHANGE, msg);
+});
+
+// function replaceSrc(txt) {
+//     var reg = /(((https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/ig;
+//     var result = txt.replace(reg, function (item) {
+//         return "<a href='" + item + "' target='_blank'>" + item + "</a>";
+//     });
+//     return result;
+// }
+
+// 缺少一个人发多条的代码考虑。
+events.on('socket:receive:notice', function (data) {
+    let msg = Object.assign(data, {
+        isLink: /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?$/i.test(data.message),
+        messagetime: data.messagetime.substring(0, data.messagetime.lastIndexOf(':')),
+        // 消息是否已读
+        isRead: false
+    });
+
+    store.commit(SOCKET_NOTICE_CHANGE, msg);
+});
+
+
+events.on('socket:receive:recent', function (data) {
+    store.commit(SOCKET_RECENT_CHANGE, data);
+});
+
+events.on('store:request:buddy', (data) => {
+    socket.getBuddyInfo(data);
+});
+
+events.on('store:request:group', (data) => {
+    socket.getGroupInfo(data);
+});
+
+events.on('store:request:history', (data) => {
+    socket.getHistory(data);
 });

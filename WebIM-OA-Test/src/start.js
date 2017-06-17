@@ -1,23 +1,13 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue';
-import axios from 'axios';
-
-let instance = axios.create({
-    headers: {
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-    }
-});
-// debugger;
-// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-Vue.prototype.$axios = instance;
-
 import app from './app';
 import store from './store';
 import events from './events';
 import controller from './controller';
 import socket from './socket';
 
+// document.domain = 'fang.com';
 // require('./controller');
 // require('./socket');
 // require('./css/global.css');

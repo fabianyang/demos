@@ -4,11 +4,11 @@
         <right-title></right-title>
         <div class="listcon">
             <!-- 消息列表组件，会有多个 -->
-            <right-list title="好友" v-if="buddy.length" type="single" :list="buddy"></right-list>
-            <right-list title="群聊" v-if="group.length" type="group" :list="group"></right-list>
-            <right-list title="直接上下级" v-if="false" type="single"></right-list>
-            <right-list title="部门同事" v-if="false" type="single"></right-list>
-            <right-list title="特别关注" v-if="follow.length" type="single" :list="fllow"></right-list>
+            <right-list signame="im_book_buddy" title="好友" v-if="list_buddy.length" :list="list_buddy" :info="info_buddy"></right-list>
+            <right-list signame="im_book_group" title="群聊" v-if="list_group.length" :list="list_group" :info="info_group"></right-list>
+            <right-list signame="im_book_manager" title="直接上下级" v-if="list_manager.length" :list="list_manager" :info="info_buddy"></right-list>
+            <right-list signame="im_book_mate" title="部门同事" v-if="list_mate.length" :list="list_mate" :info="info_buddy"></right-list>
+            <right-list signame="im_book_follow" title="特别关注" v-if="follow.length" :list="follow" :info="info_buddy"></right-list>
         </div>
         <!-- 右下角搜索和通讯录切换面板 -->
         <right-switch></right-switch>
@@ -44,9 +44,13 @@
             // },
             ...mapState({
                 // 箭头函数可使代码更简练
-                buddy: state => state.socket.buddy,
-                group: state => state.socket.group,
-                follow: state => state.socket.follow,
+                list_buddy: state => state.list_buddy,
+                list_manager: state => state.list_manager,
+                list_mate: state => state.list_mate,
+                info_buddy: state => state.info_buddy,
+                list_group: state => state.list_group,
+                info_group: state => state.info_group,
+                follow: state => state.follow,
             })
         },
         data() {

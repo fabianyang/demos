@@ -6,10 +6,7 @@
             <div class="bq" @click="emoji_show = !emoji_show"></div>
             <div class="tp">
                 <form method="Post" enctype="multipart/form-data" :action="upload_url" :target="upload_iframe_name">
-                    <input type="file" title="发送图片"
-                    v-if="update_state !== 'success' && update_state !== 'fail'"
-                    :name="upload_input_name"
-                    @change="upload_image" />
+                    <input type="file" title="发送图片" v-if="update_state !== 'success' && update_state !== 'fail'" :name="upload_input_name" @change="upload_image" />
                 </form>
             </div>
             <div class="jl"></div>
@@ -25,14 +22,8 @@
         <!-- 输入内容组件 -->
         <div class="textarea">
             <!--<textarea v-show="!update_state" name="" cols="" rows="" placeholder="点击这里开始交流，按 Ctrl+Enter 发送信息" @paste="upload_image" @keyup="send('chat', $event)" v-model="message"></textarea>-->
-            <div class='im_chatarea' contenteditable='true'
-                v-show="!update_state"
-                v-text="message"
-                @paste="upload_image"
-                @keydown.enter="send('chat', $event)"
-                @input="input_message"
-                @blur="save_caret_position"
-            ></div>
+            <!-- yangfan:实验结果，不能只使用 blur save_caret_position 会位置为 0，需要 click 或 keyup 时都记录一下光标位置。插入表情 -->
+            <div class='im_chatarea' contenteditable='true' v-show="!update_state" @paste="upload_image" @keydown.enter="send('chat', $event)" @click="save_caret_position" @keyup="save_caret_position"></div>
             <!-- 上传状态 默认隐藏 显示添加 show -->
             <p class="upload" v-show="update_state === 'loading'">图片上传中，请稍后...</p>
             <p class="upload success" v-show="update_state === 'success'">图片上传成功，
@@ -47,11 +38,12 @@
 </template>
 
 <script>
+import api from '../socket/http'
 import setting from '../setting';
 import events from '../events';
 import util from '../util';
 import { mapState, mapMutations } from 'vuex';
-import { SOCKET_SEND_MSG, VIEW_CHAT_MSG } from '../store/mutations';
+import { VIEW_CHAT_CHANGE } from '../store/mutation-types';
 
 export default {
     name: 'left-chat-textarea',
@@ -68,42 +60,38 @@ export default {
             return setting.UPLOAD_IMG_PATH + '&sid=' + sid + '&backurl=' + backurl;
         },
         ...mapState({
-            chatWindow: state => state.view.chatWindow
+            leftWindow: state => state.leftWindow
         }),
     },
     methods: {
-        input_message(event) {
-            this.message = event.target.textContent;
-        },
-        send(cmd, event = { ctrlKey: true, keyCode: 13, preventDefault() {} }) {
+        send(cmd, event = { ctrlKey: true, keyCode: 13, preventDefault() { } }) {
             event.preventDefault();
             if (event.ctrlKey && event.keyCode == 13) {
-                if (cmd === 'chat' && !this.message) {
-                    return;
-                }
+
                 if (cmd === 'img' && !this.picture) {
                     return;
                 }
 
-                let message = this.message;
+                let message = this.el_textarea.innerText;
+                console.log(message);
+                if (cmd === 'chat' && !message) {
+                    return;
+                }
+
                 if (cmd === 'img') {
                     message = this.picture
                 }
 
                 let msg = {
-                    // 进行 msgList 信息列表区分。 VIEW_CHAT_MSG 使用
-                    id: this.chatWindow.id,
+                    // 进行 msgList 信息列表区分。 VIEW_CHAT_CHANGE 使用
+                    id: this.leftWindow.id,
                     // 发送消息 id oa:125460 群没有 oa 前缀
-                    sendto: this.chatWindow.username,
+                    sendto: this.leftWindow.username,
                     message: message,
                     // 消息类型，是否为群聊，目前 group: 群聊天, 其他: 单聊
-                    command: this.chatWindow.type === 'group' ? 'group_' + cmd : cmd,
-                    // 展示信息使用
-                    avatar: this.chatWindow.avatar,
-                    nickname: this.chatWindow.nickname,
-                    nickcmd: cmd,
+                    command: this.leftWindow.isGroup ? 'group_' + cmd : cmd,
                     // 消息是否发送完成
-                    isSuccess: false,
+                    isSend: false,
                     time: new Date().getTime()
                 }
 
@@ -141,7 +129,7 @@ export default {
                             // var arr = result.split(",");
                             // var data = arr[1]; // raw base64
                             // var contentType = arr[0].split(";")[0].split(":")[1];
-                            that.paste_axios_image(result);
+                            api.pasteUploadImage(result);
                             // window.FangChat.picUploadComplete(result);
                         };
                         reader.readAsDataURL(file);
@@ -187,17 +175,14 @@ export default {
             }
         },
         emoji_insert(key) {
+            let el = this.el_textarea;
             // let emoji = '<img class="im_emoji" data-key="' + key + '" src="' + setting.EMOJI.path + setting.EMOJI.map[key] + '" width="24" border="0" style="vertical-align: bottom;" />';
-            debugger;
             // 插入图片的话仍会发生光标定位问题
-            this.message = this.contenteditable_insert('[' + key + ']');
-            this.emoji_show = false;
-        },
-        contenteditable_insert(p_html) {
-            let el = this.$el.querySelector('.im_chatarea');
+            // this.message = this.contenteditable_insert('[' + key + ']');
             let position = this.caret_position;
             let text = el.innerHTML;
-            return text.slice(0, position) + p_html + text.slice(position, text.length);
+            el.innerText = text.slice(0, position) + '[' + key + ']' + text.slice(position, text.length);
+            this.emoji_show = false;
         },
         // 光标插入和选择替换插入
         textarea_insert: function (p_text, t) {
@@ -239,19 +224,6 @@ export default {
             }
             return $t.value;
         },
-        paste_axios_image(base64) {
-            this.$axios.post(setting.PASTE_IMG_PATH, util.queryStringify({
-                projectName: 'webim',
-                base64: encodeURIComponent(base64)
-            })).then((response) => {
-                let data = response.data;
-                let url = setting.PASTE_IMG_BACK_URL_PREFIX + response.data.imgUrl;
-                if (data.code !== '100') {
-                    url = '';
-                }
-                window.FangChat.picUploadComplete(url);
-            })
-        },
         save_caret_position() {
             // https://stackoverflow.com/questions/35559097/how-to-add-emoji-in-between-the-letters-in-contenteditable-div
             function getCaretCharacterOffsetWithin(element) {
@@ -259,7 +231,7 @@ export default {
                 var doc = element.ownerDocument || element.document;
                 var win = doc.defaultView || doc.parentWindow;
                 var sel;
-                if (typeof win.getSelection != 'undefined') {
+                if (typeof win.getSelection != "undefined") {
                     sel = win.getSelection();
                     if (sel.rangeCount > 0) {
                         var range = win.getSelection().getRangeAt(0);
@@ -268,16 +240,16 @@ export default {
                         preCaretRange.setEnd(range.endContainer, range.endOffset);
                         caretOffset = preCaretRange.toString().length;
                     }
-                } else if ((sel = doc.selection) && sel.type != 'Control') {
+                } else if ((sel = doc.selection) && sel.type != "Control") {
                     var textRange = sel.createRange();
                     var preCaretTextRange = doc.body.createTextRange();
                     preCaretTextRange.moveToElementText(element);
-                    preCaretTextRange.setEndPoint('EndToEnd', textRange);
+                    preCaretTextRange.setEndPoint("EndToEnd", textRange);
                     caretOffset = preCaretTextRange.text.length;
                 }
                 return caretOffset;
             }
-            this.caret_position = getCaretCharacterOffsetWithin(this.$el.querySelector('.im_chatarea'))
+            this.caret_position = getCaretCharacterOffsetWithin(this.el_textarea);
         },
         emoji_close(e) {
             if (!this.$el.querySelector('.bq').contains(e.target)) {
@@ -285,7 +257,7 @@ export default {
             }
         },
         ...mapMutations({
-            'viewChatMsg': VIEW_CHAT_MSG
+            'viewChatMsg': VIEW_CHAT_CHANGE
         })
     },
     data() {
@@ -302,12 +274,12 @@ export default {
         }
     },
     created() {
-        // this.$nextTick(function () {
-        //     // console.log(this.$el.textContent) // => 'updated'
-        // })
+        this.$nextTick(() => {
+            this.el_textarea = this.$el.querySelector('.im_chatarea');
+        });
         let that = this,
             timer = null;
-        global.FangChat.picUploadComplete = (data) => {
+        window.FangChat.picUploadComplete = (data) => {
             clearTimeout(timer);
             if (!data) {
                 that.update_state = 'fail';
@@ -320,6 +292,7 @@ export default {
                 // that.showTip('图片上传成功，请发送。 <a href="' + data + '" target="_blank" data-id="look">\u67e5\u770b</a> <a href="javascript:;" data-id="del">\u5220\u9664</a>');// \u56fe\u7247\u4e0a\u4f20\u6210\u529f\uff0c\u8bf7\u53d1\u9001\u3002
             }
         };
+
 
         // 干掉IE http之类地址自动加链接
         try {
@@ -375,6 +348,10 @@ a:hover {
     color: #333;
     cursor: pointer;
 }
+
+
+
+
 
 /* 工具栏 */
 
@@ -485,6 +462,10 @@ a:hover {
     display: inline-block;
 }
 
+
+
+
+
 /* 输入内容 */
 
 .textarea {
@@ -507,6 +488,10 @@ a:hover {
     border: none;
     overflow-y: auto;
 }
+
+
+
+
 
 
 

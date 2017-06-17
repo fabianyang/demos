@@ -2,20 +2,22 @@
     <div class="bottom clearfix unselectable" v-show="rightState !== 'search'">
         <!-- 新消息红点添加 new2 -->
         <!-- 选中状态添加 cur -->
-        <div class="message" :class="{ cur: rightState === 'notice' }" @click="stateChange(['right', 'notice'])">消息</div>
-        <div class="contacts" :class="{ cur: rightState === 'book' }" @click="stateChange(['right', 'book'])">通讯录</div>
+        <div class="message" :class="{ cur: rightState === 'notice', new2: recent_notice }" @click="stateChange(['right', 'notice'])">消息</div>
+        <div class="contacts" :class="{ cur: rightState === 'book', new2: recent_book }" @click="stateChange(['right', 'book'])">通讯录</div>
     </div>
 </template>
 
 <script>
     import { mapState, mapMutations } from 'vuex';
-    import { VIEW_STATE_CHANGE } from '../store/mutations';
+    import { VIEW_STATE_CHANGE } from '../store/mutation-types';
 
     export default {
         name: 'right-switch',
         computed: mapState({
             // 箭头函数可使代码更简练
-            rightState: state => state.view.right
+            rightState: state => state.right,
+            recent_book: state => state.recent.book,
+            recent_notice: state => state.recent.notice
         }),
         methods: mapMutations({
             'stateChange': VIEW_STATE_CHANGE // 映射 this.add() 为 this.$store.commit('increment')

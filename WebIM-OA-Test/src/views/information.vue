@@ -47,7 +47,7 @@
                 }
             },
             ...mapState({
-                info: state => state.view.info
+                info: state => state.info
             })
         },
         data() {

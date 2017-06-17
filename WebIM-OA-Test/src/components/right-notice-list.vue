@@ -1,55 +1,55 @@
 <template>
     <!-- 默认关闭 展开状态添加 open -->
     <!--
-            <div class="conts">
-                <div class="rlisttit">
-                    <a href="#">通知</a>
-                </div>
-                <ul class="rlist">
-                    <li>
-                        <a class="user-head" href="#"><img src="images/user.jpg" alt=""></a>
-                        <a class="user-name" href="#">张金玲</a>
-                    </li>
-                    <li>
-                        <a class="user-head" href="#"><img src="images/user.jpg" alt=""></a>
-                        <a class="user-name" href="#">张金玲</a>
-                    </li>
-                </ul>
+        <div class="conts">
+            <div class="rlisttit">
+                <a href="#">通知</a>
             </div>
-            -->
+            <ul class="rlist">
+                <li>
+                    <a class="user-head" href="#"><img src="images/user.jpg" alt=""></a>
+                    <a class="user-name" href="#">张金玲</a>
+                </li>
+                <li>
+                    <a class="user-head" href="#"><img src="images/user.jpg" alt=""></a>
+                    <a class="user-name" href="#">张金玲</a>
+                </li>
+            </ul>
+        </div>
+        -->
     <div class="conts" :class="{ open: open }">
         <div class="rlisttit unselectable" @click="open = !open">
             <a v-text="title">Title</a>
             <!-- 新消息数字 -->
-            <span class="new" v-if="recent_new">{{ recent_new }}</span>
+            <!-- <span class="new">100</span> -->
         </div>
         <ul class="rlist" v-show="open">
-            <li v-for="id in list" :key="id" @click="openWindow(id)" :class="{ cur: id === leftWindow.id && title === leftWindow.title }">
+            <li v-for="item in list" :key="item.id" @click="openChat(item)" :class="{ cur: item.id === leftWindow.id }">
                 <a class="user-head">
-                    <img :src="info[id].avatar || defaultAvatar" alt="id">
+                    <img :src="item.avatar || defaultAvatar" alt="id">
                 </a>
-                <a class="user-name">{{ info[id].nickname }}</a>
-                <span class="new" v-if="recent_list[id]">{{ recent_list[id] }}</span>
+                <a class="user-name">{{ item.nickname || item.username }}</a>
+                <!--<span class="new">8</span>-->
             </li>
         </ul>
     </div>
     <!--
-            <div class="conts">
-                <div class="rlisttit">
-                    <a href="#">群聊</a>
-                </div>
-                <ul class="rlist">
-                    <li>
-                        <a class="user-head" href="#"><img src="images/user.jpg" alt=""></a>
-                        <a class="user-name" href="#">张金玲</a>
-                    </li>
-                    <li>
-                        <a class="user-head" href="#"><img src="images/user.jpg" alt=""></a>
-                        <a class="user-name" href="#">张金玲</a>
-                    </li>
-                </ul>
+        <div class="conts">
+            <div class="rlisttit">
+                <a href="#">群聊</a>
             </div>
-            -->
+            <ul class="rlist">
+                <li>
+                    <a class="user-head" href="#"><img src="images/user.jpg" alt=""></a>
+                    <a class="user-name" href="#">张金玲</a>
+                </li>
+                <li>
+                    <a class="user-head" href="#"><img src="images/user.jpg" alt=""></a>
+                    <a class="user-name" href="#">张金玲</a>
+                </li>
+            </ul>
+        </div>
+        -->
 </template>
 
 <script>
@@ -58,40 +58,22 @@ import { VIEW_STATE_CHANGE, VIEW_LEFT_OPEN } from '../store/mutation-types';
 
 export default {
     name: 'right-list',
-    props: ['signame', 'title', 'list', 'info'],
-    computed: {
-        recent_new() {
-            let count = 0;
-            this.list.forEach((v) => {
-                let recent_new = +this.recent_list[v];
-                if (recent_new) {
-                    count += recent_new;
-                }
-            });
-            return count;
-        },
-        ...mapState({
-            leftWindow: state => state.leftWindow,
-            recent_list: state => state.recent.list
-        })
-    },
+    props: ['title', 'type', 'list'],
+    computed: mapState({
+        leftWindow: state => state.leftWindow
+    }),
     methods: {
-        openWindow(id) {
+        openChat(item) {
+            // debugger;
             // let info = this.info[id] || {id: id};
-            let info = this.info[id];
-            info.signame = this.signame;
-            info.title = this.title;
-            info.recent_new = this.recent_list[id];
-            if (this.signame === 'im_notice') {
-                this.stateChange(['left', 'notice']);
-            } else {
-                this.stateChange(['left', 'chat']);
-            }
-            this.stateLeftOpen(info);
+            console.log(item);
+            item.title = this.title;
+            this.stateChange(['left', 'chat']);
+            this.chatOpen(item);
         },
         ...mapMutations({
             'stateChange': VIEW_STATE_CHANGE,
-            'stateLeftOpen': VIEW_LEFT_OPEN
+            'chatOpen': VIEW_LEFT_OPEN
         })
     },
     data() {
@@ -147,7 +129,6 @@ a:hover {
     color: #333;
     cursor: pointer;
 }
-
 
 /* 姓名列表 */
 
@@ -221,7 +202,6 @@ a:hover {
 .conts.open .rlist {
     display: block;
 }
-
 
 
 /* 新消息数字 */

@@ -27,8 +27,8 @@ export default {
     },
     computed: mapState({
         // 箭头函数可使代码更简练
-        appState: state => state.view.app,
-        info: state => state.view.info
+        appState: state => state.app,
+        info: state => state.info
     })
 }
 </script>

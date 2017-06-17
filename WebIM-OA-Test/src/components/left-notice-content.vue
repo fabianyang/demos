@@ -1,40 +1,52 @@
 <template>
     <ul>
-        <li class="time">2017-03-10 10:30</li>
+        <template v-for="item in list">
+        <li class="time" v-text="item.messagetime">2017-03-10 10:30</li>
         <!-- 文字图片通知 -->
         <li>
             <div class="noticewrap">
                 <div class="noticetit">
-                    <p>F0合作申请产品需求讲解及需求细节讨论</p>
-                    <p>收件人：allstaff</p>
+                    <p v-text="item.housetitle">F0合作申请产品需求讲解及需求细节讨论</p>
+                    <p>收件人：{{ item.mallname }}</p>
                 </div>
-                <div class="noticecon">
-                    <p>本次会议细节重点确认问题如下：</p>
-                    <p>一、申请人角色相关</p>
+                <div class="noticecon2" v-if="item.card">
+                    <a v-if="item.isLink" :href="item.message" :title="item.housetitle">
+                        <div class="con">
+                            <h6 v-text="item.card.title">item card title</h6>
+                            <p v-text="item.card.desc">item card desc</p>
+                        </div>
+                        <div class="pic"><img :src="item.card.pic" alt=""></div>
+                    </a>
+                    <template v-else>
+                        <div class="con">
+                            <h6 v-text="item.card.title">item card title</h6>
+                            <p v-text="item.card.desc">item card desc</p>
+                        </div>
+                        <div class="pic"><img :src="item.card.pic" alt=""></div>
+                    </template>
+                </div>
+                <div class="noticecon" v-else>
+                    <p v-if="item.isLink"><a :href="item.message" :title="item.housetitle" v-text="item.message">item message</a></p>
+                    <p v-else v-text="item.message">item message</p>
+
+                    <!--<p>一、申请人角色相关</p>
                     <p>1、申请基本信息增加“姓名拼音”字段；</p>
                     <p>2、选择分行，增加“意向城市”属性，可切换，分行联想结果按城市联想；</p>
                     <p>3、有已签约状态申请后不允许再申请其他分行，涉及其他并行中的申请自动标记为“放弃/不合适”；</p>
                     <p>4、有未选择分行的申请，或者已有三个分行并行处理的情况，不可再发起新申请；</p>
                     <p>5、签约/面谈通知，三端发送（邮件、短信、IM），其中IM登录后可查看；</p>
-                    <p>6、提交简历后状态为“投递成功”，分行总监或人事查看后标记为“已查看”，被邀请面谈后标记为“邀请面谈”，被邀请签约后标记为“邀请签约”，签字后标记为“已签约”，被人事或分行总监或审批未通过标记为“被拒绝”，自己撤回或放弃</p>
+                    <p>6、提交简历后状态为“投递成功”，分行总监或人事查看后标记为“已查看”，被邀请面谈后标记为“邀请面谈”，被邀请签约后标记为“邀请签约”，签字后标记为“已签约”，被人事或分行总监或审批未通过标记为“被拒绝”，自己撤回或放弃</p>-->
                 </div>
-                <div class="noticeimg">
-                    <p><img src="images/pic.png" alt=""></p>
-                    <p><img src="images/pic.png" alt=""></p>
-                    <p><img src="images/pic.png" alt=""></p>
-                    <p><img src="images/pic.png" alt=""></p>
-                    <p><img src="images/pic.png" alt=""></p>
-                    <p><img src="images/pic.png" alt=""></p>
-                    <p><img src="images/pic.png" alt=""></p>
-                    <p><img src="images/pic.png" alt=""></p>
-                    <p><img src="images/pic.png" alt=""></p>
-                    <p><img src="images/pic.png" alt=""></p>
-                    <p><img src="images/pic.png" alt=""></p>
+
+                <div class="noticeimg" v-if="item.pics && item.pics.length">
+                    <p v-for="pic in item.pics"><a :href="pic"><img :src="pic" alt="pic"></a></p>
                 </div>
             </div>
         </li>
-        <li class="time">2017-03-10 10:30</li>
+        </template>
         <!-- 文字图片通知 -->
+        <!--
+        <li class="time">2017-03-10 10:30</li>
         <li>
             <div class="noticewrap">
                 <div class="noticetit">
@@ -59,8 +71,10 @@
                 </div>
             </div>
         </li>
-        <li class="time">2017-03-10 10:30</li>
+        -->
         <!-- 发送链接通知 -->
+        <!--
+        <li class="time">2017-03-10 10:30</li>
         <li>
             <div class="noticewrap">
                 <div class="noticetit">
@@ -89,12 +103,20 @@
                 </div>
             </div>
         </li>
+        -->
     </ul>
 </template>
 
 <script>
+    import { mapState } from 'vuex';
     export default {
-        name: 'left-chat',
+        name: 'left-notice-content',
+        computed: {
+            ...mapState({
+                leftWindow: state => state.leftWindow,
+                list: state => state.notice_list
+            })
+        },
         data() {
             return {
                 msg: 'Welcome to Your Vue.js App'
@@ -263,7 +285,8 @@
 
     .noticeimg {
         width: 100%;
-        height: 140px;
+        // height: 140px;
+        max-height: 140px;
         overflow: hidden;
     }
 

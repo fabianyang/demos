@@ -18,7 +18,7 @@
 // <notice></notice>
 // <chat></chat>
 import { mapState, mapMutations } from 'vuex';
-import { VIEW_STATE_CHANGE } from '../store/mutations';
+import { VIEW_STATE_CHANGE } from '../store/mutation-types';
 import leftChat from './left-chat';
 import leftNotice from './left-notice';
 import rightBook from './right-book';
@@ -37,9 +37,9 @@ export default {
     computed: {
         ...mapState({
             // 箭头函数可使代码更简练
-            leftState: state => state.view.left,
-            rightState: state => state.view.right,
-            info: state => state.view.info
+            leftState: state => state.left,
+            rightState: state => state.right,
+            info: state => state.info
         })
     },
     methods: {

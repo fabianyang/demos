@@ -4,9 +4,9 @@
         <right-title></right-title>
         <div class="listcon">
             <!-- 消息列表组件，会有多个 -->
-            <right-list title="通知" type="notice"></right-list>
-            <right-list title="单聊" type="single"></right-list>
-            <right-list title="群聊" type="group"></right-list>
+            <right-list signame="im_notice" title="通知" v-if="notice.length" :list="notice" :info="info_buddy"></right-list>
+            <right-list signame="im_notice_single" title="单聊" v-if="single.length" :list="single" :info="info_buddy">></right-list>
+            <right-list signame="im_notice_group" title="群聊" v-if="group.length" :list="group" :info="info_group">></right-list>
         </div>
         <!-- 右下角搜索和通讯录切换面板 -->
         <right-switch></right-switch>
@@ -14,6 +14,7 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex';
     import rightTitle from '../components/right-title';
     import rightList from '../components/right-list';
     import rightSwitch from '../components/right-switch';
@@ -25,8 +26,17 @@
             rightList,
             rightSwitch
         },
+        computed: mapState({
+            // 箭头函数可使代码更简练
+            single: state => state.notice_single,
+            group: state => state.notice_group,
+            info_buddy: state => state.info_buddy,
+            info_group: state => state.info_group,
+            notice: state => state.notice,
+        }),
         data() {
             return {
+                info_notice: {},
                 msg: 'Welcome to Your Vue.js App'
             }
         }

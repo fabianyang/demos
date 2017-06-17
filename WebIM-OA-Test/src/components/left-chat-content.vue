@@ -2,71 +2,74 @@
     <!-- 所有聊天内容都放在 replybox 中，发送中添加active，失败添加fail -->
     <ul id="im_content">
         <li v-for="item in list" :key="item.messagekey" :class="{ even: item.sendto !== username, odd: item.sendto === username }">
-            <a class="user"><img :src="item.avatar || defaultAvatar"></a>
-            <div class="replybox" :class="{ group: chatWindow.type === 'group', active: !item.isSuccess }">
-                <p class="name" v-text="item.nickname" v-if="chatWindow.type === 'group'">张丽丽</p>
+            <a class="user"><img :src="getavatar(item)"></a>
+            <div class="replybox" :class="{ group: isGroup(item.command), active: item.sendto !== username && !item.isSend }">
+                <p class="name" v-text="getNickname" v-if="isGroup(item.command)">Nickname</p>
                 <!-- 文字内容 replycontent; 群聊中添加姓名 replybox 添加类名 group -->
-                <div class="replycontent" v-if="item.nickcmd === 'chat'" v-html="pack_msg(item.message)">您好，请问你要咨询什么问题？</div>
+                <div class="replycontent" v-if="item.command === 'chat' || item.command === 'group_chat'" v-html="pack_msg(item.message)">Message</div>
+                <!-- yangfan: 语音内容 -->
+                <div class="replycontent" v-if="item.command === 'voice' || item.command === 'group_voice' || item.command === 'red_packets_cash'" v-text="item.message">Message</div>
                 <!-- 图片内容 replyimg -->
-                <div class="replyimg" v-if="item.nickcmd === 'img'">
-                    <a :href="item.message" target="_blank" ><img :src="item.message" :alt="item.type"></a>
+                <div class="replyimg" v-if="item.command === 'img' || item.command === 'group_img'">
+                    <a :href="item.message" target="_blank" ><img :src="item.message" :alt="item.nickname"></a>
+                </div>
+
+                <!-- 链接卡片 replylink -->
+                <div class="replylink" v-if="item.command === 'link' || item.command === 'group_link'" >
+                    <a :href='item.message'>
+                        <h6 v-text="item.title">msgContent Title</h6>
+                        <div class="con">
+                            <div class="con-text" v-text="item.desc">msgContent desc</div>
+                            <div class="con-img"><img :src="item.pic" :alt="item.title" :title="item.title"></div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- 视频内容 replyvideo -->
+                <div class="replyvideo" v-if="item.command === 'video' || item.command === 'group_video'">
+                    <a :href='item.message'>
+                        <span class="start"></span>
+                        <span class="time" v-text="item.second">second</span>
+                    </a>
+                </div>
+
+                <!-- 定位内容 replylocation -->
+                <div class="replylocation" v-if="item.command === 'location' || item.command === 'group_location'">
+                    <div class="info">
+                        <a v-text="item.title0">big title</a>
+                        <a v-text="item.title1">small title</a>
+                    </div>
+                    <div class="map">
+                        <img :src="item.pic">
+                        <!-- 地图内容
+                        <span class="location"></span>
+                        -->
+                    </div>
                 </div>
                 <!-- 名片内容 replyuser -->
-                <!--
-                <div class="replyuser">
+                <div class="replyuser" v-if="item.command === 'card'">
                     <div class="title">
                         <div class="info">
-                            <a>张莎莎</a>
-                            <a>产品组/工作台和账户中心工作台和账户中心</a>
+                            <a v-text="item.card_nickname">card Nickname</a>
+                            <a v-text="item.card_department">card Department</a>
                         </div>
-                        <div class="user-head"><img src="images/user.jpg" alt=""></div>
+                        <div class="user-head"><img :src="item.card_avatar" alt="头像"></div>
                     </div>
                     <div class="type">个人名片</div>
                 </div>
-                -->
-                <!-- 视频内容 replyvideo -->
-                <!--
-                <div class="replyvideo">
-                    <span class="start"></span>
-                    <span class="time">00:12</span>
-                </div>
-                -->
                 <!-- 文件内容 replyfile -->
-                <!--
-                <div class="replyfile">
-                    <div class="info">
-                        <h6>OA现状上半年工作计划与总结.doc</h6>
-                        <p>
-                            <span>9.5mb</span>
-                            <span class="flor">已发送</span>
-                        </p>
-                    </div>
-                    <div class="type"><img src="images/file-exal.png" alt=""></div>
+                <div class="replyfile" v-if="item.command === 'file' || item.command === 'group_file'">
+                    <a :href="item.message">
+                        <div class="info">
+                            <h6 v-text="item.filename">file name</h6>
+                            <p>
+                                <span v-text="item.size">9.5mb</span>
+                                <span class="flor">已发送</span>
+                            </p>
+                        </div>
+                        <div class="type"><img :src="getFilePic(item.extension)" alt=""></div>
+                    </a>
                 </div>
-                -->
-                <!-- 链接卡片 replylink -->
-                <!--
-                <div class="replylink">
-                    <h6>百度一下，你就知道，百度一下，你就知道，</h6>
-                    <div class="con">
-                        <div class="con-text">百度一下，你就知道，百度一下，你就知道，百度一下，你就知道，百度一下，你就知道，百度一下，你就知道，百度一下，你就知道，百度一下，你就知道，</div>
-                        <div class="con-img"><img src="images/user.jpg" alt=""></div>
-                    </div>
-                </div>
-                -->
-                <!-- 定位内容 replylocation -->
-                <!--
-                <div class="replylocation">
-                    <div class="info">
-                        <a>丰台区花乡六圈南路金禹大成·北北北北北北北北</a>
-                        <a>丰台区花乡六圈南路金禹大成·北北北北北北北北</a>
-                    </div>
-                    <div class="map">
-                        地图内容
-                        <span class="location"></span>
-                    </div>
-                </div>
-                -->
             </div>
         </li>
         <!--
@@ -94,13 +97,48 @@ export default {
     },
     computed: {
         ...mapGetters({
-            list: 'msgList'
+            list: 'message_list'
         }),
         ...mapState({
-            chatWindow: state => state.view.chatWindow
+            leftWindow: state => state.leftWindow
         })
     },
     methods: {
+        isGroup(command) {
+            return command.split('_')[0] === 'group';
+        },
+        getFilePic(extension) {
+            // Word—— .doc，.docx
+            // EXCEL—— .xls，.xlsx
+            // PPT—— .ppt，.pptx
+            // PDF—— .pdf
+            // TXT—— .txt
+            let key = extension.substr(0, 3);
+            return this.png[key] || this.png['i'];
+        },
+        getavatar(item) {
+            let avatar = this.leftWindow.avatar || this.defaultAvatar;
+            if (this.isGroup(item.command)) {
+                // 还未做：群聊时头像不能仅仅通过 leftWindow 获取
+                avatar = this.defaultAvatar;
+            }
+            // 如果是本人发出的消息
+            if (item.sendto !== this.username) {
+                avatar = this.avatar;
+            }
+            return avatar;
+        },
+        getNickname(item) {
+            let nickname = this.leftWindow.nickname;
+            if (this.isGroup(item.command)) {
+                // 还未做：群聊时头像不能仅仅通过 leftWindow 获取
+                nickname = '未请求';
+            }
+            if (item.sendto !== this.username) {
+                nickname = this.nickname
+            }
+            return nickname;
+        },
         pack_msg(msg) {
             // 把对应的表情字符转换成表情src
             return msg.replace(/\[([^\]]*)\]/g, function () {
@@ -110,8 +148,18 @@ export default {
     },
     data() {
         return {
-            defaultAvatar: global.FangChat.data.defaultAvatar,
-            username: global.FangChat.config.username
+            png: {
+                doc: require('../assets/images/file-word.png'),
+                xls: require('../assets/images/file-exal.png'),
+                ppt: require('../assets/images/file-ppt.png'),
+                pdf: require('../assets/images/file-pdf.png'),
+                txt: require('../assets/images/file-txt.png'),
+                i: require('../assets/images/file-wenzi.png')
+            },
+            defaultAvatar: window.FangChat.data.defaultAvatar,
+            username: window.FangChat.config.username,
+            nickname: window.FangChat.config.nickname,
+            avatar: window.FangChat.data.defaultAvatar
         }
     }
 }

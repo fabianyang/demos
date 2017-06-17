@@ -1,19 +1,19 @@
 <template>
     <div class="fbconltit">
-        <span v-text="chatWindow.title">杨庆（产品组／工作台和账号中心）</span>
-        <a class="flor grey" v-text="chatWindow.email" v-show="chatWindow.email">yangqing.bj@fang.com</a>
+        <span>{{ leftWindow.nickname + leftWindow.department }}</span>
+        <a class="flor grey" v-text="leftWindow.email" v-show="leftWindow.email">yangqing.bj@fang.com</a>
         <a class="close" @click="stateChange(['left', 'close'])"></a>
     </div>
 </template>
 
 <script>
 import { mapState, mapMutations } from 'vuex';
-import { VIEW_STATE_CHANGE } from '../store/mutations';
+import { VIEW_STATE_CHANGE } from '../store/mutation-types';
 
 export default {
     name: 'left-title',
     computed: mapState({
-        chatWindow: state => state.view.chatWindow
+        leftWindow: state => state.leftWindow
     }),
     methods: {
         ...mapMutations({

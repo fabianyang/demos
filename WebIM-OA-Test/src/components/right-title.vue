@@ -10,7 +10,7 @@
 <script>
 
 import { mapMutations } from 'vuex';
-import { VIEW_STATE_CHANGE } from '../store/mutations';
+import { VIEW_STATE_CHANGE } from '../store/mutation-types';
 
 export default {
     name: 'right-title',
