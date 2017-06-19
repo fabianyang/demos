@@ -57,6 +57,11 @@ fangChat.emit = function (name, data) {
 // fangoaim事件命名空间
 let eventSpace = 'imEvent:';
 let eventRegister = {
+    'socket:getbuddyV3:ret': 1,
+    'socket:getgrouplist:ret': 1,
+    'socket:getgroupinfoV2:ret': 1,
+    'socket:getmessagecountbytime:ret': 1,
+
     // 选择 socket 事件，异步实现加载
     'socket:selec': 1,
     'socket:connecting': 1,
@@ -65,13 +70,15 @@ let eventRegister = {
     'socket:receive:mate': 1,
     'socket:receive:group': 1,
     'socket:receive:messagekey': 1,
+    'socket:receive:history': 1,
     'socket:open': 1,
     'socket:close': 1,
     'socket:error': 1,
     'socket:receive:chat': 1,
     'socket:receive:notice': 1,
     'socket:receive:recent': 1,
-    'socket:send:msg': 1,
+    'view:send:message': 1,
+    'view:search:user': 1,
     'store:request:buddy': 1,
     'store:request:group': 1,
     'store:request:history': 1

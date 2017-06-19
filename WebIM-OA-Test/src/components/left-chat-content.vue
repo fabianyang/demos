@@ -1,88 +1,100 @@
 <template>
     <!-- 所有聊天内容都放在 replybox 中，发送中添加active，失败添加fail -->
     <ul id="im_content">
-        <li v-for="item in list" :key="item.messagekey" :class="{ even: item.sendto !== username, odd: item.sendto === username }">
-            <a class="user"><img :src="getavatar(item)"></a>
-            <div class="replybox" :class="{ group: isGroup(item.command), active: item.sendto !== username && !item.isSend }">
-                <p class="name" v-text="getNickname" v-if="isGroup(item.command)">Nickname</p>
-                <!-- 文字内容 replycontent; 群聊中添加姓名 replybox 添加类名 group -->
-                <div class="replycontent" v-if="item.command === 'chat' || item.command === 'group_chat'" v-html="pack_msg(item.message)">Message</div>
-                <!-- yangfan: 语音内容 -->
-                <div class="replycontent" v-if="item.command === 'voice' || item.command === 'group_voice' || item.command === 'red_packets_cash'" v-text="item.message">Message</div>
-                <!-- 图片内容 replyimg -->
-                <div class="replyimg" v-if="item.command === 'img' || item.command === 'group_img'">
-                    <a :href="item.message" target="_blank" ><img :src="item.message" :alt="item.nickname"></a>
-                </div>
-
-                <!-- 链接卡片 replylink -->
-                <div class="replylink" v-if="item.command === 'link' || item.command === 'group_link'" >
-                    <a :href='item.message'>
-                        <h6 v-text="item.title">msgContent Title</h6>
-                        <div class="con">
-                            <div class="con-text" v-text="item.desc">msgContent desc</div>
-                            <div class="con-img"><img :src="item.pic" :alt="item.title" :title="item.title"></div>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- 视频内容 replyvideo -->
-                <div class="replyvideo" v-if="item.command === 'video' || item.command === 'group_video'">
-                    <a :href='item.message'>
-                        <span class="start"></span>
-                        <span class="time" v-text="item.second">second</span>
-                    </a>
-                </div>
-
-                <!-- 定位内容 replylocation -->
-                <div class="replylocation" v-if="item.command === 'location' || item.command === 'group_location'">
-                    <div class="info">
-                        <a v-text="item.title0">big title</a>
-                        <a v-text="item.title1">small title</a>
+        <template v-for="(item, index) in list">
+            <li class="time" v-text="item.messagetime" v-if="showTimeStamp(index)">2017-03-10 10:30</li>
+            <li :class="{ even: item.sendto !== username, odd: item.sendto === username }">
+                <a class="user">
+                    <img :src="getavatar(item)">
+                </a>
+                <div class="replybox" :class="{ group: isGroup(item.command), active: item.sendto !== username && item.messagestate === 0 }">
+                    <p class="name" v-text="getNickname" v-if="isGroup(item.command)">Nickname</p>
+                    <!-- 文字内容 replycontent; 群聊中添加姓名 replybox 添加类名 group -->
+                    <div class="replycontent" :data-time="item.messagetime" v-if="item.command === 'chat' || item.command === 'group_chat'" v-html="pack_msg(item.message)">Message</div>
+                    <!-- yangfan: 语音内容 -->
+                    <div class="replycontent" v-if="item.command === 'voice' || item.command === 'group_voice' || item.command === 'red_packets_cash'" v-text="item.message">Message</div>
+                    <!-- 图片内容 replyimg -->
+                    <div class="replyimg" v-if="item.command === 'img' || item.command === 'group_img'">
+                        <a :href="item.message" target="_blank">
+                            <img :src="item.message" :alt="item.nickname">
+                        </a>
                     </div>
-                    <div class="map">
-                        <img :src="item.pic">
-                        <!-- 地图内容
-                        <span class="location"></span>
-                        -->
+
+                    <!-- 链接卡片 replylink -->
+                    <div class="replylink" v-if="item.command === 'link' || item.command === 'group_link'">
+                        <a :href='item.message'>
+                            <h6 v-text="item.title">msgContent Title</h6>
+                            <div class="con">
+                                <div class="con-text" v-text="item.desc">msgContent desc</div>
+                                <div class="con-img">
+                                    <img :src="item.pic" :alt="item.title" :title="item.title">
+                                </div>
+                            </div>
+                        </a>
                     </div>
-                </div>
-                <!-- 名片内容 replyuser -->
-                <div class="replyuser" v-if="item.command === 'card'">
-                    <div class="title">
+
+                    <!-- 视频内容 replyvideo -->
+                    <div class="replyvideo" v-if="item.command === 'video' || item.command === 'group_video'">
+                        <a :href='item.message'>
+                            <span class="start"></span>
+                            <span class="time" v-text="item.second">second</span>
+                        </a>
+                    </div>
+
+                    <!-- 定位内容 replylocation -->
+                    <div class="replylocation" v-if="item.command === 'location' || item.command === 'group_location'">
                         <div class="info">
-                            <a v-text="item.card_nickname">card Nickname</a>
-                            <a v-text="item.card_department">card Department</a>
+                            <a v-text="item.title0">big title</a>
+                            <a v-text="item.title1">small title</a>
                         </div>
-                        <div class="user-head"><img :src="item.card_avatar" alt="头像"></div>
+                        <div class="map">
+                            <img :src="item.pic">
+                            <!-- 地图内容
+                            <span class="location"></span>
+                            -->
+                        </div>
                     </div>
-                    <div class="type">个人名片</div>
-                </div>
-                <!-- 文件内容 replyfile -->
-                <div class="replyfile" v-if="item.command === 'file' || item.command === 'group_file'">
-                    <a :href="item.message">
-                        <div class="info">
-                            <h6 v-text="item.filename">file name</h6>
-                            <p>
-                                <span v-text="item.size">9.5mb</span>
-                                <span class="flor">已发送</span>
-                            </p>
+                    <!-- 名片内容 replyuser -->
+                    <div class="replyuser" v-if="item.command === 'card'">
+                        <div class="title">
+                            <div class="info">
+                                <a v-text="item.card_nickname">card Nickname</a>
+                                <a v-text="item.card_department">card Department</a>
+                            </div>
+                            <div class="user-head">
+                                <img :src="item.card_avatar" alt="头像">
+                            </div>
                         </div>
-                        <div class="type"><img :src="getFilePic(item.extension)" alt=""></div>
-                    </a>
+                        <div class="type">个人名片</div>
+                    </div>
+                    <!-- 文件内容 replyfile -->
+                    <div class="replyfile" v-if="item.command === 'file' || item.command === 'group_file'">
+                        <a :href="item.message">
+                            <div class="info">
+                                <h6 v-text="item.filename">file name</h6>
+                                <p>
+                                    <span v-text="item.size">9.5mb</span>
+                                    <span class="flor">已发送</span>
+                                </p>
+                            </div>
+                            <div class="type">
+                                <img :src="getFilePic(item.extension)" alt="">
+                            </div>
+                        </a>
+                    </div>
                 </div>
-            </div>
-        </li>
+            </li>
+        </template>
         <!--
-            <li class="load"></li>
-            <li class="nomore">没有更多了</li>
-            <li class="time">2017-03-10 10:30</li>
-        -->
+                <li class="load"></li>
+                <li class="nomore">没有更多了</li>
+            -->
     </ul>
 </template>
 
 <script>
 import setting from '../setting'
-import { mapState,mapGetters } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 export default {
     name: 'left-chat-content',
     watch: {
@@ -91,7 +103,7 @@ export default {
                 // var container = this.$el.querySelector("#im_content");
                 let container = this.$el;
                 // console.log(container);
-                container.scrollTop = 0;
+                container.scrollTop = container.scrollHeight;
             })
         }
     },
@@ -104,6 +116,18 @@ export default {
         })
     },
     methods: {
+        showTimeStamp(index) {
+            let prev = this.list[index - 1];
+            if (!prev) {
+                return true;
+            } else {
+                let now = this.list[index];
+                if (now.time - prev.time > 60 * 1000) {
+                    console.log(now.messagetime, prev.messagetime, now.time - prev.time);
+                    return true;
+                }
+            }
+        },
         isGroup(command) {
             return command.split('_')[0] === 'group';
         },
@@ -213,6 +237,7 @@ a:hover {
 }
 
 
+
 /* 对话列表 */
 
 ul {
@@ -256,6 +281,7 @@ ul li.even .user {
 
 
 
+
 /* 发送内容 */
 
 ul li .replybox {
@@ -270,6 +296,7 @@ ul li.odd .replybox {
 ul li.even .replybox {
     float: right;
 }
+
 
 
 
@@ -309,6 +336,7 @@ ul li .replybox.fail:after {
 
 
 
+
 /* 群聊姓名 */
 
 ul li .replybox.group {
@@ -329,6 +357,7 @@ ul li.odd .replybox.group .name {
 ul li.even .replybox.group .name {
     right: 0;
 }
+
 
 /* 文字内容 */
 
@@ -378,6 +407,7 @@ ul li.even .replycontent:after {
 
 
 
+
 /* 图片内容 */
 
 ul li .replyimg {
@@ -390,6 +420,7 @@ ul li .replyimg img {
     max-height: 178px;
     border-radius: 5px;
 }
+
 
 
 
@@ -421,6 +452,7 @@ ul li .replyvideo .time {
     bottom: 10px;
     z-index: 10;
 }
+
 
 
 
@@ -507,6 +539,7 @@ ul li.even .replyuser:after {
 
 
 
+
 /* 文件内容 */
 
 ul li .replyfile {
@@ -568,6 +601,7 @@ ul li.even .replyfile:after {
     border-left: 8px solid #f7f7f7;
     right: -8px;
 }
+
 
 
 
@@ -645,6 +679,7 @@ ul li.even .replylink:after {
 
 
 
+
 /* 定位内容 */
 
 ul li .replylocation {
@@ -719,6 +754,7 @@ ul li.even .replylocation:after {
 
 
 
+
 /* 内容加载中 */
 
 ul li.load {
@@ -727,6 +763,7 @@ ul li.load {
     background: url(../assets/images/icon-active.png) no-repeat center;
     margin: 0 auto 15px;
 }
+
 
 
 
@@ -759,6 +796,7 @@ ul li.nomore:before {
 ul li.nomore:after {
     right: 65px;
 }
+
 
 
 

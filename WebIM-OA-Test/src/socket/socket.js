@@ -23,6 +23,7 @@ class WS {
         this.httpServer = setting.LONGPOLLING_SERVER;
         this.lockReconnect = false;
         this.countRecnnect = 0;
+        this.RequestPromise = {};
         this.PromiseResolve = {};
     }
 
@@ -74,7 +75,7 @@ class WS {
             // 开启心跳
             // this.heart();
             // setTimeout 防止连接过快，没有过度
-            let all = Promise.all([
+            Promise.all([
                 that.syncBuddy(),
                 that.syncGroup(),
                 that.syncManager(),
@@ -115,10 +116,14 @@ class WS {
                         that.receiveGroupInfo(json.message);
                         break;
                     case 'getmessagecountbytime_ret':
-                        that.receiveRecentMessageCount(json.recentcontacts, json.recentgroups);
+                        this.PromiseResolve[command]({
+                            buddy: json.recentcontacts,
+                            group: json.recentgroups
+                        });
+                        // that.receiveRecentMessageCount(json.recentcontacts, json.recentgroups);
                         break;
                     case 'notice':
-                        // purpose = 'voice_tongzhi'; // 用于测试，写死
+                        // purpose = 'tongzhi'; // 用于测试，写死
                         // 将展示名称定为通知标题
                         // json = {"clienttype":"phone","command":"notice","forceread":"false","form":"oa:51060","from":"oa:51060","housetitle":"文字通知","mallName":"王斌斌","message":"文字通知^@http://imgws03.soufunimg.com/SouFunOA/Image/201705/11/BEBD6FE13876A45ADD5529EBF7994908.jpg","messageid":"735145","messagetime":"2017-05-11 16:41:17.983","msgContent":"{\n  \"LogoUrl\" : \"http:\\/\\/img8.soufunimg.com\\/sfwork\\/2016_09\\/06\\/M07\\/0A\\/36\\/wKgEQFfOjRKISy0QAAAonPeoRxUAAW-TAEJdx0AACi0785.jpg\",\n  \"UserTitle\" : \"张永强\"\n}","projinfo":"654313","purpose":"tongzhi","realSendtoClientType":"phone","receiver":"{\n  \"subIds\" : \"\",\n  \"resIds\" : \"44005\",\n  \"agentType\" : \"\",\n  \"emailIds\" : \"\",\n  \"depIds\" : \"\"\n}","sendtime":"2017-05-11 16:41:17.983","sendto":"oa:44005","typeid":"1"}
                         // json = {"clienttype":"phone","command":"notice","forceread":"false","form":"oa:51060","from":"oa:51060","housetitle":"纯链接通知","mallName":"王斌斌","message":"http://www.fang.com^@http://imgws03.soufunimg.com/SouFunOA/Image/201705/11/778926A763CE435557AD51D2D8E868A0.jpg","messageid":"735152","messagetime":"2017-05-11 16:42:02.145","msgContent":"{\n  \"LogoUrl\" : \"http:\\/\\/img8.soufunimg.com\\/sfwork\\/2016_09\\/06\\/M07\\/0A\\/36\\/wKgEQFfOjRKISy0QAAAonPeoRxUAAW-TAEJdx0AACi0785.jpg\",\n  \"title\" : \"【北京房地产门户\\/房地产网】-北京搜房网\",\n  \"pic\" : \"https:\\/\\/static.soufunimg.com\\/common_m\\/m_public\\/201511\\/images\\/app_fang.png\",\n  \"UserTitle\" : \"张永强\",\n  \"desc\" : \"手机搜房网是中国最大的房地产家居移动互联网门户，为亿万用户提供全面及时的房地产新闻资讯内容,为所有楼盘提供网上浏览及业主论坛信息。覆盖全国300多个城市,找新房、找二手房、找租房,更多便捷,更加精准。\"\n}","projinfo":"654320","purpose":"tongzhi","realSendtoClientType":"phone","receiver":"{\n  \"subIds\" : \"\",\n  \"resIds\" : \"44005\",\n  \"agentType\" : \"\",\n  \"emailIds\" : \"\",\n  \"depIds\" : \"\"\n}","sendtime":"2017-05-11 16:42:02.145","sendto":"oa:44005","typeid":"1"}
@@ -245,7 +250,9 @@ class WS {
                 buddys[l[0]] = {
                     // 发消息使用 username
                     id: l[0],
-                    follow: +l[3],
+                    // 用于判断是否为联系人时使用
+                    buddy: 'buddy',
+                    follow: 'follow',
                     online: +l[4]
                 };
                 list.push(l[0].split(':')[1]);
@@ -262,32 +269,19 @@ class WS {
                 return;
             }
             data = data.Data;
-            // 如果是数组是初始化，批量请求联系人
-            if (util.isArray(data) && data.length > 1) {
-                let list = [];
-                data.forEach((v) => {
-                    let id = 'oa:' + v.SoufunId;
-                    let buddy = Object.assign(buddys[id], {
-                        nickname: v.TrueName,
-                        phone: v.Phone,
-                        avatar: v.LogoUrl,
-                        email: v.Officeemail,
-                        department: v.OrgName
-                    });
-                    list.push(buddy);
+            let list = [];
+            data.forEach((v) => {
+                let id = 'oa:' + v.SoufunId;
+                let buddy = Object.assign(buddys[id], {
+                    nickname: v.TrueName,
+                    phone: v.Phone,
+                    avatar: v.LogoUrl,
+                    email: v.Officeemail,
+                    department: v.OrgName
                 });
-                events.trigger('socket:receive:buddy', list);
-            } else {
-                events.trigger('socket:receive:buddy',
-                    Object.assign(buddys['oa:' + data[0].SoufunId], {
-                        nickname: data[0].TrueName,
-                        phone: data[0].Phone,
-                        avatar: data[0].LogoUrl,
-                        email: data[0].Officeemail,
-                        department: data[0].OrgName
-                    })
-                );
-            }
+                list.push(buddy);
+            });
+            events.trigger('socket:receive:buddy', list);
         });
     }
 
@@ -364,6 +358,8 @@ class WS {
                     let id = 'oa:' + v.id;
                     managers[id] = {
                         id: id,
+                        // 用于判断是否为联系人时使用
+                        manager: 'manager',
                         nickname: v.name,
                         avatar: v.imgUrl,
                         department: v.OrgName
@@ -410,6 +406,7 @@ class WS {
                     let id = 'oa:' + v.id;
                     mates[id] = {
                         id: id,
+                        mate: 'mate',
                         nickname: v.name,
                         avatar: v.imgUrl,
                         department: v.OrgName
@@ -442,18 +439,39 @@ class WS {
         });
     }
 
-
     syncRecentCount(time) {
-        let msg = {
-            command: 'getmessagecountbytime',
-            messagekey: util.guid(),
-            form: config.username,
-            clienttype: config.clienttype,
-            type: config.usertype,
-            synctime: 1497408366000
-        };
-        if (time) msg.synctime = time;
-        this.send(msg);
+        new Promise((resolve, reject)=>{
+            let msg = {
+                command: 'getmessagecountbytime',
+                messagekey: util.guid(),
+                form: config.username,
+                clienttype: config.clienttype,
+                type: config.usertype,
+                synctime: 1497408366000
+            };
+            if (time) msg.synctime = time;
+            this.send(msg);
+            let key = 'getmessagecountbytime_ret';
+            // 不推荐这样用，https://stackoverflow.com/questions/26150232/resolve-javascript-promise-outside-function-scope
+            this.PromiseResolve[key] = resolve;
+        }).then((data) => {
+            events.trigger('socket:receive:recent', {
+                buddy: data.buddy.map((v) => {
+                    return {
+                        id: v.id,
+                        nickname: v.name,
+                        recent_new: +v.messageCount
+                    };
+                }),
+                group: data.group.map((v) => {
+                    return {
+                        id: v.id,
+                        nickname: v.name,
+                        recent_new: +v.messageCount
+                    };
+                })
+            });
+        });
     }
 
 
@@ -647,7 +665,6 @@ class WS {
     }
 
     sendMsg(data) {
-
         let msg = {
             clienttype: config.clienttype,
             messagekey: data.messagekey,
@@ -665,6 +682,16 @@ class WS {
     postHistory(data) {
         http.getChatMsgHistory({
             sendto: data.id
+        }).then((response) => {
+            events.trigger('socket:receive:history', response.data.message);
+        });
+    }
+
+    postSearchUser(data) {
+        http.fuzzyQuery({
+            keyword: data.keyword,
+            start: data.start,
+            limit: data.limit
         }).then((response) => {
             console.log(response);
         });

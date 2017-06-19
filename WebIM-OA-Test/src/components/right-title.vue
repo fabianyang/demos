@@ -1,27 +1,45 @@
 <template>
     <div class="fbconrtit clearfix">
-        <form class="flol">
-            <input class="search" type="text" name="" placeholder="搜索">
-        </form>
+        <div class="flol">
+            <input class="search" type="text" @input="search($event)" placeholder="搜索">
+        </div>
         <a class="flol close2" @click="stateChange(['app', 'min'])"></a>
     </div>
 </template>
 
 <script>
-
+import events from '../events';
 import { mapMutations } from 'vuex';
 import { VIEW_STATE_CHANGE } from '../store/mutation-types';
 
 export default {
     name: 'right-title',
     methods: {
+        search(ev) {
+            let keyword = ev.target.value;
+            if (!keyword) {
+                // 隐藏搜索界面
+            }
+            if (this.timer) clearTimeout(this.timer);
+            let that = this;
+            this.timer = setTimeout(() => {
+                if (keyword && keyword !== that.lastKeyword) {
+                    that.lastKeyword = keyword;
+                    events.trigger('view:search:user', {
+                        keyword: keyword
+                    });
+                }
+            }, 1000);
+        },
         ...mapMutations({
             'stateChange': VIEW_STATE_CHANGE // 映射 this.add() 为 this.$store.commit('increment')
         })
     },
     data() {
         return {
-            msg: 'Welcome to Your Vue.js App'
+            timer: null,
+            lastKeyword: '',
+            keyword: ''
         }
     }
 }
@@ -29,14 +47,12 @@ export default {
 
 <style lang="scss" scoped>
 div,
-form,
 input,
 a {
     box-sizing: border-box;
 }
 
-div,
-form {
+div {
     margin: 0;
     padding: 0;
     border: 0;

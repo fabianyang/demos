@@ -22,7 +22,6 @@ class Socket {
 
     sendMsg(msg) {
         try {
-            msg.messagekey = util.guid();
             this.core.sendMsg(msg);
         } catch (e) {
             console.error(e);
@@ -79,6 +78,14 @@ class Socket {
     getHistory(data) {
         try {
             this.core.postHistory(data);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    searchUser(data) {
+        try {
+            this.core.postSearchUser(data);
         } catch (e) {
             console.error(e);
         }

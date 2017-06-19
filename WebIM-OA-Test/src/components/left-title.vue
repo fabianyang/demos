@@ -1,6 +1,6 @@
 <template>
     <div class="fbconltit">
-        <span>{{ leftWindow.nickname + leftWindow.department }}</span>
+        <span>{{ leftWindow.nickname + (leftWindow.usergroup ? leftWindow.department : leftWindow.number)}}</span>
         <a class="flor grey" v-text="leftWindow.email" v-show="leftWindow.email">yangqing.bj@fang.com</a>
         <a class="close" @click="stateChange(['left', 'close'])"></a>
     </div>
@@ -15,16 +15,9 @@ export default {
     computed: mapState({
         leftWindow: state => state.leftWindow
     }),
-    methods: {
-        ...mapMutations({
-            'stateChange': VIEW_STATE_CHANGE
-        })
-    },
-    data() {
-        return {
-            msg: 'Welcome to Your Vue.js App'
-        }
-    }
+    methods: mapMutations({
+        'stateChange': VIEW_STATE_CHANGE
+    })
 }
 </script>
 

@@ -81,7 +81,7 @@ export default {
                 if (cmd === 'img') {
                     message = this.picture
                 }
-
+                let date = new Date();
                 let msg = {
                     // 进行 msgList 信息列表区分。 VIEW_CHAT_CHANGE 使用
                     id: this.leftWindow.id,
@@ -91,12 +91,15 @@ export default {
                     // 消息类型，是否为群聊，目前 group: 群聊天, 其他: 单聊
                     command: this.leftWindow.isGroup ? 'group_' + cmd : cmd,
                     // 消息是否发送完成
-                    isSend: false,
-                    time: new Date().getTime()
+                    messagestate: 0,
+                    messagekey: util.guid(),
+                    messagetime: util.dateFormat(date),
+                    time: date.getTime()
                 }
 
                 this.viewChatMsg(msg);
-                events.trigger('socket:send:msg', msg);
+                debugger;
+                events.trigger('view:send:message', msg);
 
                 this.clear(cmd);
             }

@@ -25,10 +25,26 @@ let formatNotSyncInfo = (data) => {
     };
 };
 
+let formatReceiveChat = (data) => {
+    return {
+        // 进行 msgList 信息列表区分。 VIEW_CHAT_CHANGE 使用
+        id: data.from || data.form,
+        // 发送消息 id oa:125460 群没有 oa 前缀
+        sendto: data.sendto,
+        message: data.message,
+        // 消息类型，是否为群聊，目前 group: 群聊天, 其他: 单聊
+        command: data.command,
+        messagekey: data.messagekey,
+        messagetime: data.messagetime,
+        messagestate: 1,
+        time: new Date(data.messagetime).getTime()
+    };
+};
+
 let requestBuddyInfo = (state, data) => {
     // 要先添加基本信息，因为 im 已经渲染， 否则找不到信息报错
     // buddy = formatNotSyncInfo(v);
-    state.info_buddy = Object.assign({}, state.info_buddy, {
+    state.info_user = Object.assign({}, state.info_user, {
         [data.id]: formatNotSyncInfo(data)
     });
     // 这里要是一个新对象，否则 vuex 报错
@@ -41,7 +57,7 @@ let requestGroupInfo = (state, data) => {
         [data.id]: formatNotSyncInfo(data)
     });
     // 接收到一个群消息但是不在群列表中，需要添加到群列表，同时同步群信息
-    state.list_group = state.list_group.concat([data.id]);
+    state.view_book_group = state.view_book_group.concat([data.id]);
     events.trigger('store:request:group', formatNotSyncInfo(data));
 };
 
@@ -60,97 +76,139 @@ export default {
         };
     },
     [SOCKET_GROUP_CHANGE](state, data) {
+        let info = state.info_group;
         let l = [],
             o = {};
         data.forEach(function (v) {
-            l.push(v.id);
-            o[v.id] = v;
+            let id = v.id;
+            l.push(id);
+            if (info[id]) {
+                o[id] = Object.assign(info[id], v);
+            } else {
+                o[id] = v;
+            }
         });
-        state.list_group = state.list_group.concat(l);
-        state.info_group = Object.assign({}, state.info_group, o);
+        state.view_book_group = state.view_book_group.concat(l);
+        state.info_group = Object.assign({}, info, o);
+        // let l = [],
+        //     o = {};
+        // data.forEach(function (v) {
+        //     l.push(v.id);
+        //     o[v.id] = v;
+        // });
+        // state.view_book_group = state.view_book_group.concat(l);
+        // state.info_group = Object.assign({}, state.info_group, o);
     },
     [SOCKET_BUDDY_CHANGE](state, data) {
-        if (util.isArray(data)) {
-            let fl = [], bl = [], o = {};
-            data.forEach(function (buddy) {
-                bl.push(buddy.id);
-                o[buddy.id] = buddy;
-
-                if (buddy.follow) {
-                    fl.push(buddy.id);
-                }
-            });
-            state.list_buddy = state.list_buddy.concat(bl);
-            state.info_buddy = Object.assign({}, state.info_buddy, o);
-            if (fl.length) {
-                state.follow = state.follow.concat(fl);
+        let info = state.info_user;
+        let fl = [], bl = [], o = {};
+        data.forEach(function (v) {
+            let id = v.id;
+            bl.push(id);
+            if (info[id]) {
+                o[id] = Object.assign(info[id], v);
+            } else {
+                o[id] = v;
             }
-        } else {
-            // 只需要同步信息，目前单条只有非联系人时会出现
-            state.info_buddy = Object.assign({}, state.info_buddy, {
-                [data.id]: data
-            });
+            if (v.follow) {
+                fl.push(v.id);
+            }
+        });
+        state.view_book_buddy = state.view_book_buddy.concat(bl);
+        state.info_user = Object.assign({}, info, o);
+        if (fl.length) {
+            state.view_book_follow = state.view_book_follow.concat(fl);
         }
     },
     [SOCKET_MANAGER_CHANGE](state, data) {
+        let info = state.info_user;
         let l = [],
             o = {};
         data.forEach(function (v) {
-            l.push(v.id);
-            o[v.id] = v;
+            let id = v.id;
+            l.push(id);
+            if (info[id]) {
+                o[id] = Object.assign(info[id], v);
+            } else {
+                o[id] = v;
+            }
         });
-        state.list_manager = state.list_manager.concat(l);
-        state.info_buddy = Object.assign({}, state.info_buddy, o);
+        state.view_book_manager = state.view_book_manager.concat(l);
+        state.info_user = Object.assign({}, info, o);
     },
     [SOCKET_MATE_CHANGE](state, data) {
-        let l = [],
-            o = {};
+        let info = state.info_user;
+        let l = [], o = {};
         data.forEach(function (v) {
-            l.push(v.id);
-            o[v.id] = v;
+            let id = v.id;
+            l.push(id);
+            if (info[id]) {
+                o[id] = Object.assign(info[id], v);
+            } else {
+                o[id] = v;
+            }
         });
-        state.list_mate = state.list_mate.concat(l);
-        state.info_buddy = Object.assign({}, state.info_buddy, o);
+        state.view_book_mate = state.view_book_mate.concat(l);
+        state.info_user = Object.assign({}, info, o);
     },
     [SOCKET_CHAT_CHANGE](state, data) {
-        let id = data.id, command = data.command;
-        let isGroup = command.split('_')[0] === 'group';
-        // 这里只添加信息，不添加具体信息 在 view messageList 中添加具体消息
-        let info = isGroup ? state.info_group[id] : state.info_buddy[id];
-        if (!info) {
-            if (isGroup) {
-                requestGroupInfo(state, data);
-                state.notice_group = state.notice_group.concat([data.id]);
-            } else {
-                requestBuddyInfo(state, data);
-                state.notice_single = state.notice_single.concat([data.id]);
+        let lists = state.message_lists;
+        let id = state.leftWindow.id;
+        // 多条，历史记录请求，点击窗口已经判断是否有 info, 应该都是一个人的，打开窗口的
+        if (util.isArray(data)) {
+            if (!util.isArray(lists[id])) {
+                lists[id] = [];
             }
-        }
+            let list = [];
+            data.forEach((v) => {
+                list.push(formatReceiveChat(v));
+            });
 
-        if (state.leftWindow.id !== id) {
-            let recent_list = state.recent.list;
-            if (recent_list[id]) {
-                recent_list[id]++;
-            } else {
-                recent_list[id] = 1;
+            list = lists[id].concat(list);
+
+            state.message_lists = Object.assign({}, lists, {
+                [id]: list
+            });
+        } else {
+            let id = data.id, command = data.command;
+            let isGroup = command.split('_')[0] === 'group';
+            // 这里只添加信息，不添加具体信息 在 view messageList 中添加具体消息
+            let info = isGroup ? state.info_group[id] : state.info_user[id];
+            if (!info) {
+                if (isGroup) {
+                    requestGroupInfo(state, data);
+                    state.notice_group = state.notice_group.concat([data.id]);
+                } else {
+                    requestBuddyInfo(state, data);
+                    state.view_notice_single = state.view_notice_single.concat([data.id]);
+                }
             }
 
-            state.recent.list = recent_list;
-            if (info) {
-                state.recent.book++;
+            if (state.leftWindow.id !== id) {
+                let recent_list = state.recent.list;
+                if (recent_list[id]) {
+                    recent_list[id]++;
+                } else {
+                    recent_list[id] = 1;
+                }
+
+                state.recent.list = recent_list;
+                if (info) {
+                    state.recent.book++;
+                }
+                state.recent.notice++;
             }
-            state.recent.notice++;
         }
     },
     [SOCKET_NOTICE_CHANGE](state, data) {
         let id = data.id;
-        let info = state.info_buddy[id];
+        let info = state.info_user[id];
         if (!info) {
             // 通知发送人 基本信息添加
             requestBuddyInfo(state, data);
+            // 通知发送人 id 列表更新
+            state.view_notice = state.view_notice.concat([data.id]);
         }
-        // 通知发送人 id 列表更新
-        state.notice = state.notice.concat([data.id]);
         state.notice_list = state.notice_list.concat([data]);
     },
     [SOCKET_RECENT_CHANGE](state, data) {
@@ -165,10 +223,10 @@ export default {
         data.buddy.forEach((v) => {
             state.recent.notice += v.recent_new;
             recent_list[v.id] = v.recent_new;
-            state.notice_single = state.notice_single.concat([v.id]);
+            state.view_notice_single = state.view_notice_single.concat([v.id]);
 
             // 判断有无好友信息，无信息要请求，主要是头像地址。。。。
-            let buddy = state.info_buddy[v.id];
+            let buddy = state.info_user[v.id];
             if (!buddy) {
                 requestBuddyInfo(state, v);
             } else {
@@ -198,29 +256,37 @@ export default {
             // username: opts.username,
             // 昵称、姓名 聊天窗口显示文字
             nickname: opts.nickname || id,
+            usergroup: [opts.buddy, opts.manager, opts.mate, opts.follow].filter((x) => x).join('_'),
             department: opts.department ? '(' + opts.department + ')' : '',
             // right-list title 属性
             title: opts.title,
             // 窗口类型：好友、群聊、关注。用于判断当前打开窗口。
             signame: opts.signame,
             // 群人员数量
-            number: opts.number || '',
+            number: opts.number ? '(' + opts.number + ')' : '',
             // 头像
             avatar: opts.avatar || '',
             email: opts.email || ''
         };
+        let signame = opts.signame.split('_');
         if (opts.recent_new) {
             state.recent.list[id] = 0;
-            let recent_name = opts.signame.split('_')[1];
-            state.recent[recent_name] -= opts.recent_new;
-            if (recent_name === 'book') {
-                state.recent.notice -= opts.recent_new;
+            state.recent.notice -= opts.recent_new;
+            if (signame[1] === 'book') {
+                state.recent.book -= opts.recent_new;
+            }
+            if (signame[1] === 'notice') {
+                if (state.leftWindow.usergroup) {
+                    state.recent.book -= opts.recent_new;
+                }
             }
         }
-        // 拉取信息！！！
-        events.trigger('store:request:history', {
-            id: id
-        });
+        // 非通知时，拉取信息！！！
+        if (signame[2]) {
+            events.trigger('store:request:history', {
+                id: id
+            });
+        }
     },
     [VIEW_CHAT_MSGKEY](state, key) {
         let lists = state.message_lists,
@@ -229,7 +295,7 @@ export default {
         if (list) {
             for (let i = 0; i < list.length; i++) {
                 if (list[i].messagekey === key) {
-                    list[i].isSend = true;
+                    list[i].messagestate = 1;
                     state.message_lists = Object.assign({}, lists, {
                         [id]: list
                     });
@@ -239,14 +305,14 @@ export default {
         }
     },
     [VIEW_CHAT_CHANGE](state, data) {
-        let lists = state.message_lists,
-            id = data.id;
+        let id = data.id;
+        let lists = state.message_lists;
 
         let list = lists[id];
         if (!list) {
             list = lists[id] = [];
         }
-        list.push(data);
+        list.unshift(data);
         state.message_lists = Object.assign({}, lists, {
             [data.id]: list
         });

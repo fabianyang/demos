@@ -27,23 +27,23 @@ export default new Vuex.Store({
         // socket 连接次数
         count: 0,
         // 群成员列表，存储 id
-        list_group: [],
+        view_book_group: [],
         // 群信息，以 id 为 key
         info_group: {},
         // 好友、上下级等列表，存储 username
-        list_buddy: [],
-        list_manager: [],
-        list_mate: [],
+        view_book_buddy: [],
+        view_book_manager: [],
+        view_book_mate: [],
         // 好友、上下级等信息，以 username 为 key
-        info_buddy: {},
-        // 特别关注列表，list_body 子集
-        follow: [],
+        info_user: {},
+        // 特别关注列表，view_book_body 子集
+        view_book_follow: [],
         // 通知消息发送人列表，存储 id
-        notice: [],
+        view_notice: [],
         // 单聊消息成员列表，存储 id
-        notice_single: [],
+        view_notice_single: [],
         // 群聊消息成员列表，存储 id
-        notice_group: [],
+        view_notice_group: [],
         // 未读消息数量
         recent: {
             notice: 0,

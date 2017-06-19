@@ -58,8 +58,12 @@ events.on('socket:error', function () {
 }
  */
 
-events.on('socket:send:msg', function (data) {
+events.on('view:send:message', function (data) {
     socket.sendMsg(data);
+});
+
+events.on('view:search:user', function (data) {
+    socket.searchUser(data);
 });
 
 events.on('socket:receive:buddy', function (data) {
@@ -135,13 +139,12 @@ events.on('socket:receive:messagekey', function (key) {
 });
 
 events.on('socket:receive:chat', function (data) {
-    let msg = Object.assign(data, {
-        // 消息是否已读
-        isRead: false
-    });
+    store.commit(VIEW_CHAT_CHANGE, data);
+    store.commit(SOCKET_CHAT_CHANGE, data);
+});
 
-    store.commit(VIEW_CHAT_CHANGE, msg);
-    store.commit(SOCKET_CHAT_CHANGE, msg);
+events.on('socket:receive:history', function (data) {
+    store.commit(SOCKET_CHAT_CHANGE, data);
 });
 
 // function replaceSrc(txt) {
@@ -156,7 +159,7 @@ events.on('socket:receive:chat', function (data) {
 events.on('socket:receive:notice', function (data) {
     let msg = Object.assign(data, {
         isLink: /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?$/i.test(data.message),
-        messagetime: data.messagetime.substring(0, data.messagetime.lastIndexOf(':')),
+        messagetime: data.messagetime.substring(0, data.messagetime.lastIndexOf('.')),
         // 消息是否已读
         isRead: false
     });

@@ -110,5 +110,26 @@ export default {
         }).catch(function (error) {
             console.log(error);
         });
+    },
+
+    fuzzyQuery(opts) {
+        return axios({
+            url: setting.LONGPOLLING_SERVER,
+            method: 'post',
+            data: util.queryStringify({
+                clienttype: config.clienttype,
+                type: config.usertype,
+                username: config.username,
+                nickname: config.nickname,
+                token: config.token,
+                resourceId: config.agentid,
+                name: opts.keyword,
+                start: opts.start || 0,
+                limit: opts.limit || 20,
+                command: 'fuzzyQuery'
+            })
+        }).catch(function (error) {
+            console.log(error);
+        });
     }
 };
