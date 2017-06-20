@@ -1,7 +1,7 @@
-const webSocketUrl = 'ws://124.251.46.69:9999/chat';
+const webSocketUrl = 'ws://124.251.46.69:9999';
 
-const longPollingUrl = 'http://124.251.46.69:8022/ClientInterface';
-const httpUrl = 'http://testoachat.client.3g.fang.com/ClientInterface';
+const longPollingUrl = 'http://124.251.46.69:8022';
+const httpUrl = 'http://testoachat.client.3g.fang.com';
 // const httpUrl = 'http://oachat.client.3g.fang.com/ClientInterface';
 
 
@@ -22,9 +22,10 @@ export default {
     // POLLING_INTERVAL: 40000,
     // 在线
     // ONLINE_STATE_SEARCH_INTERVAL: 120000,
-    WEBSOCKET_SERVER: webSocketUrl,
-    LONGPOLLING_SERVER: longPollingUrl,
-    HTTP_SERVER: httpUrl,
+    WEBSOCKET_CHAT: webSocketUrl + '/chat',
+    LONGPOLLING_CHAT: longPollingUrl + '/longPolling',
+    LONGPOLLING_CI: longPollingUrl + '/ClientInterface',
+    HTTP_CI: httpUrl + '/ClientInterface',
     UPLOAD_IMG_PATH: 'http://img1u.soufun.com/upload/mchat?channel=webim&city=',
     UPLOAD_IMG_BACK_URL_PATH: 'http://activities.m.fang.com/im/?c=imchat',
     PASTE_IMG_PATH: 'http://activities.m.fang.com/im/?c=imgUpload&a=ajaxUploadImg',
@@ -34,7 +35,7 @@ export default {
         path: 'http://js.soufunimg.com/upload/webim/im2/images/emoji_s/'
     }
     // ONLINE_PATH: onlineUrl,
-    // LONGPOLLING_SERVER: longPollingUrl,
+    // LONGPOLLING_CI: longPollingUrl,
     // LONG_CONNECT_REQUEST_PATH: longPollingUrl + 'longPolling',
     // AJAX_PROXY_PATH: longPollingUrl + 'ajaxproxy.html'
 };

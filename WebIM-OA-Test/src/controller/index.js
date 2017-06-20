@@ -12,6 +12,7 @@ import {
     SOCKET_GROUP_CHANGE,
     SOCKET_CHAT_CHANGE,
     SOCKET_NOTICE_CHANGE,
+    SOCKET_SEARCH_USER_CHANGE,
     VIEW_CHAT_MSGKEY,
     VIEW_CHAT_CHANGE,
     SOCKET_RECENT_CHANGE
@@ -59,11 +60,15 @@ events.on('socket:error', function () {
  */
 
 events.on('view:send:message', function (data) {
-    socket.sendMsg(data);
+    socket.sendMessage(data);
 });
 
 events.on('view:search:user', function (data) {
     socket.searchUser(data);
+});
+
+events.on('socket:search:user:back', function (data) {
+    store.commit(SOCKET_SEARCH_USER_CHANGE, data);
 });
 
 events.on('socket:receive:buddy', function (data) {
@@ -134,8 +139,8 @@ events.on('socket:receive:group', function (data) {
 //     }
 // });
 
-events.on('socket:receive:messagekey', function (key) {
-    store.commit(VIEW_CHAT_MSGKEY, key);
+events.on('socket:messagekey:back', function (data) {
+    store.commit(VIEW_CHAT_MSGKEY, data);
 });
 
 events.on('socket:receive:chat', function (data) {
@@ -173,7 +178,7 @@ events.on('socket:receive:recent', function (data) {
 });
 
 events.on('store:request:buddy', (data) => {
-    socket.getBuddyInfo(data);
+    socket.postUserInfo([data]);
 });
 
 events.on('store:request:group', (data) => {
@@ -181,5 +186,5 @@ events.on('store:request:group', (data) => {
 });
 
 events.on('store:request:history', (data) => {
-    socket.getHistory(data);
+    socket.postHistory(data);
 });

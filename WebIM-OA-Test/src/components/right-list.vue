@@ -24,7 +24,7 @@
             <span class="new" v-if="recent_new">{{ recent_new }}</span>
         </div>
         <ul class="rlist" v-show="open">
-            <li v-for="id in list" :key="id" @click="openWindow(id)" :class="{ cur: id === leftWindow.id && title === leftWindow.title }">
+            <li v-for="id in list" :key="id" @click="openWindow(id)" :class="{ cur: id === leftWindow.id && signame === leftWindow.signame }">
                 <a class="user-head">
                     <img :src="info[id].avatar || defaultAvatar" alt="id">
                 </a>

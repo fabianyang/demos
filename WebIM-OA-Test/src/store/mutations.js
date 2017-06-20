@@ -8,6 +8,8 @@ import {
     SOCKET_CHAT_CHANGE,
     SOCKET_NOTICE_CHANGE,
     SOCKET_RECENT_CHANGE,
+    SOCKET_SEARCH_USER_CHANGE,
+    VIEW_SEARCH_USER_CHANGE,
     VIEW_STATE_CHANGE,
     VIEW_INFO_CHANGE,
     VIEW_LEFT_OPEN,
@@ -61,6 +63,16 @@ let requestGroupInfo = (state, data) => {
     events.trigger('store:request:group', formatNotSyncInfo(data));
 };
 
+let addViewNoticeList = (state, viewName, id) => {
+    let list = state[viewName];
+    let i = list.length - 1;
+    while (i--) {
+        if (list[i] === id);
+        return;
+    }
+    state[viewName] = state[viewName].concat([id]);
+};
+
 export default {
     [SOCKET_COUNT_UP](state) {
         state.count++;
@@ -102,16 +114,25 @@ export default {
     [SOCKET_BUDDY_CHANGE](state, data) {
         let info = state.info_user;
         let fl = [], bl = [], o = {};
+
         data.forEach(function (v) {
             let id = v.id;
-            bl.push(id);
+            if (v.buddy) {
+                bl.push(id);
+            }
             if (info[id]) {
                 o[id] = Object.assign(info[id], v);
             } else {
                 o[id] = v;
             }
+
             if (v.follow) {
                 fl.push(v.id);
+            }
+
+            if (v.signame) {
+                state.leftWindow = Object.assign({}, v, state.leftWindow);
+                delete v.signame;
             }
         });
         state.view_book_buddy = state.view_book_buddy.concat(bl);
@@ -177,7 +198,7 @@ export default {
             if (!info) {
                 if (isGroup) {
                     requestGroupInfo(state, data);
-                    state.notice_group = state.notice_group.concat([data.id]);
+                    state.view_notice_group = state.view_notice_group.concat([data.id]);
                 } else {
                     requestBuddyInfo(state, data);
                     state.view_notice_single = state.view_notice_single.concat([data.id]);
@@ -216,7 +237,7 @@ export default {
         data.group.forEach((v) => {
             state.recent.notice += v.recent_new;
             recent_list[v.id] = v.recent_new;
-            state.notice_group = state.notice_group.concat([v.id]);
+            state.view_notice_group = state.view_notice_group.concat([v.id]);
             // 不必判断有无组信息，不成立组无法收到消息，同步完成信息，再同步未读消息。
             state.recent.book += v.recent_new;
         });
@@ -234,6 +255,31 @@ export default {
             }
         });
         state.recent.list = recent_list;
+    },
+    [SOCKET_SEARCH_USER_CHANGE](state, data) {
+        if (util.isArray(data)) {
+            let result = state.search.result;
+            if (data.length) {
+                state.search.result = result.concat(data);
+                if (data.length < 20) {
+                    state.search.info = 'nomore';
+                }
+            } else if (result.length) {
+                state.search.info = 'nomore';
+            } else {
+                state.search.info = 'none';
+            }
+        } else {
+            state.search.info = 'fail';
+        }
+        state.search.requesting = false;
+    },
+    [VIEW_SEARCH_USER_CHANGE](state, data) {
+        state.search.keyword = data.keyword || state.search.keyword;
+        state.search.result = data.result || state.search.result;
+        state.search.info = data.info || state.search.info;
+        state.search.keyword = data.keyword || state.search.keyword;
+        state.search.requesting = data.requesting || state.search.requesting;
     },
     [VIEW_STATE_CHANGE](state, params) {
         let key = params[0],
@@ -258,8 +304,6 @@ export default {
             nickname: opts.nickname || id,
             usergroup: [opts.buddy, opts.manager, opts.mate, opts.follow].filter((x) => x).join('_'),
             department: opts.department ? '(' + opts.department + ')' : '',
-            // right-list title 属性
-            title: opts.title,
             // 窗口类型：好友、群聊、关注。用于判断当前打开窗口。
             signame: opts.signame,
             // 群人员数量
@@ -283,18 +327,20 @@ export default {
         }
         // 非通知时，拉取信息！！！
         if (signame[2]) {
+            // 还需要获取信息条数和从第几条开始拉取
             events.trigger('store:request:history', {
                 id: id
             });
         }
     },
-    [VIEW_CHAT_MSGKEY](state, key) {
+    [VIEW_CHAT_MSGKEY](state, data) {
         let lists = state.message_lists,
-            id = state.leftWindow.id;
+            // 不适用 leftwindow.id 因为有可能返回结果已经切换窗口了
+            id = data.sendto;
         let list = lists[id];
         if (list) {
             for (let i = 0; i < list.length; i++) {
-                if (list[i].messagekey === key) {
+                if (list[i].messagekey === data.messagekey) {
                     list[i].messagestate = 1;
                     state.message_lists = Object.assign({}, lists, {
                         [id]: list
@@ -307,10 +353,16 @@ export default {
     [VIEW_CHAT_CHANGE](state, data) {
         let id = data.id;
         let lists = state.message_lists;
-
         let list = lists[id];
         if (!list) {
             list = lists[id] = [];
+            if (data.command.split('_')[0] === 'group') {
+                addViewNoticeList(state, 'view_notice_group', id);
+                // state.view_notice_group = state.view_notice_group.concat([id]);
+            } else {
+                addViewNoticeList(state, 'view_notice_single', id);
+                // state.view_notice_single = state.view_notice_single.concat([id]);
+            }
         }
         list.unshift(data);
         state.message_lists = Object.assign({}, lists, {

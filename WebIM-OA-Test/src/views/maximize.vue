@@ -5,12 +5,8 @@
         <!-- 左侧通知视图 -->
         <left-notice v-show="leftState === 'notice'"></left-notice>
 
-        <!-- 右侧通讯录视图 -->
-        <right-book v-show="rightState === 'book'"></right-book>
-        <!-- 右侧通讯录视图 -->
-        <right-notice v-show="rightState === 'notice'"></right-notice>
-        <!-- 右侧搜索视图 -->
-        <right-search v-show="rightState === 'search'"></right-search>
+        <!-- 右侧视图 -->
+        <right></right>
     </div>
 </template>
 
@@ -21,18 +17,14 @@ import { mapState, mapMutations } from 'vuex';
 import { VIEW_STATE_CHANGE } from '../store/mutation-types';
 import leftChat from './left-chat';
 import leftNotice from './left-notice';
-import rightBook from './right-book';
-import rightNotice from './right-notice';
-import rightSearch from './right-search';
+import right from './right';
 
 export default {
     name: 'max-im',
     components: {
         leftChat,
         leftNotice,
-        rightBook,
-        rightNotice,
-        rightSearch
+        right
     },
     computed: {
         ...mapState({

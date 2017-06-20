@@ -69,7 +69,7 @@ let eventRegister = {
     'socket:receive:manager': 1,
     'socket:receive:mate': 1,
     'socket:receive:group': 1,
-    'socket:receive:messagekey': 1,
+    'socket:messagekey:back': 1,
     'socket:receive:history': 1,
     'socket:open': 1,
     'socket:close': 1,
@@ -79,6 +79,7 @@ let eventRegister = {
     'socket:receive:recent': 1,
     'view:send:message': 1,
     'view:search:user': 1,
+    'socket:search:user:back': 1,
     'store:request:buddy': 1,
     'store:request:group': 1,
     'store:request:history': 1

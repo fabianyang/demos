@@ -1,7 +1,7 @@
 <template>
     <div class="fbconrtit clearfix">
         <div class="flol">
-            <input class="search" type="text" @input="search($event)" placeholder="搜索">
+            <input class="search" type="text" @input="search($event)" @focus="onFucus" @blur="onBlur($event)" placeholder="搜索">
         </div>
         <a class="flol close2" @click="stateChange(['app', 'min'])"></a>
     </div>
@@ -9,37 +9,57 @@
 
 <script>
 import events from '../events';
-import { mapMutations } from 'vuex';
-import { VIEW_STATE_CHANGE } from '../store/mutation-types';
+import { mapState, mapMutations } from 'vuex';
+import { VIEW_STATE_CHANGE, VIEW_SEARCH_USER_CHANGE } from '../store/mutation-types';
+
+let timer = null,
+    lastRightState = '';
 
 export default {
     name: 'right-title',
+    computed: mapState({
+        rightState: state => state.right
+    }),
     methods: {
         search(ev) {
             let keyword = ev.target.value;
-            if (!keyword) {
-                // 隐藏搜索界面
+            this.stateSearchChage({
+                result: [],
+                info: 'loading'
+            });
+            // 隐藏搜索界面
+            if (keyword) {
+                this.stateChange(['right', 'search']);
+            } else {
+                this.stateChange(['right', lastRightState])
+                return;
             }
-            if (this.timer) clearTimeout(this.timer);
+            if (timer) clearTimeout(timer);
             let that = this;
-            this.timer = setTimeout(() => {
-                if (keyword && keyword !== that.lastKeyword) {
-                    that.lastKeyword = keyword;
-                    events.trigger('view:search:user', {
-                        keyword: keyword
-                    });
-                }
+            timer = setTimeout(() => {
+                that.stateSearchChage({
+                    keyword: keyword
+                });
+                events.trigger('view:search:user', {
+                    keyword: keyword
+                });
             }, 1000);
         },
+        onBlur(ev) {
+            ev.target.value = '';
+            this.stateChange(['right', lastRightState]);
+        },
+        onFucus() {
+            lastRightState = this.rightState;
+        },
         ...mapMutations({
+            'stateSearchChage': VIEW_SEARCH_USER_CHANGE,
             'stateChange': VIEW_STATE_CHANGE // 映射 this.add() 为 this.$store.commit('increment')
         })
     },
     data() {
         return {
-            timer: null,
-            lastKeyword: '',
-            keyword: ''
+            lastRightState: ''
         }
     }
 }

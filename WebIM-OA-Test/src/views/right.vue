@@ -2,14 +2,24 @@
     <div class="fbconr">
         <!-- 搜索框组件 -->
         <right-title></right-title>
-        <div class="listcon">
+        <div class="listcon" v-if="rightState === 'notice'">
             <!-- 消息列表组件，会有多个 -->
             <right-list signame="im_notice" title="通知" v-if="notice.length" :list="notice" :info="info_user"></right-list>
             <right-list signame="im_notice_single" title="单聊" v-if="single.length" :list="single" :info="info_user">></right-list>
             <right-list signame="im_notice_group" title="群聊" v-if="group.length" :list="group" :info="info_group">></right-list>
         </div>
+        <div class="listcon" v-if="rightState === 'book'">
+            <!-- 消息列表组件，会有多个 -->
+            <right-list signame="im_book_buddy" title="好友" v-if="list_buddy.length" :list="list_buddy" :info="info_user"></right-list>
+            <right-list signame="im_book_group" title="群聊" v-if="list_group.length" :list="list_group" :info="info_group"></right-list>
+            <right-list signame="im_book_manager" title="直接上下级" v-if="list_manager.length" :list="list_manager" :info="info_user"></right-list>
+            <right-list signame="im_book_mate" title="部门同事" v-if="list_mate.length" :list="list_mate" :info="info_user"></right-list>
+            <right-list signame="im_book_follow" title="特别关注" v-if="follow.length" :list="follow" :info="info_user"></right-list>
+        </div>
+        <!-- 搜索结果组件 -->
+        <right-search-result v-if="rightState === 'search'"></right-search-result>
         <!-- 右下角搜索和通讯录切换面板 -->
-        <right-switch></right-switch>
+        <right-switch v-show="rightState !== 'search'"></right-switch>
     </div>
 </template>
 
@@ -18,28 +28,30 @@
     import rightTitle from '../components/right-title';
     import rightList from '../components/right-list';
     import rightSwitch from '../components/right-switch';
+    import rightSearchResult from '../components/right-search-result';
 
     export default {
         name: 'right-notice',
         components: {
             rightTitle,
             rightList,
-            rightSwitch
+            rightSwitch,
+            rightSearchResult
         },
         computed: mapState({
             // 箭头函数可使代码更简练
+            rightState: state => state.right,
             single: state => state.view_notice_single,
             group: state => state.view_notice_group,
-            info_user: state => state.info_user,
-            info_group: state => state.info_group,
             notice: state => state.view_notice,
-        }),
-        data() {
-            return {
-                info_notice: {},
-                msg: 'Welcome to Your Vue.js App'
-            }
-        }
+            list_buddy: state => state.view_book_buddy,
+            list_manager: state => state.view_book_manager,
+            list_mate: state => state.view_book_mate,
+            list_group: state => state.view_book_group,
+            follow: state => state.view_book_follow,
+            info_user: state => state.info_user,
+            info_group: state => state.info_group
+        })
     }
 </script>
 

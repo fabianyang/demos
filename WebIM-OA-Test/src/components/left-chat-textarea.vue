@@ -82,14 +82,15 @@ export default {
                     message = this.picture
                 }
                 let date = new Date();
+                let signame = this.leftWindow.signame.split('_');
                 let msg = {
                     // 进行 msgList 信息列表区分。 VIEW_CHAT_CHANGE 使用
                     id: this.leftWindow.id,
                     // 发送消息 id oa:125460 群没有 oa 前缀
-                    sendto: this.leftWindow.username,
+                    sendto: this.leftWindow.id,
                     message: message,
                     // 消息类型，是否为群聊，目前 group: 群聊天, 其他: 单聊
-                    command: this.leftWindow.isGroup ? 'group_' + cmd : cmd,
+                    command: signame[2] === 'group' ? 'group_' + cmd : cmd,
                     // 消息是否发送完成
                     messagestate: 0,
                     messagekey: util.guid(),
@@ -98,7 +99,6 @@ export default {
                 }
 
                 this.viewChatMsg(msg);
-                debugger;
                 events.trigger('view:send:message', msg);
 
                 this.clear(cmd);

@@ -18,6 +18,13 @@ export default new Vuex.Store({
         left: 'close',
         // right - 右侧窗口状态
         right: 'notice',
+        // search - 是否正在搜索
+        search: {
+            result: [],
+            info: 'loading',
+            keyword: '',
+            requesting: false
+        },
         // leftWindow - 聊天窗口信息
         leftWindow: {},
         // 对话消息列表，以 id 为 key

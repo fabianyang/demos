@@ -1,6 +1,6 @@
 <template>
     <div class="fbconltit">
-        <span>{{ leftWindow.nickname + (leftWindow.usergroup ? leftWindow.department : leftWindow.number)}}</span>
+        <span>{{ leftWindow.nickname + (leftWindow.department || leftWindow.number)}}</span>
         <a class="flor grey" v-text="leftWindow.email" v-show="leftWindow.email">yangqing.bj@fang.com</a>
         <a class="close" @click="stateChange(['left', 'close'])"></a>
     </div>

@@ -32,7 +32,7 @@ export default {
     // OA天下聊批量获取用户详情接口
     getLotUserDetail(names) {
         return axios({
-            url: setting.LONGPOLLING_SERVER,
+            url: setting.LONGPOLLING_CI,
             method: 'post',
             data: util.queryStringify({
                 clienttype: config.clienttype,
@@ -52,7 +52,7 @@ export default {
     // OA天下聊获取上下级关系接口
     myManagerAndSubordinate() {
         return axios({
-            url: setting.LONGPOLLING_SERVER,
+            url: setting.LONGPOLLING_CI,
             method: 'post',
             data: util.queryStringify({
                 clienttype: config.clienttype,
@@ -70,7 +70,7 @@ export default {
 
     mySubordinate() {
         return axios({
-            url: setting.LONGPOLLING_SERVER,
+            url: setting.LONGPOLLING_CI,
             method: 'post',
             data: util.queryStringify({
                 clienttype: config.clienttype,
@@ -87,13 +87,14 @@ export default {
     },
 
     getChatMsgHistory(params) {
+        let command = params.sendto.split(':')[0] === 'oa' ? 'getChatMsgHistory' : 'getGroupChatMsgHistory';
         // 空值 sign 和 data 都不要传
         let key = md5(config.username + 'soufunchat').toUpperCase();
-        let sign = 'command=getChatMsgHistoryfrom=' + config.username + 'sendto=' + params.sendto + key + config.key;
+        let sign = 'command=' + command + 'from=' + config.username + 'sendto=' + params.sendto + key + config.key;
         console.log(sign);
 
         return axios({
-            url: setting.HTTP_SERVER,
+            url: setting.HTTP_CI,
             method: 'post',
             data: util.queryStringify({
                 im_username: config.username,
@@ -104,7 +105,7 @@ export default {
                 // messageid: params.messageid || '',
                 // filter: '', // 过滤条件
 
-                command: 'getChatMsgHistory',
+                command: command,
                 sign: md5(sign)
             })
         }).catch(function (error) {
@@ -114,7 +115,7 @@ export default {
 
     fuzzyQuery(opts) {
         return axios({
-            url: setting.LONGPOLLING_SERVER,
+            url: setting.LONGPOLLING_CI,
             method: 'post',
             data: util.queryStringify({
                 clienttype: config.clienttype,
