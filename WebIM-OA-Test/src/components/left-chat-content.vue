@@ -1,14 +1,18 @@
 <template>
     <!-- 所有聊天内容都放在 replybox 中，发送中添加active，失败添加fail -->
-    <ul id="im_content">
+    <ul @mousewheel="onMousewheel($event)">
+        <li class="load" v-show="historyContainerState === 'loading'"></li>
+        <li class="nomore" v-show="historyContainerOpen && history_nomore && historyContainerState !== 'loading'">没有更多了</li>
+        <li class="nomore" v-show="historyContainerOpen && !history_nomore && historyContainerState !== 'loading'">以下为历史记录</li>
+        <li class="nomore" v-show="list.length && historyContainerRequested && !historyContainerOpen && historyContainerState !== 'loading'">更多请查看历史记录</li>
         <template v-for="(item, index) in list">
             <li class="time" v-text="item.messagetime" v-if="showTimeStamp(index)">2017-03-10 10:30</li>
-            <li :class="{ even: item.sendto !== username, odd: item.sendto === username }">
+            <li :class="{ even: item.from === username, odd: item.from !== username }">
                 <a class="user">
                     <img :src="getavatar(item)">
                 </a>
-                <div class="replybox" :class="{ group: isGroup(item.command), active: item.sendto !== username && item.messagestate === 0 }">
-                    <p class="name" v-text="getNickname" v-if="isGroup(item.command)">Nickname</p>
+                <div class="replybox" :class="{ group: isGroup, active: item.sendto !== username && item.messagestate === 0 }">
+                    <p class="name" v-text="getNickname(item)" v-if="isGroup">Nickname</p>
                     <!-- 文字内容 replycontent; 群聊中添加姓名 replybox 添加类名 group -->
                     <div class="replycontent" :data-time="item.messagetime" v-if="item.command === 'chat' || item.command === 'group_chat'" v-html="pack_msg(item.message)">Message</div>
                     <!-- yangfan: 语音内容 -->
@@ -85,16 +89,23 @@
                 </div>
             </li>
         </template>
-        <!--
-                <li class="load"></li>
-                <li class="nomore">没有更多了</li>
-            -->
     </ul>
 </template>
 
 <script>
-import setting from '../setting'
-import { mapState, mapGetters } from 'vuex';
+import events from '../events';
+import setting from '../setting';
+import { mapState, mapGetters, mapMutations } from 'vuex';
+import {VIEW_TOGGLE_HISTORY} from '../store/mutation-types';
+let timer = null;
+let lock = false;
+
+let config = window.FangChat.config;
+let defaultAvatar = window.FangChat.data.defaultAvatar;
+/**
+ * getAvatar() getNickname 基本都会执行 2 遍，一遍发送刷新视图，一遍返回发送状态刷新视图
+ **/
+
 export default {
     name: 'left-chat-content',
     watch: {
@@ -103,16 +114,36 @@ export default {
                 // var container = this.$el.querySelector("#im_content");
                 let container = this.$el;
                 // console.log(container);
-                container.scrollTop = container.scrollHeight;
+                if (this.historyContainerOpen) {
+                    container.scrollTop = 0;
+                } else {
+                    container.scrollTop = container.scrollHeight;
+                }
             })
         }
     },
     computed: {
+        list() {
+            if (this.historyContainerOpen) {
+                return this.history_list;
+            } else {
+                return this.message_list;
+            }
+        },
+        isGroup() {
+            return this.leftWindow.signame.split('_')[2] === 'group';
+        },
         ...mapGetters({
-            list: 'message_list'
+            message_list: 'message_list',
+            history_list: 'history_list',
+            history_nomore: 'history_nomore'
         }),
         ...mapState({
-            leftWindow: state => state.leftWindow
+            leftWindow: state => state.leftWindow,
+            historyContainerOpen: state => state.historyContainer.open,
+            historyContainerState: state => state.historyContainer.loadState,
+            historyContainerRequested: state => state.historyContainer.requested,
+            user_info: state => state.user_info
         })
     },
     methods: {
@@ -128,9 +159,6 @@ export default {
                 }
             }
         },
-        isGroup(command) {
-            return command.split('_')[0] === 'group';
-        },
         getFilePic(extension) {
             // Word—— .doc，.docx
             // EXCEL—— .xls，.xlsx
@@ -141,34 +169,83 @@ export default {
             return this.png[key] || this.png['i'];
         },
         getavatar(item) {
-            let avatar = this.leftWindow.avatar || this.defaultAvatar;
-            if (this.isGroup(item.command)) {
-                // 还未做：群聊时头像不能仅仅通过 leftWindow 获取
-                avatar = this.defaultAvatar;
+            let from = item.from;
+            if (from === this.username) {
+                return config.avatar;
             }
-            // 如果是本人发出的消息
-            if (item.sendto !== this.username) {
-                avatar = this.avatar;
+            let info = this.user_info[from];
+            if (info) {
+                return info.avatar || defaultAvatar;
             }
-            return avatar;
         },
         getNickname(item) {
-            let nickname = this.leftWindow.nickname;
-            if (this.isGroup(item.command)) {
-                // 还未做：群聊时头像不能仅仅通过 leftWindow 获取
-                nickname = '未请求';
+            let from = item.from;
+            if (from === this.username) {
+                return config.nickname;
             }
-            if (item.sendto !== this.username) {
-                nickname = this.nickname
+            let info = this.user_info[from];
+            if (info) {
+                return info.nickname || 'fang.com';
             }
-            return nickname;
         },
         pack_msg(msg) {
             // 把对应的表情字符转换成表情src
             return msg.replace(/\[([^\]]*)\]/g, function () {
                 return '<img src="' + setting.EMOJI.path + setting.EMOJI.map[arguments[1]] + '" width="24" border="0" style="vertical-align: bottom;" />'
             });
-        }
+        },
+        onMousewheel(e) {
+            if (!this.list.length || lock) {
+               return;
+            }
+            lock = true;
+            setTimeout(() => {
+                lock = false;
+            }, 1000);
+            clearTimeout(timer);
+            let wheelup = false;
+            if (e.wheelDelta) {  //判断浏览器IE，谷歌滑轮事件
+                if (e.wheelDelta > 0) { //当滑轮向上滚动时
+                    wheelup = true;
+                }
+                if (e.wheelDelta < 0) { //当滑轮向下滚动时
+                    wheelup = false;
+                }
+            } else if (e.detail) {  //Firefox滑轮事件
+                if (e.detail> 0) { //当滑轮向上滚动时
+                    wheelup = true;
+                }
+                if (e.detail< 0) { //当滑轮向下滚动时
+                    wheelup = false;
+                }
+            }
+
+            let that = this;
+            let request = (exec) => {
+                timer = setTimeout(() => {
+                    events.trigger('store:request:history', {
+                        id: that.leftWindow.id,
+                        messageid: that.list[0].messageid,
+                        fn: 'p',
+                        exec: exec
+                    });
+                }, 1000);
+            }
+            if (this.historyContainerOpen) {
+                if (wheelup && !this.history_nomore) {
+                    this.toggleHistory('loading');
+                    request('more_history');
+                }
+            } else {
+                if (wheelup && !this.historyContainerRequested) {
+                    this.toggleHistory('loading');
+                    request('more_recent');
+                }
+            }
+        },
+        ...mapMutations({
+            'toggleHistory': VIEW_TOGGLE_HISTORY
+        })
     },
     data() {
         return {
@@ -180,10 +257,8 @@ export default {
                 txt: require('../assets/images/file-txt.png'),
                 i: require('../assets/images/file-wenzi.png')
             },
-            defaultAvatar: window.FangChat.data.defaultAvatar,
-            username: window.FangChat.config.username,
-            nickname: window.FangChat.config.nickname,
-            avatar: window.FangChat.data.defaultAvatar
+            requested: false,
+            username: config.username
         }
     }
 }

@@ -6,10 +6,10 @@
             <div class="bq" @click="emoji_show = !emoji_show"></div>
             <div class="tp">
                 <form method="Post" enctype="multipart/form-data" :action="upload_url" :target="upload_iframe_name">
-                    <input type="file" title="发送图片" v-if="update_state !== 'success' && update_state !== 'fail'" :name="upload_input_name" @change="upload_image" />
+                    <input type="file" title="发送图片" v-if="upload_state !== 'success' && upload_state !== 'fail'" :name="upload_input_name" @change="upload_image" />
                 </form>
             </div>
-            <div class="jl"></div>
+            <div class="jl" @click="getHistory()"></div>
             <!-- 表情 默认隐藏 显示添加 show , yangfan: img 添加个 a 标签-->
             <div class="bqbox" v-show="emoji_show">
                 <div class="bqcon">
@@ -21,18 +21,18 @@
         </div>
         <!-- 输入内容组件 -->
         <div class="textarea">
-            <!--<textarea v-show="!update_state" name="" cols="" rows="" placeholder="点击这里开始交流，按 Ctrl+Enter 发送信息" @paste="upload_image" @keyup="send('chat', $event)" v-model="message"></textarea>-->
+            <!--<textarea v-show="!upload_state" name="" cols="" rows="" placeholder="点击这里开始交流，按 Ctrl+Enter 发送信息" @paste="upload_image" @keyup="send('chat', $event)" v-model="message"></textarea>-->
             <!-- yangfan:实验结果，不能只使用 blur save_caret_position 会位置为 0，需要 click 或 keyup 时都记录一下光标位置。插入表情 -->
-            <div class='im_chatarea' contenteditable='true' v-show="!update_state" @paste="upload_image" @keydown.enter="send('chat', $event)" @click="save_caret_position" @keyup="save_caret_position"></div>
+            <div class='im_chatarea' contenteditable='true' v-show="!upload_state" @paste="upload_image" @keydown.enter="send('chat', $event)" @click="save_caret_position" @keyup="save_caret_position"></div>
             <!-- 上传状态 默认隐藏 显示添加 show -->
-            <p class="upload" v-show="update_state === 'loading'">图片上传中，请稍后...</p>
-            <p class="upload success" v-show="update_state === 'success'">图片上传成功，
+            <p class="upload" v-show="upload_state === 'loading'">图片上传中，请稍后...</p>
+            <p class="upload success" v-show="upload_state === 'success'">图片上传成功，
                 <a :href="picture" target="_blank">查看</a>
                 <a @click="send('img')">发送</a>
                 <a @click="clear('img')">删除</a>
             </p>
-            <p class="upload fail" v-show="update_state === 'fail'">图片上传失败，请稍后上传</p>
-            <iframe v-if="update_state !== 'success' && update_state !== 'fail'" :name="upload_iframe_name" width="0" height="0" scrolling="no" frameBorder="0" style="visibility: hidden;"></iframe>
+            <p class="upload fail" v-show="upload_state === 'fail'">图片上传失败，请稍后上传</p>
+            <iframe v-if="upload_state !== 'success' && upload_state !== 'fail'" :name="upload_iframe_name" width="0" height="0" scrolling="no" frameBorder="0" style="visibility: hidden;"></iframe>
         </div>
     </div>
 </template>
@@ -42,8 +42,10 @@ import api from '../socket/http'
 import setting from '../setting';
 import events from '../events';
 import util from '../util';
-import { mapState, mapMutations } from 'vuex';
-import { VIEW_CHAT_CHANGE } from '../store/mutation-types';
+import { mapState, mapMutations, mapGetters } from 'vuex';
+import { VIEW_CHAT_CHANGE,VIEW_LEFT_OPEN, VIEW_TOGGLE_HISTORY } from '../store/mutation-types';
+
+let config = window.FangChat.config;
 
 export default {
     name: 'left-chat-textarea',
@@ -59,59 +61,61 @@ export default {
             var sid = Math.round(Math.random() * 100);
             return setting.UPLOAD_IMG_PATH + '&sid=' + sid + '&backurl=' + backurl;
         },
+        ...mapGetters({
+            message_list: 'message_list',
+            history_list: 'history_list'
+        }),
         ...mapState({
             leftWindow: state => state.leftWindow
         }),
     },
     methods: {
-        send(cmd, event = { ctrlKey: true, keyCode: 13, preventDefault() { } }) {
+        send(cmd, event = { ctrlKey: true, preventDefault() { } }) {
             event.preventDefault();
-            if (event.ctrlKey && event.keyCode == 13) {
-
-                if (cmd === 'img' && !this.picture) {
-                    return;
-                }
-
-                let message = this.el_textarea.innerText;
-                console.log(message);
-                if (cmd === 'chat' && !message) {
-                    return;
-                }
-
-                if (cmd === 'img') {
-                    message = this.picture
-                }
-                let date = new Date();
-                let signame = this.leftWindow.signame.split('_');
-                let msg = {
-                    // 进行 msgList 信息列表区分。 VIEW_CHAT_CHANGE 使用
-                    id: this.leftWindow.id,
-                    // 发送消息 id oa:125460 群没有 oa 前缀
-                    sendto: this.leftWindow.id,
-                    message: message,
-                    // 消息类型，是否为群聊，目前 group: 群聊天, 其他: 单聊
-                    command: signame[2] === 'group' ? 'group_' + cmd : cmd,
-                    // 消息是否发送完成
-                    messagestate: 0,
-                    messagekey: util.guid(),
-                    messagetime: util.dateFormat(date),
-                    time: date.getTime()
-                }
-
-                this.viewChatMsg(msg);
-                events.trigger('view:send:message', msg);
-
-                this.clear(cmd);
+            if (cmd === 'img' && !this.picture) {
+                return;
             }
+
+            let message = this.el_textarea.innerText;
+            console.log(message);
+            if (cmd === 'chat' && !message) {
+                return;
+            }
+
+            if (cmd === 'img') {
+                message = this.picture
+            }
+            let date = new Date();
+            let signame = this.leftWindow.signame.split('_');
+            let msg = {
+                // 进行 msgList 信息列表区分。 VIEW_CHAT_CHANGE 使用
+                id: this.leftWindow.id,
+                from: config.username,
+                // 发送消息 id oa:125460 群没有 oa 前缀
+                sendto: this.leftWindow.id,
+                message: message,
+                // 消息类型，是否为群聊，目前 group: 群聊天, 其他: 单聊
+                command: signame[2] === 'group' ? 'group_' + cmd : cmd,
+                // 消息是否发送完成
+                messagestate: 0,
+                messagekey: util.guid(),
+                messagetime: util.dateFormat(date),
+                time: date.getTime()
+            }
+
+            this.viewChatMsg(msg);
+            events.trigger('view:send:message', msg);
+
+            this.clear(cmd);
         },
         clear(type) {
             if (type === 'img') {
-                this.update_state = '';
+                this.upload_state = '';
                 this.picture = '';
                 this.sid = Math.round(Math.random() * 10000);
             }
             if (type === 'chat') {
-                this.message = '';
+                this.el_textarea.innerText = '';
             }
         },
         upload_image: function (ev) {
@@ -173,7 +177,7 @@ export default {
                     return
                 }
 
-                this.update_state = 'loading';
+                this.upload_state = 'loading';
                 this.$el.querySelector('form').submit();
             }
         },
@@ -259,8 +263,29 @@ export default {
                 this.emoji_show = false;
             }
         },
+        getHistory() {
+            if (!this.historyContainerOpen) {
+                if (!this.history_list.length) {
+                    this.toggleHistory('loading');
+                    let messageid = '';
+                    if (this.message_list[0]) {
+                        messageid = this.message_list[0].messageid;
+                    }
+                    events.trigger('store:request:history', {
+                        id: this.leftWindow.id,
+                        messageid: messageid,
+                        fn: 'p',
+                        exec: 'more_history'
+                    });
+                }
+                this.toggleHistory();
+            } else {
+                this.toggleHistory();
+            }
+        },
         ...mapMutations({
-            'viewChatMsg': VIEW_CHAT_CHANGE
+            'viewChatMsg': VIEW_CHAT_CHANGE,
+            'toggleHistory': VIEW_TOGGLE_HISTORY
         })
     },
     data() {
@@ -270,10 +295,11 @@ export default {
             emoji_show: false,
             emoji_path: setting.EMOJI.path,
             emoji_map: setting.EMOJI.map,
-            message: '',
+            // 用原生获取，不进行双向绑定，插入表情或普通输入有影响
+            // message: '',
             picture: '',
             sid: Math.round(Math.random() * 10000),
-            update_state: ''
+            upload_state: ''
         }
     },
     created() {
@@ -285,12 +311,12 @@ export default {
         window.FangChat.picUploadComplete = (data) => {
             clearTimeout(timer);
             if (!data) {
-                that.update_state = 'fail';
+                that.upload_state = 'fail';
                 timer = setTimeout(() => {
                     that.clear('image');
                 }, 2000);
             } else {
-                that.update_state = 'success';
+                that.upload_state = 'success';
                 that.picture = data;
                 // that.showTip('图片上传成功，请发送。 <a href="' + data + '" target="_blank" data-id="look">\u67e5\u770b</a> <a href="javascript:;" data-id="del">\u5220\u9664</a>');// \u56fe\u7247\u4e0a\u4f20\u6210\u529f\uff0c\u8bf7\u53d1\u9001\u3002
             }

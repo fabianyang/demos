@@ -21,34 +21,40 @@
     <div class="connect" :class="klass">
         <span class="icon"></span>
         <span v-text="text">已离线</span>
-        <a title="close" v-show="info === 'close'">重新登陆</a>
+        <a title="close" v-show="socket_state === 'close'" @click="reconnect">重新登陆</a>
     </div>
 </template>
 
 <script>
+    import events from '../events';
     import { mapState } from 'vuex';
     export default {
         name: 'information',
         computed: {
             text() {
-                let text = {
+                return {
                     connecting: '正在连接服务器...',
+                    syncing: '正在同步信息...',
                     open: '已连接成功',
                     close: '已离线',
-                    error: '连接服务器失败',
-                }[this.info];
-                return text || this.info;
+                    error: '连接服务器失败'
+                }[this.socket_state];
             },
             klass() {
                 return {
-                    'success': this.info === 'open',
-                    'refresh': this.info === 'close',
-                    'fail': this.info === 'error'
-                }
+                    open: 'success',
+                    close: 'refresh',
+                    error: 'fail'
+                }[this.socket_state] || '';
             },
             ...mapState({
-                info: state => state.info
+                socket_state: state => state.socket_state
             })
+        },
+        methods: {
+            reconnect() {
+                events.trigger('view:reconnect:socket');
+            }
         },
         data() {
             return {

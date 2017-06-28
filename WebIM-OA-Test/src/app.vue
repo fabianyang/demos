@@ -4,9 +4,9 @@
         <!-- 窗口最大化 -->
         <max-view v-show="appState === 'max'"></max-view>
         <!-- 窗口最小化 -->
-        <min-view v-show="!info && appState === 'min'"></min-view>
+        <min-view v-show="!socket_state && appState === 'min'"></min-view>
         <!-- 消息通知 -->
-        <info-view v-show="info"></info-view>
+        <info-view v-show="socket_state"></info-view>
     </div>
 </template>
 
@@ -28,7 +28,7 @@ export default {
     computed: mapState({
         // 箭头函数可使代码更简练
         appState: state => state.app,
-        info: state => state.info
+        socket_state: state => state.socket_state
     })
 }
 </script>

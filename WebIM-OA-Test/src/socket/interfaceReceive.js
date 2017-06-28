@@ -1,4 +1,5 @@
 import events from '../events';
+import util from '../util';
 
 let formatReceiveJSON = (json) => {
     // group 类型发送的是群 id, 个人是 oa:id
@@ -9,15 +10,20 @@ let formatReceiveJSON = (json) => {
     //         console.log('is send to: ' + json.sendto);
     //     }
     // }
-
+    let messagetime = json.messagetime || util.dateFormat(new Date());
+    let time = new Date(messagetime).getTime();
     return {
         // 进行 msgList 信息列表区分。 VIEW_CHAT_CHANGE 使用
-        id: json.from,
+        id: json.from || json.form,
+        from: json.from || json.form,
         nickname: json.nickname,
         // 发送消息 id oa:125460 群没有 oa 前缀
         sendto: json.sendto,
         command: json.command,
-        time: new Date(json.sendtime).getTime()
+        messageid: json.messageid,
+        messagekey: json.messagekey,
+        messagetime: messagetime,
+        time: time
     };
 };
 
@@ -32,24 +38,7 @@ let isJSON = (str) => {
 };
 
 class InterfaceReceive {
-    constructor() {}
-    receiveRecentMessageCount(buddy, group) {
-        events.trigger('socket:receive:recent', {
-            buddy: buddy.map((v) => {
-                return {
-                    id: v.id,
-                    nickname: v.name,
-                    recent_new: +v.messageCount
-                };
-            }),
-            group: group.map((v) => {
-                return {
-                    id: v.id,
-                    nickname: v.name,
-                    recent_new: +v.messageCount
-                };
-            })
-        });
+    constructor() {
     }
 
     // 文字通知的
@@ -69,8 +58,6 @@ class InterfaceReceive {
         }
         msg = Object.assign(msg, {
             purpose: json.purpose,
-            // 通知时间
-            messagetime: json.messagetime,
             // 通知标题
             housetitle: json.housetitle,
             // 收件人
@@ -92,8 +79,6 @@ class InterfaceReceive {
 
         msg = Object.assign(msg, {
             purpose: json.purpose,
-            // 通知时间
-            messagetime: json.messagetime,
             // 通知标题
             housetitle: json.housetitle,
             // 收件人
@@ -201,15 +186,20 @@ class InterfaceReceive {
     }
 
     socket_error() {
-        setTimeout(() => {
-            events.trigger('socket:error');
-        }, 1000);
+        events.trigger('socket:state:change', 'error');
     }
 
     socket_close() {
-        setTimeout(() => {
-            events.trigger('socket:close');
-        }, 1000);
+        events.trigger('socket:state:change', 'close');
+    }
+
+    imei() {
+        let imei = util.getCookie('fang_oaim_imei');
+        if (!imei) {
+            imei = util.imei_guid();
+            util.setCookie('fang_oaim_imei', this.imei, 30);
+        }
+        return imei;
     }
 }
 

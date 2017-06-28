@@ -36,25 +36,40 @@ let PromiseResolve = {};
 class WS extends InterfaceReceive {
     constructor() {
         super();
+        this.imei = super.imei();
     }
 
     // 这里应该可以传参重新初始化
-    login() {
+    login(data) {
         return new Promise((resolve, reject) => {
+            let params = {
+                command: 'login',
+                username: config.username,
+                nickname: config.nickname,
+                agentid: config.agentid,
+                clienttype: config.clienttype,
+                usertype: config.usertype,
+                os: config.os,
+                imei: this.imei
+            };
+            if (data) {
+                params = Object.assign(params, data);
+            }
+
             try {
-                let ws = this.ws = new WebSocket(setting.WEBSOCKET_CHAT + '?' + util.queryStringify(config));
+                let ws = this.ws = new WebSocket(setting.WEBSOCKET_CHAT + '?' + util.queryStringify(params));
 
                 ws.addEventListener('open', (event) => {
-                    resolve({
-                        data: event.type
-                    });
+                    resolve();
                     // 开启心跳
-                    // this.heart();
+                    setInterval(() => {
+                        ws.send('t');
+                    }, 80 * 1000);
                 });
 
                 this.initMessageEvent();
 
-                ws.addEventListener('error', () => {
+                ws.addEventListener('error', (event) => {
                     super.socket_error();
                 });
 
@@ -74,7 +89,7 @@ class WS extends InterfaceReceive {
     initMessageEvent() {
         let that = this;
         this.ws.addEventListener('message', (msg) => {
-            // 拿到心跳信息
+            // 拿到心跳信息。此项目每 80 秒发送一个 t 字符串保持连接即可，不会返回信息。
             // this.heart()
             // console.log(msg.data);
             // console.log(msg);
@@ -102,7 +117,6 @@ class WS extends InterfaceReceive {
                             buddy: json.recentcontacts,
                             group: json.recentgroups
                         });
-                        // that.receiveRecentMessageCount(json.recentcontacts, json.recentgroups);
                         break;
                     case 'notice':
                         // purpose = 'tongzhi'; // 用于测试，写死
@@ -257,9 +271,8 @@ class WS extends InterfaceReceive {
                 form: config.username,
                 clienttype: config.clienttype,
                 type: config.usertype,
-                synctime: 1497408366000
+                synctime: time - 1000
             };
-            if (time) msg.synctime = time;
             this.send(msg);
             let key = 'getmessagecountbytime_ret';
             // 不推荐这样用，https://stackoverflow.com/questions/26150232/resolve-javascript-promise-outside-function-scope

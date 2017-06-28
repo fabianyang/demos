@@ -86,28 +86,46 @@ export default {
         });
     },
 
-    getChatMsgHistory(params) {
-        let command = params.sendto.split(':')[0] === 'oa' ? 'getChatMsgHistory' : 'getGroupChatMsgHistory';
+    getChatMsgHistory(data) {
+        let publicKey = 'Key_oa_2015-09-24 10:21:00Thu';
+        let command = data.sendto.split(':')[0] === 'oa' ? 'getChatMsgHistory' : 'getGroupChatMsgHistory';
         // 空值 sign 和 data 都不要传
-        let key = md5(config.username + 'soufunchat').toUpperCase();
-        let sign = 'command=' + command + 'from=' + config.username + 'sendto=' + params.sendto + key + config.key;
+        let secretKey = md5(config.username + 'soufunchat').toUpperCase();
+
+        let sign = [
+            'command=' + command,
+            data.fn ? 'fn=' + data.fn : '',
+            'from=' + config.username,
+            data.messageid ? 'messageid=' + data.messageid : '',
+            data.pageSize ? 'pageSize=' + data.pageSize : '',
+            'sendto=' + data.sendto,
+            secretKey + publicKey
+        ].join('');
         console.log(sign);
+
+        let params = {
+            im_username: config.username,
+            from: config.username,
+            sendto: data.sendto,
+            // filter: '',  // 过滤条件
+            command: command,
+            sign: md5(sign)
+        };
+        if (data.fn) {
+            // n(下一页) 或p(上一页);为空，则默认上一页。 如 fn=p ：表示获取上一页
+            params.fn = data.fn;
+        }
+        if (data.messageid) {
+            params.messageid = data.messageid;
+        }
+        if (data.pageSize) {
+            params.pageSize = data.pageSize;
+        }
 
         return axios({
             url: setting.HTTP_CI,
             method: 'post',
-            data: util.queryStringify({
-                im_username: config.username,
-                from: config.username,
-                sendto: params.sendto,
-                // fn: params.fn,   // n(下一页) 或p(上一页);为空，则默认上一页。 如 fn=p ：表示获取上一页
-                // pageSize: params.pageSize,   // 默认20
-                // messageid: params.messageid || '',
-                // filter: '', // 过滤条件
-
-                command: command,
-                sign: md5(sign)
-            })
+            data: util.queryStringify(params)
         }).catch(function (error) {
             console.log(error);
         });

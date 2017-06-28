@@ -1,6 +1,6 @@
 class Util {
     constructor() {}
-    static addCookie(name, value, iDay) {
+    static setCookie(name, value, iDay) {
         if (iDay) {
             let oDate = new Date();
             oDate.setDate(oDate.getDate() + iDay);
@@ -65,12 +65,24 @@ class Util {
         });
     }
 
+    static imei_guid() {
+        var i = 0;
+        var result = '';
+        var pattern = '0123456789abcdef';
+        for (i = 0; i < 8; i++) {
+            result += pattern.charAt(Math.round(Math.random() * 15));
+        }
+        var time = new Date().getTime();
+        result += ('00000000' + time.toString(16).toLocaleLowerCase()).substr(-8);
+        return result;
+    }
+
     static isArray(a) {
         return Array.isArray ? Array.isArray(a) : Object.prototype.toString.call(a) === '[object Array]';
     }
 
     static delCookie(name) {
-        Util.addCookie(name, 1, -1);
+        Util.setCookie(name, 1, -1);
     }
 
     static dateFormat(date, fmt = 'yyyy-MM-dd hh:mm:ss') {

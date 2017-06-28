@@ -25,6 +25,7 @@ let closeGroupInfo = (count, resolve) => {
 class LongPolling extends InterfaceReceive {
     constructor() {
         super();
+        this.imei = this.imei();
     }
 
     // 与 websocket 请求方式不同的需要提出
@@ -75,7 +76,7 @@ class LongPolling extends InterfaceReceive {
     socketSendMessage(message) {
         return new Promise((resolve, reject) => {
             this.sendMessage(message).then((data) => {
-                if (data.message === 'ok') {
+                if (data.status === 200) {
                     resolve({
                         messagekey: message.messagekey,
                         sendto: message.sendto
@@ -90,9 +91,10 @@ class LongPolling extends InterfaceReceive {
     // chat/img
     sendMessage(data) {
         return axios({
-            url: setting.LONGPOLLING_CI,
+            url: setting.LONGPOLLING_CHAT,
             method: 'post',
             data: util.queryStringify({
+                username: config.username,
                 from: config.username,
                 sendto: data.sendto,
                 clienttype: config.clienttype,
@@ -101,7 +103,7 @@ class LongPolling extends InterfaceReceive {
                 command: data.command,
                 nickname: config.nickname,
                 city: config.city,
-                imei: config.imei
+                imei: this.imei
             })
         }).catch(function (error) {
             console.log(error);
@@ -122,17 +124,15 @@ class LongPolling extends InterfaceReceive {
                     agentid: config.agentid,
                     city: config.city,
                     os: config.os,
-                    imei: config.imei,
+                    imei: this.imei,
                     command: command
                 })
             }).then((data) => {
                 if (data.status === 200) {
-                    this.request(util.guid());
-                    // this.polling = setInterval(() => {
-                    //     debugger;
-                    //     this.request(util.guid());
-                    // }, 30 * 1000);
-                    resolve(data);
+                    this.polling = setInterval(() => {
+                        this.request(util.guid());
+                    }, 30 * 1000);
+                    resolve();
                 }
             });
         });
@@ -150,7 +150,7 @@ class LongPolling extends InterfaceReceive {
                 agentid: config.agentid,
                 city: config.city,
                 os: config.os,
-                imei: config.imei,
+                imei: this.imei,
                 requestid: requestid,
                 command: 'request'
             })
@@ -223,7 +223,7 @@ class LongPolling extends InterfaceReceive {
                 type: config.usertype,
                 username: config.username,
                 nickname: config.nickname,
-                synctime: time || 1497408366000,
+                synctime: time - 1000,
                 command: 'getmessagecountbytime'
             })
         }).catch(function (error) {
