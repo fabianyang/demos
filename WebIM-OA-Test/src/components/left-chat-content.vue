@@ -143,7 +143,7 @@ export default {
             historyContainerOpen: state => state.historyContainer.open,
             historyContainerState: state => state.historyContainer.loadState,
             historyContainerRequested: state => state.historyContainer.requested,
-            user_info: state => state.user_info
+            info_user: state => state.info_user
         })
     },
     methods: {
@@ -173,7 +173,7 @@ export default {
             if (from === this.username) {
                 return config.avatar;
             }
-            let info = this.user_info[from];
+            let info = this.info_user[from];
             if (info) {
                 return info.avatar || defaultAvatar;
             }
@@ -183,7 +183,7 @@ export default {
             if (from === this.username) {
                 return config.nickname;
             }
-            let info = this.user_info[from];
+            let info = this.info_user[from];
             if (info) {
                 return info.nickname || 'fang.com';
             }

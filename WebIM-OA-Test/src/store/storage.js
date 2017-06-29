@@ -19,7 +19,6 @@ class Storage {
         }
         this.core = window.localStorage;
         this.synctime = {};
-        this.messagelist = {};
 
         if (ls) {
             let item = ls.getItem(this.key);
@@ -30,15 +29,9 @@ class Storage {
                 } else {
                     this.synctime = {};
                 }
-                if (json.messagelist) {
-                    this.messagelist = json.messagelist;
-                } else {
-                    this.messagelist = {};
-                }
             } else {
                 ls.setItem(this.key, JSON.stringify({
-                    synctime: {},
-                    messagelist: {}
+                    synctime: {}
                 }));
             }
         }
@@ -48,14 +41,7 @@ class Storage {
         let item = this.core.getItem(this.key);
         let json = JSON.parse(item);
 
-        let synctime = this.synctime[id];
-        if (synctime) {
-            if (time - synctime) {
-                this.synctime[id] = time;
-            }
-        } else {
-            this.synctime[id] = time;
-        }
+        this.synctime[id] = time;
 
         json.synctime = this.synctime;
 
@@ -73,42 +59,6 @@ class Storage {
         });
 
         return synctime[result[0]] || 0;
-    }
-
-    setMessagelist(data) {
-        let item = this.core.getItem(this.key);
-        let json = JSON.parse(item);
-        this.messagelist[data.id] = data.messagelist;
-        json.messagelist = this.messagelist;
-        this.core.setItem(this.key, JSON.stringify(json));
-    }
-
-    getMessagelist(data) {
-        return this.messagelist[data.id] || [];
-    }
-
-    setLastmessage(data) {
-        let item = this.core.getItem(this.key);
-        let json = JSON.parse(item);
-        this.lastmessage[data.id] = data.messagekey;
-        json.lastmessage = this.lastmessage;
-        this.core.setItem(this.key, JSON.stringify(json));
-    }
-
-    getLastmessage(data) {
-        return this.lastmessage[data.id] || '';
-    }
-
-    setReadcount(data) {
-        let item = this.core.getItem(this.key);
-        let json = JSON.parse(item);
-        this.readcount[data.id] = data.readcount;
-        json.readcount = this.readcount;
-        this.core.setItem(this.key, JSON.stringify(json));
-    }
-
-    getReadcount(data) {
-        return this.readcount[data.id] || 0;
     }
 
     // key 和 mutation 最好一致

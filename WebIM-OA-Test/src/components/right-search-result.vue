@@ -24,7 +24,8 @@
             result: state => state.search.result,
             info: state => state.search.info,
             keyword: state => state.search.keyword,
-            requesting: state => state.search.requesting
+            requesting: state => state.search.requesting,
+            user_info: state => state.user_info
         }),
         methods: {
             onScroll(ev) {
@@ -46,7 +47,9 @@
                 }
             },
             openWindow(info) {
-                events.trigger('store:request:buddy', info);
+                if (!user_info[info.id]) {
+                    events.trigger('store:request:user', info);
+                }
                 // 重置窗口
                 info.signame = 'im_notice_single_search';
                 this.stateChange(['left', 'chat']);

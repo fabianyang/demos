@@ -99,6 +99,7 @@ class LongPolling extends InterfaceReceive {
                 sendto: data.sendto,
                 clienttype: config.clienttype,
                 type: config.usertype,
+                os: config.os,
                 message: data.message,
                 command: data.command,
                 nickname: config.nickname,

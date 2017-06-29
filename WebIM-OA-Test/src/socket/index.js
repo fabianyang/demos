@@ -17,17 +17,21 @@ class IndexSocket {
         this.core = new Socket();
     }
 
-    init(config) {
+    init(config, isReco) {
         try {
-            this.core.login(config).then(() => {
+            this.core.login(config, isReco).then(() => {
                 setTimeout(() => {
-                    events.trigger('socket:state:change', 'syncing');
-                    this.sync().then(() => {
-                        setTimeout(() => {
-                            events.trigger('socket:state:change', 'open');
-                            // events.trigger('socket:state:change', 'close');
-                        }, 1000);
-                    });
+                    if (!isReco) {
+                        events.trigger('socket:state:change', 'syncing');
+                        this.sync(isReco).then(() => {
+                            setTimeout(() => {
+                                events.trigger('socket:state:change', 'open');
+                                // events.trigger('socket:state:change', 'close');
+                            }, 1000);
+                        });
+                    } else {
+                        events.trigger('socket:state:change', 'open');
+                    }
                 }, 1000);
             }).catch(function (error) {
                 console.log(error);
@@ -40,39 +44,58 @@ class IndexSocket {
 
     sync() {
         return new Promise((resolve, reject) => {
-            let list = [];
-            ['buddy', 'group', 'manager', 'mate'].forEach((v) => {
-                let s = storage.coreGet(v);
-                if (s) {
-                    events.trigger('socket:receive:' + v, s);
-                    // 是否需要几分钟后再同步？
-                    this['sync_' + v](false);
-                } else {
-                    list.push(this['sync_' + v](true));
-                }
-            });
-            if (list.length) {
+            let data = {
+                info_group: storage.coreGet('info_group') || {},
+                info_user: storage.coreGet('info_user') || {},
+                view_notice: storage.coreGet('view_notice') || [],
+                view_notice_single: storage.coreGet('view_notice_single') || [],
+                view_notice_group: storage.coreGet('view_notice_group') || [],
+                view_book_group: storage.coreGet('view_book_group') || [],
+                view_book_buddy: storage.coreGet('view_book_buddy') || [],
+                view_book_manager: storage.coreGet('view_book_manager') || [],
+                view_book_mate: storage.coreGet('view_book_mate') || [],
+                view_book_follow: storage.coreGet('view_book_follow') || [],
+                notice_list: storage.coreGet('notice_list') || []
+            };
+
+            let sync_http = (sync_count) => {
                 Promise.all([
                     this.sync_buddy(true),
                     this.sync_group(true),
                     this.sync_manager(true),
                     this.sync_mate(true)
                 ]).then((res) => {
+                    console.log('sync from http finish!', res);
+                    if (sync_count) {
+                        resolve();
+                        let time = storage.getSynctime();
+                        if (time) {
+                            // 同步联系人完成后，同步未读消息
+                            this.syncRecentCount(time);
+                        }
+                    }
+                });
+            };
+
+            // 有存储备份信息。
+            if (Object.keys(data.info_user).length) {
+                let promise = new Promise((resolve, reject) => {
+                    data.resolve = resolve;
+                    events.trigger('socket:restore:info', data);
+                });
+                promise.then(() => {
+                    console.log('sync from localstorage finish!');
                     resolve();
-                    console.log(res);
                     let time = storage.getSynctime();
+                    console.log('sync time: ' + time);
                     if (time) {
                         // 同步联系人完成后，同步未读消息
                         this.syncRecentCount(time);
                     }
+                    sync_http(false);
                 });
             } else {
-                resolve();
-                let time = storage.getSynctime();
-                if (time) {
-                    // 同步联系人完成后，同步未读消息
-                    this.syncRecentCount(time);
-                }
+                sync_http(true);
             }
         });
     }
@@ -87,7 +110,7 @@ class IndexSocket {
         }
     }
 
-    sync_buddy(render) {
+    sync_buddy() {
         try {
             return new Promise((resolve, reject) => {
                 this.core.syncBuddy().then((data) => {
@@ -101,7 +124,7 @@ class IndexSocket {
                             online: +l[4]
                         };
                     });
-                    this.postUserInfo(list, render).then((data) => {
+                    this.postUserInfo(list).then((data) => {
                         resolve(data);
                     });
                 });
@@ -111,7 +134,7 @@ class IndexSocket {
         }
     }
 
-    postUserInfo(users, render = true) {
+    postUserInfo(users) {
         let ids = [],
             info = {};
         users.forEach((v) => {
@@ -136,10 +159,7 @@ class IndexSocket {
                         department: v.OrgName
                     });
                 });
-                storage.coreSet('buddy', list);
-                if (render) {
-                    events.trigger('socket:receive:buddy', list);
-                }
+                events.trigger('socket:receive:user', list);
                 resolve(list);
             });
         });
@@ -148,12 +168,12 @@ class IndexSocket {
     /**
      * core.sync_group.then([]) reponse is array
      */
-    sync_group(render) {
+    sync_group() {
         let that = this;
         try {
             return new Promise((resolve, reject) => {
                 this.core.syncGroup().then((data) => {
-                    that.getGroupInfo(data, render).then((data) => {
+                    that.getGroupInfo(data).then((data) => {
                         resolve(data);
                     });
                 });
@@ -167,20 +187,17 @@ class IndexSocket {
      * core.socketGroupInfo.then([]) reponse is array
      * 直接触发事件
      */
-    getGroupInfo(groups, render = true) {
+    getGroupInfo(groups) {
         return new Promise((resolve, reject) => {
             this.core.socketGroupInfo(groups).then((data) => {
-                storage.coreSet('group', data);
-                if (render) {
-                    events.trigger('socket:receive:group', data);
-                }
+                events.trigger('socket:receive:group', data);
                 resolve(data);
             });
         });
     }
 
     // 获取群列表
-    sync_manager(render = true) {
+    sync_manager() {
         return new Promise((resolve, reject) => {
             http.myManagerAndSubordinate().then((response) => {
                 let data = response.data;
@@ -218,10 +235,7 @@ class IndexSocket {
                         });
                     });
 
-                    storage.coreSet('manager', list);
-                    if (render) {
-                        events.trigger('socket:receive:manager', list);
-                    }
+                    events.trigger('socket:receive:manager', list);
                     resolve(list);
                 });
             });
@@ -229,7 +243,7 @@ class IndexSocket {
     }
 
     // 获取群列表
-    sync_mate(render = true) {
+    sync_mate() {
         return new Promise((resolve, reject) => {
             http.mySubordinate().then((response) => {
                 let data = response.data;
@@ -266,11 +280,7 @@ class IndexSocket {
                             department: v.OrgName
                         });
                     });
-
-                    storage.coreSet('mate', list);
-                    if (render) {
-                        events.trigger('socket:receive:mate', list);
-                    }
+                    events.trigger('socket:receive:mate', list);
                     resolve(list);
                 });
             });

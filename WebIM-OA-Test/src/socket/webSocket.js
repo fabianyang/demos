@@ -31,7 +31,8 @@ let closeGroupInfo = (count, resolve) => {
     };
 };
 
-let PromiseResolve = {};
+let PromiseResolve = {},
+    heart_timer = null;
 
 class WS extends InterfaceReceive {
     constructor() {
@@ -62,7 +63,7 @@ class WS extends InterfaceReceive {
                 ws.addEventListener('open', (event) => {
                     resolve();
                     // 开启心跳
-                    setInterval(() => {
+                    heart_timer = setInterval(() => {
                         ws.send('t');
                     }, 80 * 1000);
                 });
@@ -70,6 +71,7 @@ class WS extends InterfaceReceive {
                 this.initMessageEvent();
 
                 ws.addEventListener('error', (event) => {
+                    clearInterval(heart_timer);
                     super.socket_error();
                 });
 
@@ -78,6 +80,7 @@ class WS extends InterfaceReceive {
                     // var reason = event.reason;
                     // var wasClean = event.wasClean;
                     // handle close event
+                    clearInterval(heart_timer);
                     super.socket_close();
                 });
             } catch (e) {

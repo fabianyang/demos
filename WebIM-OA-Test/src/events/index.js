@@ -60,8 +60,9 @@ let eventRegister = {
     // 选择 socket 事件，异步实现加载
     'socket:state:change': 1,
     'socket:connecting': 1,
+    'socket:restore:info': 1,
 
-    'socket:receive:buddy': 1,
+    'socket:receive:user': 1,
     'socket:receive:manager': 1,
     'socket:receive:mate': 1,
     'socket:receive:group': 1,
@@ -77,7 +78,7 @@ let eventRegister = {
     'view:search:user': 1,
     'view:reconnect:socket': 1,
     'socket:search:user:back': 1,
-    'store:request:buddy': 1,
+    'store:request:user': 1,
     'store:request:group': 1,
     'store:request:history': 1
 };

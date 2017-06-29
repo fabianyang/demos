@@ -4,7 +4,7 @@ import store from '../store';
 
 import {
     SOCKET_STATE_CHANGE,
-    SOCKET_BUDDY_CHANGE,
+    SOCKET_USER_CHANGE,
     SOCKET_MANAGER_CHANGE,
     SOCKET_MATE_CHANGE,
     SOCKET_GROUP_CHANGE,
@@ -12,6 +12,7 @@ import {
     SOCKET_NOTICE_CHANGE,
     SOCKET_SEARCH_USER_CHANGE,
     SOCKET_RECONNECT,
+    SOCKET_RESTORE_INFO,
     VIEW_CHAT_MSGKEY,
     VIEW_CHAT_CHANGE,
     SOCKET_RECENT_CHANGE
@@ -44,9 +45,13 @@ events.on('socket:state:change', function (data) {
 events.on('view:reconnect:socket', (data) => {
     // 需要清空所有的存储信息，目前是联系人列表
     store.commit(SOCKET_STATE_CHANGE, 'connecting');
-    store.commit(SOCKET_RECONNECT);
+    // store.commit(SOCKET_RECONNECT);
     // 重新初始化
-    socket.init(data);
+    socket.init(data, true);
+});
+
+events.on('socket:restore:info', (data) => {
+    store.commit(SOCKET_RESTORE_INFO, data);
 });
 
 events.on('view:send:message', (data) => {
@@ -57,7 +62,7 @@ events.on('view:search:user', (data) => {
     socket.postHistory(data);
 });
 
-events.on('store:request:buddy', (data) => {
+events.on('store:request:user', (data) => {
     socket.postUserInfo([data]);
 });
 
@@ -73,8 +78,8 @@ events.on('socket:search:user:back', (data) => {
     store.commit(SOCKET_SEARCH_USER_CHANGE, data);
 });
 
-events.on('socket:receive:buddy', (data) => {
-    store.commit(SOCKET_BUDDY_CHANGE, data);
+events.on('socket:receive:user', (data) => {
+    store.commit(SOCKET_USER_CHANGE, data);
 });
 
 events.on('socket:receive:manager', (data) => {

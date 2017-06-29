@@ -22,10 +22,11 @@
         methods: mapMutations({
             'stateChange': VIEW_STATE_CHANGE // 映射 this.add() 为 this.$store.commit('increment')
         }),
-        data() {
-            return {
-                msg: 'Welcome to Your Vue.js App'
-            }
+        created() {
+            this.$nextTick(() => {
+                // 需要切换一下状态，ie 没有展示默认状态
+                this.stateChange(['right', 'notice'])
+            })
         }
     }
 </script>

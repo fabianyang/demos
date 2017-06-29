@@ -77,7 +77,6 @@ export default {
             }
 
             let message = this.el_textarea.innerText;
-            console.log(message);
             if (cmd === 'chat' && !message) {
                 return;
             }
@@ -106,6 +105,7 @@ export default {
             this.viewChatMsg(msg);
             events.trigger('view:send:message', msg);
 
+            // console.log('send', msg);
             this.clear(cmd);
         },
         clear(type) {
