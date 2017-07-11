@@ -2,21 +2,21 @@
     <!-- 所有聊天内容都放在 replybox 中，发送中添加active，失败添加fail -->
     <ul @mousewheel="onMousewheel($event)">
         <li class="load" v-show="historyContainerState === 'loading'"></li>
-        <li class="nomore" v-show="historyContainerOpen && history_nomore && historyContainerState !== 'loading'">没有更多了</li>
-        <li class="nomore" v-show="historyContainerOpen && !history_nomore && historyContainerState !== 'loading'">以下为历史记录</li>
-        <li class="nomore" v-show="list.length && historyContainerRequested && !historyContainerOpen && historyContainerState !== 'loading'">更多请查看历史记录</li>
+        <li class="nomore" v-show="historyContainerOpen && historyContainerNomore && historyContainerState !== 'loading'">没有更多了</li>
+        <li class="nomore" v-show="historyContainerOpen && !historyContainerNomore && historyContainerState !== 'loading'">以下为历史记录</li>
+        <li class="nomore" v-show="list.length && !historyContainerOpen && historyContainerState !== 'loading'">更多请查看历史记录</li>
         <template v-for="(item, index) in list">
-            <li class="time" v-text="item.messagetime" v-if="showTimeStamp(index)">2017-03-10 10:30</li>
+            <li class="time" v-text="item.messagetime">messagetime</li>
             <li :class="{ even: item.from === username, odd: item.from !== username }">
                 <a class="user">
-                    <img :src="getavatar(item)">
+                    <img :src="getAvatar(item)">
                 </a>
                 <div class="replybox" :class="{ group: isGroup, active: item.sendto !== username && item.messagestate === 0 }">
                     <p class="name" v-text="getNickname(item)" v-if="isGroup">Nickname</p>
                     <!-- 文字内容 replycontent; 群聊中添加姓名 replybox 添加类名 group -->
                     <div class="replycontent" :data-time="item.messagetime" v-if="item.command === 'chat' || item.command === 'group_chat'" v-html="pack_msg(item.message)">Message</div>
                     <!-- yangfan: 语音内容 -->
-                    <div class="replycontent" v-if="item.command === 'voice' || item.command === 'group_voice' || item.command === 'red_packets_cash'" v-text="item.message">Message</div>
+                    <div class="replycontent" v-if="item.command === 'voice' || item.command === 'group_voice' || item.command === 'red_packets_cash' || item.command === 'batchchat' || item.command === 'group_batchchat'" v-text="item.message">Message</div>
                     <!-- 图片内容 replyimg -->
                     <div class="replyimg" v-if="item.command === 'img' || item.command === 'group_img'">
                         <a :href="item.message" target="_blank">
@@ -26,7 +26,7 @@
 
                     <!-- 链接卡片 replylink -->
                     <div class="replylink" v-if="item.command === 'link' || item.command === 'group_link'">
-                        <a :href='item.message'>
+                        <a :href='item.message' target="_blank">
                             <h6 v-text="item.title">msgContent Title</h6>
                             <div class="con">
                                 <div class="con-text" v-text="item.desc">msgContent desc</div>
@@ -39,7 +39,7 @@
 
                     <!-- 视频内容 replyvideo -->
                     <div class="replyvideo" v-if="item.command === 'video' || item.command === 'group_video'">
-                        <a :href='item.message'>
+                        <a :href='item.message' target="_blank">
                             <span class="start"></span>
                             <span class="time" v-text="item.second">second</span>
                         </a>
@@ -48,18 +48,20 @@
                     <!-- 定位内容 replylocation -->
                     <div class="replylocation" v-if="item.command === 'location' || item.command === 'group_location'">
                         <div class="info">
-                            <a v-text="item.title0">big title</a>
-                            <a v-text="item.title1">small title</a>
+                            <a v-text="item.title0" :href="location_href(item.message)" target="_blank">big title</a>
+                            <a v-text="item.title1" :href="location_href(item.message)" target="_blank">small title</a>
                         </div>
                         <div class="map">
-                            <img :src="item.pic">
+                            <a :href="location_href(item.message)" target="_blank">
+                                <img :src="getMapSrc(item)">
+                            </a>
                             <!-- 地图内容
                             <span class="location"></span>
                             -->
                         </div>
                     </div>
                     <!-- 名片内容 replyuser -->
-                    <div class="replyuser" v-if="item.command === 'card'">
+                    <div class="replyuser" v-if="item.command === 'card'" @click="openCard(item)">
                         <div class="title">
                             <div class="info">
                                 <a v-text="item.card_nickname">card Nickname</a>
@@ -73,7 +75,7 @@
                     </div>
                     <!-- 文件内容 replyfile -->
                     <div class="replyfile" v-if="item.command === 'file' || item.command === 'group_file'">
-                        <a :href="item.message">
+                        <a :href="item.message" target="_blank">
                             <div class="info">
                                 <h6 v-text="item.filename">file name</h6>
                                 <p>
@@ -82,7 +84,7 @@
                                 </p>
                             </div>
                             <div class="type">
-                                <img :src="getFilePic(item.extension)" alt="">
+                                <img :src="getFilePic(item.extension)" alt="item.message">
                             </div>
                         </a>
                     </div>
@@ -96,12 +98,12 @@
 import events from '../events';
 import setting from '../setting';
 import { mapState, mapGetters, mapMutations } from 'vuex';
-import {VIEW_TOGGLE_HISTORY} from '../store/mutation-types';
+import {VIEW_TOGGLE_HISTORY,VIEW_LEFT_OPEN,VIEW_STATE_CHANGE,VIEW_RIGHT_SWITCH} from '../store/mutation-types';
 let timer = null;
 let lock = false;
 
 let config = window.FangChat.config;
-let defaultAvatar = window.FangChat.data.defaultAvatar;
+let defaultAvatar = setting.defaultAvatar;
 /**
  * getAvatar() getNickname 基本都会执行 2 遍，一遍发送刷新视图，一遍返回发送状态刷新视图
  **/
@@ -135,29 +137,37 @@ export default {
         },
         ...mapGetters({
             message_list: 'message_list',
-            history_list: 'history_list',
-            history_nomore: 'history_nomore'
+            history_list: 'history_list'
         }),
         ...mapState({
             leftWindow: state => state.leftWindow,
             historyContainerOpen: state => state.historyContainer.open,
             historyContainerState: state => state.historyContainer.loadState,
             historyContainerRequested: state => state.historyContainer.requested,
+            historyContainerNomore: state => state.historyContainer.nomore,
             info_user: state => state.info_user
         })
     },
     methods: {
+        location_href(message) {
+            return 'http://m.test.fang.com/chat/location.jsp?pos_x=' + message.split(',')[0] + '&pos_y=' + message.split(',')[1] + '&message=test&title=test'
+        },
         showTimeStamp(index) {
             let prev = this.list[index - 1];
             if (!prev) {
                 return true;
             } else {
                 let now = this.list[index];
+
+                console.log(prev, now);
                 if (now.time - prev.time > 60 * 1000) {
                     console.log(now.messagetime, prev.messagetime, now.time - prev.time);
                     return true;
                 }
             }
+        },
+        getMapSrc(item) {
+            return item.pic || 'http://api.map.baidu.com/staticimage?width=240&height=118&copyright=1&zoom=18&markers=' + item.message + '&markerStyles=m';
         },
         getFilePic(extension) {
             // Word—— .doc，.docx
@@ -168,7 +178,7 @@ export default {
             let key = extension.substr(0, 3);
             return this.png[key] || this.png['i'];
         },
-        getavatar(item) {
+        getAvatar(item) {
             let from = item.from;
             if (from === this.username) {
                 return config.avatar;
@@ -189,9 +199,37 @@ export default {
             }
         },
         pack_msg(msg) {
+            let isLink = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?$/i.test(msg);
+            if (isLink) {
+                return '<a href="' + msg + '" target="_blank">' + msg + '</a>';
+            }
+
             // 把对应的表情字符转换成表情src
             return msg.replace(/\[([^\]]*)\]/g, function () {
                 return '<img src="' + setting.EMOJI.path + setting.EMOJI.map[arguments[1]] + '" width="24" border="0" style="vertical-align: bottom;" />'
+            });
+        },
+        openCard(item) {
+            let card = {
+                id: item.card_username,
+                nickname: item.card_nickname,
+                avatar: item.card_avatar,
+                department: item.card_department
+            }
+            if (!this.info_user[card.id]) {
+                events.trigger('store:request:user', card);
+                card.bySearch = 1;
+            }
+            card.signame = 'im_notice_single';
+            this.stateChange(['left', 'chat']);
+            this.stateLeftOpen(card);
+            this.stateChange(['right', 'notice']);
+            this.stateRightOpen({
+                signame: 'im_notice_single',
+                open: true
+            });
+            this.toggleHistory({
+                open: 0
             });
         },
         onMousewheel(e) {
@@ -232,19 +270,19 @@ export default {
                 }, 1000);
             }
             if (this.historyContainerOpen) {
-                if (wheelup && !this.history_nomore) {
-                    this.toggleHistory('loading');
+                if (wheelup && !this.historyContainerNomore) {
+                    this.toggleHistory({
+                        state: 'loading'
+                    });
                     request('more_history');
-                }
-            } else {
-                if (wheelup && !this.historyContainerRequested) {
-                    this.toggleHistory('loading');
-                    request('more_recent');
                 }
             }
         },
         ...mapMutations({
-            'toggleHistory': VIEW_TOGGLE_HISTORY
+            'toggleHistory': VIEW_TOGGLE_HISTORY,
+            'stateLeftOpen': VIEW_LEFT_OPEN,
+            'stateChange': VIEW_STATE_CHANGE,
+            'stateRightOpen': VIEW_RIGHT_SWITCH
         })
     },
     data() {
@@ -311,7 +349,9 @@ a:hover {
     cursor: pointer;
 }
 
-
+p {
+    white-space: normal;
+}
 
 /* 对话列表 */
 
@@ -497,14 +537,12 @@ ul li .replyimg img {
 }
 
 
-
-
 /* 视频内容 */
 
 ul li .replyvideo {
     width: 240px;
     height: 178px;
-    background: #999;
+    background: url(../assets/images/video_bg.png) no-repeat center;
     border-radius: 5px;
     position: relative;
 }
@@ -527,9 +565,6 @@ ul li .replyvideo .time {
     bottom: 10px;
     z-index: 10;
 }
-
-
-
 
 /* 名片内容 */
 
@@ -752,9 +787,6 @@ ul li.even .replylink:after {
     right: -8px;
 }
 
-
-
-
 /* 定位内容 */
 
 ul li .replylocation {
@@ -827,9 +859,6 @@ ul li.even .replylocation:after {
     right: -8px;
 }
 
-
-
-
 /* 内容加载中 */
 
 ul li.load {
@@ -838,9 +867,6 @@ ul li.load {
     background: url(../assets/images/icon-active.png) no-repeat center;
     margin: 0 auto 15px;
 }
-
-
-
 
 /* 没有更多 */
 
@@ -871,9 +897,6 @@ ul li.nomore:before {
 ul li.nomore:after {
     right: 65px;
 }
-
-
-
 
 /* 聊天时间 */
 

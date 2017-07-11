@@ -13,6 +13,7 @@ import {
     VIEW_STATE_CHANGE,
     SOCKET_STATE_CHANGE,
     VIEW_LEFT_OPEN,
+    VIEW_RIGHT_SWITCH,
     VIEW_CHAT_CHANGE,
     VIEW_CHAT_MSGKEY,
     VIEW_TOGGLE_HISTORY
@@ -21,58 +22,39 @@ import storage from './storage';
 import util from '../util';
 import events from '../events';
 
-let messageMaxCount = 10;
+let messageMaxCount = 40;
 
 let formatNotSyncInfo = (data, view_name) => {
-    return {
+    let ret = {
         id: data.id,
-        nickname: data.nickname,
-        view_name: view_name
+        nickname: data.nickname
     };
-};
-
-let formatReceiveChat = (data) => {
-    let isGroup = data.command.split('_')[0] === 'group';
-    let result = {
-        // 进行 msgList 信息列表区分。 VIEW_CHAT_CHANGE 使用
-        from: data.from || data.form,
-        // 发送消息 id oa:125460 群没有 oa 前缀
-        sendto: data.sendto,
-        message: data.message,
-        // 消息类型，是否为群聊，目前 group: 群聊天, 其他: 单聊
-        command: data.command,
-        messageid: data.messageid,
-        messagekey: data.messagekey,
-        messagetime: data.messagetime,
-        messagestate: 1,
-        time: new Date(data.messagetime).getTime()
-    };
-    if (isGroup) {
-        result.id = data.from || data.form;
-    } else {
-        result.id = data.sendto;
+    if (view_name) {
+        ret.view_name = view_name;
     }
-    return result;
+    return ret;
 };
 
 let requestUserInfo = (state, data, view_name) => {
+    let info = formatNotSyncInfo(data, view_name);
     // 要先添加基本信息，因为 im 已经渲染， 否则找不到信息报错
     // buddy = formatNotSyncInfo(v);
     state.info_user = Object.assign({}, state.info_user, {
-        [data.id]: formatNotSyncInfo(data, view_name)
+        [data.id]: info
     });
     // 这里要是一个新对象，否则 vuex 报错
     // 最好是一个 promise 执行完成后进行回调，就不需要更新两遍对象，刷新两遍视图。
-    events.trigger('store:request:user', formatNotSyncInfo(data, view_name));
+    events.trigger('store:request:user', info);
 };
 
 let requestGroupInfo = (state, data, view_name) => {
+    let info = formatNotSyncInfo(data, view_name);
     state.info_group = Object.assign({}, state.info_group, {
-        [data.id]: formatNotSyncInfo(data, view_name)
+        [data.id]: info
     });
     // 接收到一个群消息但是不在群列表中，需要添加到群列表，同时同步群信息
     state.view_book_group = state.view_book_group.concat([data.id]);
-    events.trigger('store:request:group', formatNotSyncInfo(data, view_name));
+    events.trigger('store:request:group', info);
 };
 
 let addViewNoticeList = (state, view_name, id) => {
@@ -81,10 +63,11 @@ let addViewNoticeList = (state, view_name, id) => {
         let i = list.length;
         while (i--) {
             if (list[i] === id) {
+                // list.splice(i, 1);
                 return;
             }
         }
-        state[view_name] = state[view_name].concat([id]);
+        state[view_name] = [id].concat(list);
     } else {
         state[view_name] = [id];
     }
@@ -102,23 +85,24 @@ let addRecentNew = (state, id, count = 1) => {
     state.recent.list = Object.assign({}, recent_list);
     state.recent.notice += count;
 
-    if (id.split(':')[0] === 'oa') {
-        [].concat.apply([], [state.view_book_buddy, state.view_book_manager, state.view_book_mate]).every((v) => {
-            if (v === id) {
-                state.recent.book += count;
-                return false;
-            }
-            return true;
-        });
-    } else {
-        state.view_book_group.every((v) => {
-            if (v === id) {
-                state.recent.book += count;
-                return false;
-            }
-            return true;
-        });
-    }
+    // 通讯录红点不要了
+    // if (id.split(':')[0] === 'oa') {
+    //     [].concat.apply([], [state.view_book_buddy, state.view_book_manager, state.view_book_mate]).every((v) => {
+    //         if (v === id) {
+    //             state.recent.book += count;
+    //             return false;
+    //         }
+    //         return true;
+    //     });
+    // } else {
+    //     state.view_book_group.every((v) => {
+    //         if (v === id) {
+    //             state.recent.book += count;
+    //             return false;
+    //         }
+    //         return true;
+    //     });
+    // }
 };
 
 let diffRecentNew = (state) => {
@@ -134,23 +118,59 @@ let diffRecentNew = (state) => {
     recent_list[id] = 0;
     state.recent.list = Object.assign({}, recent_list);
     state.recent.notice -= count;
+    if (state.recent.notice < 0) {
+        state.recent.notice = 0;
+    }
 
-    if (id.split(':')[0] === 'oa') {
-        [].concat.apply([], [state.view_book_buddy, state.view_book_manager, state.view_book_mate]).every((v) => {
-            if (v === id) {
-                state.recent.book -= count;
-                return false;
-            }
-            return true;
-        });
+    // 通讯录红点不要了
+    // if (id.split(':')[0] === 'oa') {
+    //     [].concat.apply([], [state.view_book_buddy, state.view_book_manager, state.view_book_mate]).every((v) => {
+    //         if (v === id) {
+    //             state.recent.book -= count;
+    //             if (state.recent.book < 0) {
+    //                 state.recent.book = 0;
+    //             }
+    //             return false;
+    //         }
+    //         return true;
+    //     });
+    // } else {
+    //     state.view_book_group.every((v) => {
+    //         if (v === id) {
+    //             state.recent.book -= count;
+    //             if (state.recent.book < 0) {
+    //                 state.recent.book = 0;
+    //             }
+    //             return false;
+    //         }
+    //         return true;
+    //     });
+    // }
+};
+
+let addNoticeRecentNew = (state, id, count = 1) => {
+    let recent_list = state.recent.list.notice;
+    if (recent_list[id]) {
+        recent_list[id] += count;
     } else {
-        state.view_book_group.every((v) => {
-            if (v === id) {
-                state.recent.book -= count;
-                return false;
-            }
-            return true;
-        });
+        recent_list[id] = count;
+    }
+
+    state.recent.list.notice = Object.assign({}, recent_list);
+    state.recent.notice += count;
+};
+
+
+let diffNoticeRecentNew = (state) => {
+    let id = state.leftWindow.id,
+        count = state.leftWindow.recent_new;
+
+    let recent_list = state.recent.list.notice;
+    recent_list[id] = 0;
+    state.recent.list.notice = Object.assign({}, recent_list);
+    state.recent.notice -= count;
+    if (state.recent.notice < 0) {
+        state.recent.notice = 0;
     }
 };
 
@@ -181,7 +201,7 @@ export default {
         state.view_book_manager = data.view_book_manager ;
         state.view_book_mate = data.view_book_mate ;
         state.view_book_follow = data.view_book_follow ;
-        state.notice_list = data.notice_list ;
+        state.notice_lists = data.notice_lists ;
         data.resolve();
     },
     // 同步组信息
@@ -228,9 +248,9 @@ export default {
             }
 
             // 搜索用户情况，signame 传过去了
-            if (v.signame) {
+            if (v.bySearch) {
+                delete v.bySearch;
                 state.leftWindow = Object.assign({}, v, state.leftWindow);
-                delete v.signame;
             }
         });
         if (bl.length) {
@@ -293,12 +313,27 @@ export default {
             // 通知发送人 基本信息添加
             requestUserInfo(state, data, 'view_notice');
             // 通知发送人 id 列表更新
-            // addViewNoticeList(state, 'view_notice', data.id);
-            // state.view_notice = state.view_notice.concat([data.id]);
+            // state.view_notice = state.view_notice.concat([id]);
+        } else {
+            addViewNoticeList(state, 'view_notice', id);
         }
-        state.notice_list = state.notice_list.concat([data]);
-        storage.coreSet('notice_list', state.notice_list);
+        // 接收到新消息，没有打开左侧聊天窗口，或者当前窗口不是消息发送人，或者最小化状态，记录新条数
+        if (!state.leftWindow.id || state.leftWindow.id !== id || state.app === 'min') {
+            // 如果没有打开窗口，且没有同步消息时间
+            addNoticeRecentNew(state, id);
+        }
+
+        let lists = state.notice_lists;
+        if (!lists[id]) {
+            lists[id] = [];
+        }
+        let list = lists[id].concat([data]);
+        state.notice_lists = Object.assign({}, lists, {
+            [id]: list
+        });
+        storage.coreSet('notice_lists', state.notice_lists);
     },
+    // 同步未读消息不要了，所以只有打开窗口时有 sync_recent 类型了
     [SOCKET_RECENT_CHANGE](state, data) {
         data.group.forEach((v) => {
             let synctime = storage.getSynctime(v.id);
@@ -370,7 +405,11 @@ export default {
             state.leftWindow = {};
         }
         if (key === 'app' && value === 'max' && state.leftWindow.id) {
-            diffRecentNew(state);
+            if (state.leftWindow.signame === 'im_notice') {
+                diffNoticeRecentNew(state);
+            } else {
+                diffRecentNew(state);
+            }
         }
     },
     [SOCKET_STATE_CHANGE](state, data) {
@@ -396,15 +435,38 @@ export default {
         let time = new Date().getTime();
         storage.setSynctime(id, 2 * 1000 + time);
     },
-    [VIEW_TOGGLE_HISTORY](state, loadState) {
-        if (loadState) {
-            state.historyContainer.loadState = loadState;
-        } else {
-            state.historyContainer.open = !state.historyContainer.open;
+    [VIEW_TOGGLE_HISTORY](state, opts) {
+        if (opts.state) {
+            state.historyContainer.loadState = opts.state;
         }
+
+        if (opts.open === 1) {
+            state.historyContainer.open = true;
+        }
+
+        if (opts.open === 0) {
+            state.historyContainer.open = false;
+            state.historyContainer.list = [];
+            state.historyContainer.nomore = false;
+        }
+    },
+    [VIEW_RIGHT_SWITCH](state, opts) {
+        let open = state.rightPanel.open;
+        state.rightPanel.open = Object.assign({}, open, {
+            [opts.signame]: opts.open
+        });
     },
     [VIEW_LEFT_OPEN](state, opts) {
         let id = opts.id;
+        // 获得点击的 signame
+        let signame = opts.signame.split('_');
+
+        if (signame[2] === 'group') {
+            addViewNoticeList(state, 'view_notice_group', id);
+        } else {
+            addViewNoticeList(state, 'view_notice_single', id);
+        }
+
         state.leftWindow = {
             // 聊天对象唯一标识，http 查询信息标识, 接口 resourceid 。
             id: id,
@@ -414,6 +476,7 @@ export default {
             nickname: opts.nickname || id,
             department: opts.department ? '(' + opts.department + ')' : '',
             // 窗口类型：好友、群聊、关注。用于判断当前打开窗口。
+            // signame: signame[2] === 'group' ? 'im_notice_group' : 'im_notice_single',
             signame: opts.signame,
             // 群人员数量
             number: opts.number ? '(' + opts.number + ')' : '',
@@ -422,95 +485,78 @@ export default {
             email: opts.email || '',
             recent_new: opts.recent_new
         };
-        let signame = opts.signame.split('_');
-        // 获取几条数据
-        let size = opts.recent_new || 0;
-        if (size) {
-            diffRecentNew(state);
-            size = opts.recent_new;
-        }
-
-        let synctime = storage.getSynctime(opts.id);
 
         // 打开窗口有同步时间，更新同步时间
+        // 只有新的条数才拉取历史记录，就是为了得到未读消息。
         if (opts.recent_new) {
-            storage.setSynctime(opts.id);
+            if (opts.signame === 'im_notice') {
+                diffNoticeRecentNew(state);
+            } else {
+                diffRecentNew(state);
+            }
             // 非通知时，有新消息，且没有发送或接收过消息，拉取信息！！！
-            if (signame[2] && !synctime) {
-                // 只有新的条数才拉取历史记录，就是为了得到未读消息。
+            if (signame[2]) {
                 events.trigger('store:request:history', {
                     id: id,
-                    exec: 'more_recent'
+                    exec: 'sync_recent'
                 });
             }
+            storage.setSynctime(opts.id);
         }
     },
     [SOCKET_CHAT_CHANGE](state, data) {
         let lists = state.message_lists;
 
-        let id = data.id,
-            more_length = 40;
-        if (data.exec === 'more_recent') {
-            state.historyContainer.requested = true;
-            // 不用判断是否有数组， left-chat-content 已经判断，只有有条数的时候才会加载更多信息。
-            let message_count = lists[id].length;
-            if (message_count < messageMaxCount) {
-                more_length = messageMaxCount - message_count;
-            } else {
-                return;
-            }
-        }
-
-        if (data.exec === 'more_history') {
-            lists = state.history_lists;
-            state.historyContainer.requested = true;
-        }
-
+        let id = data.id;
         let history = data.history;
+        let isGroup = id.split(':')[0] !== 'oa';
         // 多条，历史记录请求，点击窗口已经判断是否有 info, 应该都是一个人的，打开窗口的
         if (history) {
-            // 初始化消息数组
-            if (!util.isArray(lists[id])) {
-                lists[id] = [];
-            }
-
-            if (!history.length) {
-                state.history_nomore = Object.assign({}, {
-                    [data.id]: true
-                });
-                return;
-            }
             if (history.length < 20) {
-                state.history_nomore = Object.assign({}, {
-                    [data.id]: true
-                });
+                state.historyContainer.nomore = true;
             }
 
             let list = [],
                 recent_new = 0;
-            history.forEach((v, i) => {
-                let chat = formatReceiveChat(v);
-                if (data.exec === 'more_recent' && i < more_length) {
-                    list.push(chat);
-                    return;
-                }
+            history.forEach((chat) => {
+                list.push(chat);
+                // if (data.exec === 'more_recent' && i < more_length) {
+                //     list.push(chat);
+                //     return;
+                // }
 
-                if (data.exec === 'more_history') {
-                    list.push(chat);
-                    return;
-                }
+                // if (data.exec === 'more_history') {
+                //     list.push(chat);
+                //     return;
+                // }
 
-                if (data.exec === 'sync_recent') {
-                    let synctime = storage.getSynctime(id);
-                    // 只将未读消息更新
-
-                    if (chat.time > synctime) {
-                        list.push(chat);
-                        console.log(chat);
-                        recent_new++;
+                if (isGroup) {
+                    if (!state.info_user[chat.from]) {
+                        requestUserInfo(state, chat.from);
                     }
                 }
+
+                // if (data.exec === 'sync_recent') {
+                //     let synctime = storage.getSynctime(id);
+                //     // 只将未读消息更新
+
+                //     if (chat.time >= synctime) {
+                //         recent_new++;
+                //     }
+                // }
             });
+
+            state.historyContainer.loadState = '';
+
+            if (data.exec === 'more_history') {
+                let history_list = state.historyContainer.list;
+                if (history_list.length) {
+                    state.historyContainer.list = history_list.concat(list);
+                } else {
+                    state.historyContainer.list = list;
+                }
+                return;
+            }
 
             if (recent_new) {
                 if (state.leftWindow.id === id) {
@@ -525,23 +571,22 @@ export default {
                 }
             }
 
-            state.historyContainer.loadState = '';
-
             // 有数据再更新 view 数据
             if (list.length) {
-                list = lists[id].concat(list);
-
-                if (data.exec === 'more_history') {
-                    state.history_lists = Object.assign({}, lists, {
-                        [id]: list
-                    });
-                } else {
-                    state.message_lists = Object.assign({}, lists, {
-                        [id]: list
-                    });
+                // 初始化消息数组
+                if (!lists[id]) {
+                    lists[id] = [];
                 }
+                // 同步的时候，直接赋值
+                if (data.exec !== 'sync_recent') {
+                    list = lists[id].concat(list);
+                }
+                state.message_lists = Object.assign({}, lists, {
+                    [id]: list
+                });
             }
         } else {
+            // debugger;
             let command = data.command;
             let isGroup = command.split('_')[0] === 'group';
             // 这里只添加信息，不添加具体信息 在 view messageList 中添加具体消息
@@ -550,6 +595,10 @@ export default {
                     requestGroupInfo(state, data, 'view_notice_group');
                 } else {
                     addViewNoticeList(state, 'view_notice_group', id);
+                }
+                // 如果收到消息的群成员没有信息，请求一次
+                if (!state.info_user[data.from]) {
+                    requestUserInfo(state, data.from);
                 }
             } else {
                 if (!state.info_user[data.id]) {
@@ -561,15 +610,11 @@ export default {
 
             // 接收到新消息，没有打开左侧聊天窗口，或者当前窗口不是消息发送人，或者最小化状态，记录新条数
             if (!state.leftWindow.id || state.leftWindow.id !== id || state.app === 'min') {
-                addRecentNew(state, id);
-                // 如果没有打开窗口，且没有未读消息时，记录未读消息时间
-                if (!state.recent.list[data.id]) {
+                // 如果没有打开窗口，且没有同步消息时间
+                if (!storage.getSynctime(data.id)) {
                     storage.setSynctime(data.id, data.time);
                 }
-            }
-
-            if (state.leftWindow.id === id) {
-                storage.setSynctime(data.id, data.time);
+                addRecentNew(state, id);
             }
         }
     },
@@ -577,32 +622,24 @@ export default {
         let id = data.id;
         // 只有当前窗口时才更新列表，否则只在 SOCKET_CHAT_CHANGE 中更新新消息条数
         if (state.leftWindow.id === id) {
-            let msglists = state.message_lists;
-            let msglist = msglists[id];
-            if (!msglist) {
-                msglist = msglists[id] = [];
-                if (data.command.split('_')[0] === 'group') {
-                    addViewNoticeList(state, 'view_notice_group', id);
-                } else {
-                    addViewNoticeList(state, 'view_notice_single', id);
-                }
+            storage.setSynctime(data.id, data.time);
+            if (state.historyContainer.open) {
+                state.historyContainer.state = '';
+                state.historyContainer.open = false;
             }
 
-            // 多余可显示的当前聊天条数，如果已经请求过历史记录，更新历史记录列表。
-            let hislists = state.history_lists;
-            if (msglist.length > messageMaxCount) {
-                let pop = msglist.pop();
-                let hislist = hislists[id];
-                if (hislist) {
-                    hislist.unshift(pop);
-                    state.history_lists = Object.assign({}, hislists, {
-                        [id]: hislist
-                    });
-                }
+            let lists = state.message_lists;
+            let list = lists[id];
+            if (!list) {
+                list = lists[id] = [];
             }
-            msglist.unshift(data);
-            state.message_lists = Object.assign({}, msglists, {
-                [id]: msglist
+
+            if (list.length > messageMaxCount) {
+                list.pop();
+            }
+            list.unshift(data);
+            state.message_lists = Object.assign({}, lists, {
+                [id]: list
             });
         }
     }

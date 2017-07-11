@@ -1,6 +1,7 @@
 import http from './http';
 import events from '../events';
 import storage from '../store/storage';
+import receiveApi from './interfaceReceive';
 
 // let config = window.FangChat.config;
 
@@ -8,6 +9,7 @@ let Socket = null;
 if (window.WebSocket) {
     Socket = require('./webSocket').Socket;
 } else {
+    console.log('not support websocket!');
     Socket = require('./longPolling').Socket;
 }
 
@@ -15,6 +17,7 @@ if (window.WebSocket) {
 class IndexSocket {
     constructor() {
         this.core = new Socket();
+        this.tempSend = [];
     }
 
     init(config, isReco) {
@@ -23,22 +26,32 @@ class IndexSocket {
                 setTimeout(() => {
                     if (!isReco) {
                         events.trigger('socket:state:change', 'syncing');
-                        this.sync(isReco).then(() => {
+                        this.sync().then(() => {
                             setTimeout(() => {
                                 events.trigger('socket:state:change', 'open');
                                 // events.trigger('socket:state:change', 'close');
                             }, 1000);
+
+                            // 同步联系人完成后，同步未读消息
+                            // 不同步未读消息了
+                            // let time = storage.getSynctime();
+                            // console.log('sync time: ' + time);
+                            // if (time) {
+                            //     this.syncRecentCount(time);
+                            // }
+                        }).catch(() => {
+                            console.log('sync error');
                         });
                     } else {
                         events.trigger('socket:state:change', 'open');
                     }
                 }, 1000);
             }).catch(function (error) {
-                console.log(error);
+                console.log('login', error);
                 events.trigger('socket:state:change', 'error');
             });
         } catch (e) {
-            console.error(e);
+            console.error('login', e);
         }
     }
 
@@ -55,24 +68,31 @@ class IndexSocket {
                 view_book_manager: storage.coreGet('view_book_manager') || [],
                 view_book_mate: storage.coreGet('view_book_mate') || [],
                 view_book_follow: storage.coreGet('view_book_follow') || [],
-                notice_list: storage.coreGet('notice_list') || []
+                notice_lists: storage.coreGet('notice_lists') || []
             };
 
-            let sync_http = (sync_count) => {
+            let sync_http = (hasSyncFromStorage) => {
                 Promise.all([
-                    this.sync_buddy(true),
-                    this.sync_group(true),
-                    this.sync_manager(true),
-                    this.sync_mate(true)
-                ]).then((res) => {
-                    console.log('sync from http finish!', res);
-                    if (sync_count) {
+                    this.sync_buddy(),
+                    this.sync_group(),
+                    this.sync_manager(),
+                    this.sync_mate()
+                ]).then((data) => {
+                    console.log(data);
+                    resolve();
+                }).catch((err) => {
+                    console.log(err);
+                    // 这里应该判断是哪个出错了，继续同步后面的。
+                    if (hasSyncFromStorage) {
                         resolve();
-                        let time = storage.getSynctime();
-                        if (time) {
-                            // 同步联系人完成后，同步未读消息
-                            this.syncRecentCount(time);
-                        }
+                    } else {
+                        this.sync_buddy();
+                        this.sync_group();
+                        this.sync_manager();
+                        this.sync_mate();
+                        setTimeout(() => {
+                            resolve();
+                        }, 5000);
                     }
                 });
             };
@@ -85,28 +105,35 @@ class IndexSocket {
                 });
                 promise.then(() => {
                     console.log('sync from localstorage finish!');
-                    resolve();
-                    let time = storage.getSynctime();
-                    console.log('sync time: ' + time);
-                    if (time) {
-                        // 同步联系人完成后，同步未读消息
-                        this.syncRecentCount(time);
-                    }
-                    sync_http(false);
+                    sync_http(true);
                 });
             } else {
-                sync_http(true);
+                sync_http(false);
             }
         });
     }
 
     sendMessage(msg) {
         try {
+            // 消息重发机制
+            // this.tempSend.push(msg);
             this.core.socketSendMessage(msg).then((data) => {
-                events.trigger('socket:messagekey:back', data);
+                // this.removeTempSend();
+                events.trigger('socket:messagekey:back', {
+                    messagekey: data,
+                    sendto: msg.sendto,
+                    state: 1
+                });
+            }).catch((data) => {
+                console.log('sendMessage error', data);
+                events.trigger('socket:messagekey:back', {
+                    messagekey: data,
+                    sendto: msg.sendto,
+                    state: 2
+                });
             });
         } catch (e) {
-            console.error(e);
+            console.error('sendMessage', e);
         }
     }
 
@@ -114,23 +141,30 @@ class IndexSocket {
         try {
             return new Promise((resolve, reject) => {
                 this.core.syncBuddy().then((data) => {
-                    let list = data.map((v) => {
-                        let l = v.split(',');
-                        return {
-                            // 发消息使用 username
-                            id: l[0],
-                            // 用于判断是否为联系人时使用
-                            follow: +l[3] ? 'follow' : '',
-                            online: +l[4]
-                        };
-                    });
-                    this.postUserInfo(list).then((data) => {
-                        resolve(data);
-                    });
+                    if (data.length) {
+                        let list = data.map((v) => {
+                            let l = v.split(',');
+                            return {
+                                // 发消息使用 username
+                                id: l[0],
+                                // 用于判断是否为联系人时使用
+                                follow: +l[3] ? 'follow' : '',
+                                online: +l[4]
+                            };
+                        });
+                        this.postUserInfo(list).then((data) => {
+                            resolve(data);
+                        }).catch((data) => {
+                            reject(data);
+                        });
+                    } else {
+                        console.log('core.syncBuddy return Array(0)');
+                        reject(data);
+                    }
                 });
             });
         } catch (e) {
-            console.error(e);
+            console.error('sync_buddy', e);
         }
     }
 
@@ -145,7 +179,8 @@ class IndexSocket {
             http.getLotUserDetail(ids.join(',')).then((response) => {
                 let data = response.data;
                 if (data.IsSuccess !== '1') {
-                    console.log(data.ErrMsg);
+                    console.log('postUserInfo http.getLotUserDetail data.IsSuccess !== 1', data);
+                    reject(data);
                     return;
                 }
                 data = data.Data;
@@ -175,11 +210,17 @@ class IndexSocket {
                 this.core.syncGroup().then((data) => {
                     that.getGroupInfo(data).then((data) => {
                         resolve(data);
+                    }).catch((data) => {
+                        console.log('getGroupInfo error', data);
+                        reject(data);
                     });
+                }).catch((data) => {
+                    console.log('core.syncGroup error', data);
+                    reject(data);
                 });
             });
         } catch (e) {
-            console.error(e);
+            console.error('sync_group', e);
         }
     }
 
@@ -192,6 +233,9 @@ class IndexSocket {
             this.core.socketGroupInfo(groups).then((data) => {
                 events.trigger('socket:receive:group', data);
                 resolve(data);
+            }).catch((data) => {
+                console.log('socketGroupInfo error', data);
+                reject(data);
             });
         });
     }
@@ -202,7 +246,8 @@ class IndexSocket {
             http.myManagerAndSubordinate().then((response) => {
                 let data = response.data;
                 if (data.code !== '1') {
-                    console.log(data.message);
+                    console.log('http.myManagerAndSubordinate edata.code !== 1', data);
+                    reject(data);
                     return;
                 }
                 let managers = {};
@@ -220,7 +265,8 @@ class IndexSocket {
                 http.getLotUserDetail(ids).then((response) => {
                     let data = response.data;
                     if (data.IsSuccess !== '1') {
-                        reject(data.ErrMsg);
+                        console.log('myManagerAndSubordinate http.getLotUserDetail data.IsSuccess !== 1', data);
+                        reject(data);
                         return;
                     }
 
@@ -237,7 +283,11 @@ class IndexSocket {
 
                     events.trigger('socket:receive:manager', list);
                     resolve(list);
+                }).catch(function (error) {
+                    console.log('myManagerAndSubordinate http.getLotUserDetail', error);
                 });
+            }).catch(function (error) {
+                console.log('myManagerAndSubordinate', error);
             });
         });
     }
@@ -248,7 +298,8 @@ class IndexSocket {
             http.mySubordinate().then((response) => {
                 let data = response.data;
                 if (data.code !== '1') {
-                    console.log(data.message);
+                    console.log('http.mySubordinate data.code !== 1', data);
+                    reject(data);
                     return;
                 }
                 let mates = {};
@@ -266,7 +317,8 @@ class IndexSocket {
                 http.getLotUserDetail(ids).then((response) => {
                     let data = response.data;
                     if (data.IsSuccess !== '1') {
-                        reject(data.ErrMsg);
+                        console.log('mySubordinate http.getLotUserDetail data.IsSuccess !== 1', data);
+                        reject(data);
                         return;
                     }
 
@@ -282,7 +334,11 @@ class IndexSocket {
                     });
                     events.trigger('socket:receive:mate', list);
                     resolve(list);
+                }).catch(function (error) {
+                    console.log('mySubordinate http.getLotUserDetail', error);
                 });
+            }).catch(function (error) {
+                console.log('mySubordinate', error);
             });
         });
     }
@@ -305,6 +361,8 @@ class IndexSocket {
                     };
                 })
             });
+        }).catch((data) => {
+            console.log('core.socketRecentCount error', data);
         });
     }
 
@@ -315,14 +373,22 @@ class IndexSocket {
             fn: data.fn,
             pageSize: data.pageSize
         }).then((response) => {
-            let message = response.data.message;
-            if (message.length) {
-                events.trigger('socket:receive:history', {
-                    id: data.id,
-                    exec: data.exec,
-                    history: message
-                });
-            }
+            // console.log(response.data.message);
+            let list = [];
+            response.data.message.forEach((v, i) => {
+                let message = receiveApi.receiveSwitch(v);
+                // command = 'livechat' 就返回 undefined
+                if (message) {
+                    list.push(message);
+                }
+            });
+            events.trigger('socket:receive:history', {
+                id: data.id,
+                exec: data.exec,
+                history: list
+            });
+        }).catch((data) => {
+            console.log('http.getChatMsgHistory error', data);
         });
     }
 
@@ -332,6 +398,11 @@ class IndexSocket {
             start: data.start
         }).then((response) => {
             let hits = response.data.hits;
+            if (!hits) {
+                console.log('postSearchUser', response.data);
+                events.trigger('socket:search:user:back', []);
+                return;
+            }
             if (hits.length) {
                 events.trigger('socket:search:user:back', hits.map((v) => {
                     return {
@@ -344,6 +415,8 @@ class IndexSocket {
             } else {
                 events.trigger('socket:search:user:back', []);
             }
+        }).catch((data) => {
+            console.log('http.fuzzyQuery error', data);
         });
     }
 }

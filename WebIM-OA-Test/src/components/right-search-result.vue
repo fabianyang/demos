@@ -16,7 +16,7 @@
 <script>
     import events from '../events';
     import { mapState, mapMutations } from 'vuex';
-    import { VIEW_SEARCH_USER_CHANGE, VIEW_LEFT_OPEN, VIEW_STATE_CHANGE } from '../store/mutation-types'
+    import { VIEW_SEARCH_USER_CHANGE, VIEW_LEFT_OPEN, VIEW_STATE_CHANGE, VIEW_RIGHT_SWITCH } from '../store/mutation-types'
 
     export default {
         name: 'right-search-result',
@@ -25,7 +25,7 @@
             info: state => state.search.info,
             keyword: state => state.search.keyword,
             requesting: state => state.search.requesting,
-            user_info: state => state.user_info
+            info_user: state => state.info_user
         }),
         methods: {
             onScroll(ev) {
@@ -47,22 +47,28 @@
                 }
             },
             openWindow(info) {
-                if (!user_info[info.id]) {
+                if (!this.info_user[info.id]) {
                     events.trigger('store:request:user', info);
+                    info.bySearch = 1;
                 }
                 // 重置窗口
-                info.signame = 'im_notice_single_search';
+                info.signame = 'im_notice_single';
                 this.stateChange(['left', 'chat']);
+                this.stateLeftOpen(info);
                 this.stateChange(['right', 'notice']);
+                this.stateRightOpen({
+                    signame: 'im_notice_single',
+                    open: true
+                });
                 this.stateSearchChage({
                     result: [],
                     info: 'loading'
                 });
-                this.stateLeftOpen(info);
             },
             ...mapMutations({
                 'stateLeftOpen': VIEW_LEFT_OPEN,
                 'stateChange': VIEW_STATE_CHANGE,
+                'stateRightOpen': VIEW_RIGHT_SWITCH,
                 'stateSearchChage': VIEW_SEARCH_USER_CHANGE
             })
         }

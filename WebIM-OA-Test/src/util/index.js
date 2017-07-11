@@ -105,6 +105,16 @@ class Util {
         }
         return fmt;
     }
+
+    static isJSON(str) {
+        if (typeof str === 'string') {
+            try {
+                return JSON.parse(str);
+            } catch (e) {
+                return false;
+            }
+        }
+    }
 }
 
 export default Util;

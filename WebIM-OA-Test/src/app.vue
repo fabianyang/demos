@@ -1,6 +1,5 @@
 <template>
-    <div id="app">
-        <img src="./assets/logo.png">
+    <div id="im_app">
         <!-- 窗口最大化 -->
         <max-view v-show="appState === 'max'"></max-view>
         <!-- 窗口最小化 -->
@@ -11,8 +10,6 @@
 </template>
 
 <script>
-// <hello></hello>
-// import Hello from './components/Hello'
 import { mapState } from 'vuex';
 import maxView from './views/maximize'
 import minView from './views/minimize'
@@ -36,10 +33,15 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 /* 排除顶部全局标签样式，单独引入到各个 view/component style scope 中，因为可能会影响页面的样式 */
+input::-ms-clear {
+    display: none;
+}
 
+input[type="password"]::-ms-reveal {
+    display: none;
+}
 
 /* common */
-
 .clearfix:after {
     clear: both;
     content: "\200B";
@@ -66,15 +68,14 @@ export default {
 .flor {
     float: right;
 }
-
-.hide {
+/* !important 影响 oa 弹层*/
+/*.hide {
     display: none!important;
 }
 
 .show {
     display: block!important;
-}
-
+}*/
 
 .unselectable {
     -moz-user-select: -moz-none;
@@ -87,5 +88,4 @@ export default {
     -ms-user-select: none;
     user-select: none;
 }
-
 </style>

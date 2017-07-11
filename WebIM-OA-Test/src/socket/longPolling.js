@@ -34,6 +34,8 @@ class LongPolling extends InterfaceReceive {
             this.getgrouplist().then((data) => {
                 let message = data.data.message;
                 resolve(message.split(',').filter((x) => x));
+            }).catch((err) => {
+                console.log('longpolling syncGroup error', err);
             });
         });
     }
@@ -44,6 +46,8 @@ class LongPolling extends InterfaceReceive {
                 // message	好友列表：用户名,分组,备注,是否特别关注,在线状态 每个好友由\t隔开	oa:195626,我的好友,,0,1\toa:18908,我的好友,刘新路,0,1
                 let message = data.data.message;
                 resolve(message.split('\t').filter((x) => x));
+            }).catch((err) => {
+                console.log('longpolling syncBuddy error', err);
             });
         });
     }
@@ -55,6 +59,8 @@ class LongPolling extends InterfaceReceive {
                 this.getgroupinfoV2(v).then((data) => {
                     let message = data.data.message;
                     this.receiveGroupInfo(message);
+                }).catch((err) => {
+                    console.log('longpolling socketGroupInfo error', err);
                 });
             });
         });
@@ -69,6 +75,8 @@ class LongPolling extends InterfaceReceive {
                     buddy: contact,
                     group: group
                 });
+            }).catch((err) => {
+                console.log('longpolling socketRecentCount error', err);
             });
         });
     }
@@ -84,6 +92,8 @@ class LongPolling extends InterfaceReceive {
                 } else {
                     reject(data.message);
                 }
+            }).catch((err) => {
+                console.log('longpolling socketSendMessage error', err);
             });
         });
     }
@@ -107,13 +117,14 @@ class LongPolling extends InterfaceReceive {
                 imei: this.imei
             })
         }).catch(function (error) {
-            console.log(error);
+            console.log('longpolling sendMessage error', error);
         });
     }
 
     // loginout
     login(command = 'login') {
         return new Promise((resolve, reject) => {
+            console.log(config, this.imei);
             axios({
                 url: setting.LONGPOLLING_CHAT,
                 method: 'post',
@@ -135,6 +146,8 @@ class LongPolling extends InterfaceReceive {
                     }, 30 * 1000);
                     resolve();
                 }
+            }).catch((err) => {
+                console.log('longpolling login error', err);
             });
         });
     }
@@ -156,7 +169,7 @@ class LongPolling extends InterfaceReceive {
                 command: 'request'
             })
         }).catch(function (error) {
-            console.log(error);
+            console.log('longpolling request error', error);
         });
     }
 
@@ -174,7 +187,7 @@ class LongPolling extends InterfaceReceive {
                 command: 'getbuddyV3'
             })
         }).catch(function (error) {
-            console.log(error);
+            console.log('longpolling getbuddyV3 error', error);
         });
     }
 
@@ -193,7 +206,7 @@ class LongPolling extends InterfaceReceive {
                 groupid: groupid
             })
         }).catch(function (error) {
-            console.log(error);
+            console.log('longpolling getgroupinfoV2 error', error);
         });
     }
 
@@ -211,7 +224,7 @@ class LongPolling extends InterfaceReceive {
                 command: 'getgrouplist'
             })
         }).catch(function (error) {
-            console.log(error);
+            console.log('longpolling getgrouplist error', error);
         });
     }
 
@@ -228,7 +241,7 @@ class LongPolling extends InterfaceReceive {
                 command: 'getmessagecountbytime'
             })
         }).catch(function (error) {
-            console.log(error);
+            console.log('longpolling getmessagecountbytime error', error);
         });
     }
 }

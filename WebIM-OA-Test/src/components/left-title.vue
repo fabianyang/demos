@@ -1,7 +1,7 @@
 <template>
     <div class="fbconltit">
-        <span>{{ leftWindow.nickname + (leftWindow.department || leftWindow.number)}}</span>
-        <a class="flor grey" v-text="leftWindow.email" v-show="leftWindow.email">yangqing.bj@fang.com</a>
+        <span v-text="title"></span>
+        <a class="flor grey" v-text="email" v-show="leftWindow.email">yangqing.bj@fang.com</a>
         <a class="close" @click="stateChange(['left', 'close'])"></a>
     </div>
 </template>
@@ -12,9 +12,32 @@ import { VIEW_STATE_CHANGE } from '../store/mutation-types';
 
 export default {
     name: 'left-title',
-    computed: mapState({
-        leftWindow: state => state.leftWindow
-    }),
+    computed: {
+        title() {
+            let data = this.leftWindow;
+            if (!data.id) return;
+            let notGroup = data.id.split(':')[0] === 'oa';
+            if (notGroup) {
+                if (data.department.length > 16) {
+                    return data.nickname + data.department.substr(0, 16) + '...)';
+                }
+            }
+            if (!notGroup) {
+                if (data.nickname.length > 26) {
+                    return data.nickname.substr(0, 26) + '... ' + data.number;
+                }
+            }
+            return data.nickname + (data.department || data.number);
+        },
+        email() {
+            let data = this.leftWindow;
+            if (!data.id) return;
+            return data.email.substr(0, data.email.lastIndexOf('@'));
+        },
+        ...mapState({
+            leftWindow: state => state.leftWindow
+        })
+    },
     methods: mapMutations({
         'stateChange': VIEW_STATE_CHANGE
     })
@@ -42,7 +65,7 @@ a {
 
 a:hover {
     color: #333;
-    cursor: pointer;
+    cursor: default;
 }
 
 .grey {

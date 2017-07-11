@@ -3,18 +3,18 @@
         <!-- 工具栏 -->
         <div class="fbtools clearfix">
             <!-- 工具选中时添加类名 cur -->
-            <div class="bq" @click="emoji_show = !emoji_show"></div>
-            <div class="tp">
-                <form method="Post" enctype="multipart/form-data" :action="upload_url" :target="upload_iframe_name">
-                    <input type="file" title="发送图片" v-if="upload_state !== 'success' && upload_state !== 'fail'" :name="upload_input_name" @change="upload_image" />
-                </form>
+            <div id="im_facebutton" class="bq" :class="{ cur: emoji_show }" @click="emoji_show = !emoji_show"></div>
+            <div class="tp" :class="{ cur: upload_state }">
+                <!--<form method="Post" enctype="multipart/form-data" :action="upload_url" :target="upload_iframe_name">-->
+                <input type="file" title="发送图片" v-if="upload_state !== 'success' && upload_state !== 'fail'" :name="upload_input_name" @change="upload_image" />
+                <!--</form>-->
             </div>
-            <div class="jl" @click="getHistory()"></div>
+            <div class="jl" :class="{ cur: historyContainerOpen }" @click="toggleHistoryContainer"></div>
             <!-- 表情 默认隐藏 显示添加 show , yangfan: img 添加个 a 标签-->
             <div class="bqbox" v-show="emoji_show">
                 <div class="bqcon">
                     <a v-for="(emoji, key, index) in emoji_map" @click="emoji_insert(key)">
-                        <img :src="emoji_path + emoji" width="24" :title="key" :alt="emoji + '_' + index">
+                        <img :src="emoji_path + emoji" width="24" height="24" :title="key" :alt="emoji + '_' + index">
                     </a>
                 </div>
             </div>
@@ -23,16 +23,19 @@
         <div class="textarea">
             <!--<textarea v-show="!upload_state" name="" cols="" rows="" placeholder="点击这里开始交流，按 Ctrl+Enter 发送信息" @paste="upload_image" @keyup="send('chat', $event)" v-model="message"></textarea>-->
             <!-- yangfan:实验结果，不能只使用 blur save_caret_position 会位置为 0，需要 click 或 keyup 时都记录一下光标位置。插入表情 -->
-            <div class='im_chatarea' contenteditable='true' v-show="!upload_state" @paste="upload_image" @keydown.enter="send('chat', $event)" @click="save_caret_position" @keyup="save_caret_position"></div>
+            <div id="im_chatarea" class='im_chatarea' contenteditable='true' v-show="!upload_state" @paste="upload_image" @keydown.enter="send('chat', $event)" @click="save_caret_position" @keyup="save_caret_position" @focus="togglePrompt" @blur="togglePrompt"></div>
+            <div class='im_prompt' v-show="prompt_state && !upload_state" @click="togglePrompt">点击开始交流...</div>
             <!-- 上传状态 默认隐藏 显示添加 show -->
             <p class="upload" v-show="upload_state === 'loading'">图片上传中，请稍后...</p>
-            <p class="upload success" v-show="upload_state === 'success'">图片上传成功，
+            <p class="upload success" v-show="upload_state === 'success'">图片上传成功
                 <a :href="picture" target="_blank">查看</a>
                 <a @click="send('img')">发送</a>
                 <a @click="clear('img')">删除</a>
             </p>
-            <p class="upload fail" v-show="upload_state === 'fail'">图片上传失败，请稍后上传</p>
-            <iframe v-if="upload_state !== 'success' && upload_state !== 'fail'" :name="upload_iframe_name" width="0" height="0" scrolling="no" frameBorder="0" style="visibility: hidden;"></iframe>
+            <p class="upload fail" v-show="upload_state === 'fail'">图片上传失败，请稍后上传
+                <a @click="clear('img')">删除</a>
+            </p>
+            <!--<iframe v-if="upload_state !== 'success' && upload_state !== 'fail'" :name="upload_iframe_name" width="0" height="0" scrolling="no" frameBorder="0" style="visibility: hidden;"></iframe>-->
         </div>
     </div>
 </template>
@@ -42,10 +45,18 @@ import api from '../socket/http'
 import setting from '../setting';
 import events from '../events';
 import util from '../util';
-import { mapState, mapMutations, mapGetters } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 import { VIEW_CHAT_CHANGE,VIEW_LEFT_OPEN, VIEW_TOGGLE_HISTORY } from '../store/mutation-types';
 
 let config = window.FangChat.config;
+let el_textarea = null;
+
+let getElTextarea = () => {
+    if (!el_textarea) {
+        el_textarea = document.getElementById('im_chatarea');
+    }
+    return el_textarea;
+}
 
 export default {
     name: 'left-chat-textarea',
@@ -61,24 +72,46 @@ export default {
             var sid = Math.round(Math.random() * 100);
             return setting.UPLOAD_IMG_PATH + '&sid=' + sid + '&backurl=' + backurl;
         },
-        ...mapGetters({
-            message_list: 'message_list',
-            history_list: 'history_list'
-        }),
         ...mapState({
+            historyContainerOpen: state => state.historyContainer.open,
             leftWindow: state => state.leftWindow
         }),
     },
     methods: {
+        togglePrompt(e) {
+            if (e.type === 'click') {
+                this.prompt_state = false;
+                getElTextarea().focus();
+                return;
+            }
+            if (e.type === 'focus') {
+                this.prompt_state = false;
+                return;
+            }
+            if (e.type === 'blur') {
+                if (getElTextarea().innerText.trim()) {
+                    this.prompt_state = false;
+                    return;
+                }
+            }
+            this.prompt_state = true;
+        },
         send(cmd, event = { ctrlKey: true, preventDefault() { } }) {
             event.preventDefault();
             if (cmd === 'img' && !this.picture) {
                 return;
             }
 
-            let message = this.el_textarea.innerText;
-            if (cmd === 'chat' && !message) {
-                return;
+            let message = getElTextarea().innerText;
+            if (cmd === 'chat') {
+                if (!message) {
+                    alert('请输入发送消息');
+                    return;
+                }
+                if (message.length > 1000) {
+                    alert('最多输入1000字');
+                    return;
+                }
             }
 
             if (cmd === 'img') {
@@ -102,6 +135,12 @@ export default {
                 time: date.getTime()
             }
 
+            if (!this.historyContainerOpen) {
+                this.toggleHistory({
+                    open: 0
+                });
+            }
+
             this.viewChatMsg(msg);
             events.trigger('view:send:message', msg);
 
@@ -115,13 +154,14 @@ export default {
                 this.sid = Math.round(Math.random() * 10000);
             }
             if (type === 'chat') {
-                this.el_textarea.innerText = '';
+                getElTextarea().innerText = '';
             }
         },
         upload_image: function (ev) {
+                        debugger;
             let that = this;
             if (ev.type === 'paste') {
-                this.can_paste_upload = true;
+                // this.can_paste_upload = true;
                 let _ua = navigator.userAgent.toLowerCase();
                 let WEBKIT = _ua.indexOf('applewebkit') > -1;
                 /* Paste in chrome.*/
@@ -140,23 +180,24 @@ export default {
                             // window.FangChat.picUploadComplete(result);
                         };
                         reader.readAsDataURL(file);
-                    } else {
-                        var text = ev.clipboardData.getData('text/plain');
-                        // Chrome之类浏览器
-                        document.execCommand('insertText', false, text);
                     }
+                    // else {
+                    //     var text = ev.clipboardData.getData('text/plain');
+                    //     // Chrome之类浏览器
+                    //     document.execCommand('insertText', false, text);
+                    // }
                 }
                 /* Paste in firfox and other firfox.*/
                 else {
                     setTimeout(() => {
-                        let el = that.$el.querySelector('.im_chatarea');
+                        let el = getElTextarea();
                         let html = el.innerHTML;
+                        console.log(el.innerHTML);
                         if (html.search(/<img src="data:.+;base64,/) > -1) {
                             let img = html.match(/src=[\'\"]?([^\'\"]*)[\'\"]?/i)[1];
-                            let text = html.replace(/<img(.*)src=\"([^\"]+)\"[^>]+>/, '');
-                            // textarea.html(html);
-
-                            that.paste_axios_image(img);
+                            // let text = html.replace(/<img(.*)src=\"([^\"]+)\"[^>]+>/g, '');
+                            el.innerText = html.replace(/<img [^>]*src=['"]([^'"]+)[^>]*>/gi, '');;
+                            api.pasteUploadImage(img);
 
                         } else {
                             // textarea.text(textarea.text());
@@ -176,20 +217,58 @@ export default {
                     alert("不支持文件类型" + fileType + "，支持 jpeg,jpg,gif,png,bmp 图片类型文件！");
                     return
                 }
-
+                let file = files[0];
                 this.upload_state = 'loading';
-                this.$el.querySelector('form').submit();
+                let reader = new FileReader();
+                reader.onload = function (evt) {
+                    // let img = new Image();
+                    // img.src = evt.target.result;
+                    // img.onload = function ()
+                    // {
+                    //     let canvas = document.createElement('canvas');
+                    //     let ctx = canvas.getContext('2d');
+                    //     canvas.width = this.width;
+                    //     canvas.height = this.height;
+                    //     ctx.drawImage(img, 0, 0, this.width, this.height);
+                    //     // let base64 = canvas.toDataURL('image/jpeg', 0.5);
+                    //     let base64 = canvas.toDataURL();
+                    //     // let result = {
+                    //     //     url: window.URL.createObjectURL(file),
+                    //     //     base64: base64,
+                    //     //     clearBase64: base64.substr(base64.indexOf(',') + 1),
+                    //     //     suffix: base64.substring(base64.indexOf('/') + 1, base64.indexOf(';')),
+                    //     // };
+                    //     api.pasteUploadImage(base64);
+                    // }
+                    api.pasteUploadImage(evt.target.result);
+                };
+                reader.readAsDataURL(file);
+                // this.$el.querySelector('form').submit();
             }
         },
         emoji_insert(key) {
-            let el = this.el_textarea;
+            let el = getElTextarea();
             // let emoji = '<img class="im_emoji" data-key="' + key + '" src="' + setting.EMOJI.path + setting.EMOJI.map[key] + '" width="24" border="0" style="vertical-align: bottom;" />';
             // 插入图片的话仍会发生光标定位问题
             // this.message = this.contenteditable_insert('[' + key + ']');
             let position = this.caret_position;
-            let text = el.innerHTML;
+            // innerHtml ie 下空值会多出 <br>
+            let text = el.innerText;
+
+            console.log(text);
             el.innerText = text.slice(0, position) + '[' + key + ']' + text.slice(position, text.length);
             this.emoji_show = false;
+            this.prompt_state = false;
+            el.focus();
+            // https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=2&cad=rja&uact=8&ved=0ahUKEwiI7NqX9vbUAhVKFJQKHfKWAIYQFggvMAE&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F24115860%2Fset-caret-position-at-a-specific-position-in-contenteditable-div&usg=AFQjCNFcDFEz45PuDlQCGVqYsYt1S8EZUQ
+            // https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=0ahUKEwiI7NqX9vbUAhVKFJQKHfKWAIYQFggnMAA&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F6249095%2Fhow-to-set-caretcursor-position-in-contenteditable-element-div&usg=AFQjCNEWqQvJnN7lDdXPZldY5nuiKlIa2Q
+            var range = document.createRange();
+            range.setStart(el.firstChild, this.caret_position + key.length + 2);
+            // range.setEnd(el.firstChild, this.caret_position + key.length + 2);
+            range.collapse(true);
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
         },
         // 光标插入和选择替换插入
         textarea_insert: function (p_text, t) {
@@ -256,31 +335,28 @@ export default {
                 }
                 return caretOffset;
             }
-            this.caret_position = getCaretCharacterOffsetWithin(this.el_textarea);
+            this.caret_position = getCaretCharacterOffsetWithin(getElTextarea());
+            console.log('caret position', this.caret_position);
         },
         emoji_close(e) {
-            if (!this.$el.querySelector('.bq').contains(e.target)) {
+            if (!document.getElementById('im_facebutton').contains(e.target)) {
                 this.emoji_show = false;
             }
         },
-        getHistory() {
+        toggleHistoryContainer() {
             if (!this.historyContainerOpen) {
-                if (!this.history_list.length) {
-                    this.toggleHistory('loading');
-                    let messageid = '';
-                    if (this.message_list[0]) {
-                        messageid = this.message_list[0].messageid;
-                    }
-                    events.trigger('store:request:history', {
-                        id: this.leftWindow.id,
-                        messageid: messageid,
-                        fn: 'p',
-                        exec: 'more_history'
-                    });
-                }
-                this.toggleHistory();
+                this.toggleHistory({
+                    state: 'loading',
+                    open: 1
+                });
+                events.trigger('store:request:history', {
+                    id: this.leftWindow.id,
+                    exec: 'more_history'
+                });
             } else {
-                this.toggleHistory();
+                this.toggleHistory({
+                    open: 0
+                });
             }
         },
         ...mapMutations({
@@ -291,6 +367,7 @@ export default {
     data() {
         return {
             // can_paste_upload: false,
+            prompt_state: true,
             caret_position: 0,
             emoji_show: false,
             emoji_path: setting.EMOJI.path,
@@ -304,10 +381,13 @@ export default {
     },
     created() {
         this.$nextTick(() => {
-            this.el_textarea = this.$el.querySelector('.im_chatarea');
+            document.getElementById('im_app').addEventListener('click', this.emoji_close);
         });
+
         let that = this,
             timer = null;
+        // oa 无法使用 form 提交上传图片。跨域。郁闷
+        // document.domain = 'fang.com';
         window.FangChat.picUploadComplete = (data) => {
             clearTimeout(timer);
             if (!data) {
@@ -322,13 +402,12 @@ export default {
             }
         };
 
-
         // 干掉IE http之类地址自动加链接
         try {
             document.execCommand("AutoUrlDetect", false, false);
-        } catch (e) { }
-
-        window.addEventListener('click', this.emoji_close);
+        } catch (e) {
+            console.log('AutoUrlDetect', e);
+        }
     }
 }
 </script>
@@ -379,9 +458,6 @@ a:hover {
 }
 
 
-
-
-
 /* 工具栏 */
 
 .fbtools {
@@ -408,7 +484,7 @@ a:hover {
 .fbtools .tp input {
     // width: 18px;
     // height: 15px;
-    margin-left: -70px; // yangfan: 正好选择按钮在图片位置
+    margin-left: -145px; // yangfan: 正好选择按钮在图片位置
     vertical-align: top;
     filter: alpha(opacity=0);
     opacity: 0;
@@ -492,9 +568,6 @@ a:hover {
 }
 
 
-
-
-
 /* 输入内容 */
 
 .textarea {
@@ -502,6 +575,7 @@ a:hover {
     height: 115px;
     padding: 10px 15px;
     position: relative;
+    background-color: #fff;
 }
 
 .textarea textarea,
@@ -517,20 +591,6 @@ a:hover {
     border: none;
     overflow-y: auto;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /* 图片上传状态 */
@@ -561,5 +621,20 @@ a:hover {
 .textarea .upload.fail {
     background-image: url(../assets/images/icon-upload-fail.png);
     color: #e01818;
+}
+
+.textarea .upload.fail a {
+    color: #4d90fe;
+    text-decoration: underline;
+}
+
+.im_prompt {
+    width: 480px;
+    height: 20px;
+    padding: 10px 15px;
+    color: #aaa;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 </style>

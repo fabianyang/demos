@@ -4,17 +4,17 @@
         <right-title></right-title>
         <div class="listcon" v-if="rightState === 'notice'">
             <!-- 消息列表组件，会有多个 -->
-            <right-list signame="im_notice" title="通知" v-if="notice.length" :list="notice" :info="info_user"></right-list>
-            <right-list signame="im_notice_single" title="单聊" v-if="single.length" :list="single" :info="info_user">></right-list>
-            <right-list signame="im_notice_group" title="群聊" v-if="group.length" :list="group" :info="info_group">></right-list>
+            <right-list signame="im_notice" title="通知" :list="notice" :info="info_user"></right-list>
+            <right-list signame="im_notice_single" title="单聊" :list="single" :info="info_user">></right-list>
+            <right-list signame="im_notice_group" title="群聊" :list="group" :info="info_group">></right-list>
         </div>
         <div class="listcon" v-if="rightState === 'book'">
             <!-- 消息列表组件，会有多个 -->
-            <right-list signame="im_book_buddy" title="好友" v-if="list_buddy.length" :list="list_buddy" :info="info_user"></right-list>
-            <right-list signame="im_book_group" title="群聊" v-if="list_group.length" :list="list_group" :info="info_group"></right-list>
-            <right-list signame="im_book_manager" title="直接上下级" v-if="list_manager.length" :list="list_manager" :info="info_user"></right-list>
-            <right-list signame="im_book_mate" title="部门同事" v-if="list_mate.length" :list="list_mate" :info="info_user"></right-list>
-            <right-list signame="im_book_follow" title="特别关注" v-if="follow.length" :list="follow" :info="info_user"></right-list>
+            <right-list signame="im_book_buddy" title="好友" :list="list_buddy" :info="info_user"></right-list>
+            <right-list signame="im_book_group" title="群聊" :list="list_group" :info="info_group"></right-list>
+            <right-list signame="im_book_manager" title="直接上下级" :list="list_manager" :info="info_user"></right-list>
+            <right-list signame="im_book_mate" title="部门同事" :list="list_mate" :info="info_user"></right-list>
+            <right-list signame="im_book_follow" title="特别关注" :list="follow" :info="info_user"></right-list>
         </div>
         <!-- 搜索结果组件 -->
         <right-search-result v-if="rightState === 'search'"></right-search-result>

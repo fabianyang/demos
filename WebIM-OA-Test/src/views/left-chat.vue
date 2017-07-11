@@ -10,7 +10,11 @@
         <left-chat-textarea></left-chat-textarea>
         <!-- 下载 -->
         <div class="fbbutr">
-            <a href="#">下载天下聊pc客户端</a>
+            <a @click.stop="show_download = !show_download">下载天下聊pc客户端</a>
+            <div id="im_downloadbox" class="imBox" v-show="show_download">
+                <a :href="win_url"><img class="impic" src="http://js.soufunimg.com/oa/platform_web/images/login/btn-Windows.png?jsc=2017-06-22 18:13:30"></a>
+                <a :href="mac_url"><img class="impic" src="http://js.soufunimg.com/oa/platform_web/images/login/btn-Mac.png?jsc=2017-06-22 18:13:30"></a>
+            </div>
         </div>
     </div>
 </template>
@@ -19,6 +23,8 @@
 import leftTitle from '../components/left-title';
 import leftChatContent from '../components/left-chat-content';
 import leftChatTextarea from '../components/left-chat-textarea';
+
+let config = window.FangChat.config;
 
     export default {
         name: 'left-chat',
@@ -29,8 +35,19 @@ import leftChatTextarea from '../components/left-chat-textarea';
         },
         data() {
             return {
-                msg: 'Welcome to Your Vue.js App'
+                show_download: false,
+                mac_url: config.macUrl || 'javascript:;',
+                win_url: config.winUrl || 'javascript:;'
             }
+        },
+        created() {
+            this.$nextTick(() => {
+                document.getElementById('im_app').addEventListener('click', (e) => {
+                    if (!document.getElementById('im_downloadbox').contains(e.target)) {
+                        this.show_download = false;
+                    }
+                });
+            });
         }
     }
 </script>
@@ -83,6 +100,8 @@ import leftChatTextarea from '../components/left-chat-textarea';
         width: 510px;
         height: 25px;
         padding: 0 15px;
+        background-color: #fff;
+        position: relative;
     }
 
     .fbconl .fbbutr a {
@@ -93,5 +112,25 @@ import leftChatTextarea from '../components/left-chat-textarea';
 
     .fbconl .fbbutr a:hover {
         color: #333;
+    }
+
+    .imBox {
+        width: 112px;
+        height: 75px;
+        border: 1px solid #ccc;
+        position: absolute;
+        left: 15px;
+        top: -75px;
+        background-color: #fff;
+        z-index: 100;
+    }
+
+    .imBox a {
+        display: block;
+    }
+
+    .impic {
+        width: 100px;
+        margin: 5px 5px -5px 5px;
     }
 </style>

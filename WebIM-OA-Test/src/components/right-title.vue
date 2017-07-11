@@ -1,7 +1,8 @@
 <template>
     <div class="fbconrtit clearfix">
         <div class="flol">
-            <input class="search" type="text" @input="search($event)" @focus="onFucus" @blur="onBlur($event)" placeholder="搜索">
+            <span class="searchdel" @click="closeSearch"></span>
+            <input id="im_inputsearch" class="search" type="text" @input="search" @focus="onFucus" placeholder="搜索">
         </div>
         <a class="flol close2" @click="stateChange(['app', 'min'])"></a>
     </div>
@@ -13,7 +14,15 @@ import { mapState, mapMutations } from 'vuex';
 import { VIEW_STATE_CHANGE, VIEW_SEARCH_USER_CHANGE } from '../store/mutation-types';
 
 let timer = null,
-    lastRightState = '';
+    lastRightState = '',
+    el_input = null;
+
+let getElInput = () => {
+    if (!el_input) {
+        el_input = document.getElementById('im_inputsearch');
+    }
+    return el_input;
+}
 
 export default {
     name: 'right-title',
@@ -21,8 +30,15 @@ export default {
         rightState: state => state.right
     }),
     methods: {
-        search(ev) {
-            let keyword = ev.target.value;
+        closeSearch() {
+            clearTimeout(timer);
+            getElInput().value = '';
+            if (lastRightState) {
+                this.stateChange(['right', lastRightState]);
+            }
+        },
+        search() {
+            let keyword = getElInput().value;
             this.stateSearchChage({
                 result: [],
                 info: 'loading'
@@ -34,7 +50,7 @@ export default {
                 this.stateChange(['right', lastRightState])
                 return;
             }
-            if (timer) clearTimeout(timer);
+            clearTimeout(timer);
             let that = this;
             timer = setTimeout(() => {
                 that.stateSearchChage({
@@ -45,12 +61,10 @@ export default {
                 });
             }, 1000);
         },
-        onBlur(ev) {
-            ev.target.value = '';
-            this.stateChange(['right', lastRightState]);
-        },
         onFucus() {
-            lastRightState = this.rightState;
+            if (this.rightState !== 'search') {
+                lastRightState = this.rightState;
+            }
         },
         ...mapMutations({
             'stateSearchChage': VIEW_SEARCH_USER_CHANGE,
@@ -94,7 +108,18 @@ a:hover {
     cursor: pointer;
 }
 
-
+.flol {
+    position: relative;
+}
+.flol .searchdel {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    cursor: pointer;
+    background: url(../assets/images/search-del.png) no-repeat center;
+}
 
 /* 搜索 最小化 */
 
@@ -122,4 +147,5 @@ a:hover {
     display: inline-block;
     background: url(../assets/images/icon-close2.png) no-repeat center;
 }
+
 </style>

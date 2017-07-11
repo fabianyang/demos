@@ -2,7 +2,7 @@
  * util-events.js - The minimal events support
  */
 let fangChat = window.FangChat;
-let events = fangChat.data.events = {};
+let events = fangChat.events = {};
 
 // Bind event, name not use 'on', 'off', 'emit'
 fangChat.on = function (name, callback) {
@@ -54,11 +54,12 @@ fangChat.emit = function (name, data) {
 
     return events;
 };
-// fangoaim事件命名空间
+// fangoaim 事件命名空间
 let eventSpace = 'imEvent:';
 let eventRegister = {
     // 选择 socket 事件，异步实现加载
     'socket:state:change': 1,
+    'socket:receive:message': 1,
     'socket:connecting': 1,
     'socket:restore:info': 1,
 

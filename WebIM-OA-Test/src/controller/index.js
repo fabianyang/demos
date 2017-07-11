@@ -13,6 +13,7 @@ import {
     SOCKET_SEARCH_USER_CHANGE,
     SOCKET_RECONNECT,
     SOCKET_RESTORE_INFO,
+    VIEW_STATE_CHANGE,
     VIEW_CHAT_MSGKEY,
     VIEW_CHAT_CHANGE,
     SOCKET_RECENT_CHANGE
@@ -26,6 +27,9 @@ events.on('socket:state:change', function (data) {
         setTimeout(() => {
             store.commit(SOCKET_STATE_CHANGE, '');
         }, 1000);
+    }
+    if (data === 'close' || data === 'error') {
+        store.commit(VIEW_STATE_CHANGE, ['app', 'min']);
     }
 });
 
@@ -59,7 +63,7 @@ events.on('view:send:message', (data) => {
 });
 
 events.on('view:search:user', (data) => {
-    socket.postHistory(data);
+    socket.postSearchUser(data);
 });
 
 events.on('store:request:user', (data) => {
@@ -104,6 +108,10 @@ events.on('socket:messagekey:back', (data) => {
  * 一定要先更新基础信息
  */
 events.on('socket:receive:chat', (data) => {
+    if (!data) {
+        console.log('socket receive void chat');
+        return;
+    }
     store.commit(SOCKET_CHAT_CHANGE, data);
     store.commit(VIEW_CHAT_CHANGE, data);
 });

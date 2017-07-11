@@ -17,13 +17,13 @@
                 </ul>
             </div>
             -->
-    <div class="conts" :class="{ open: open }">
-        <div class="rlisttit unselectable" @click="open = !open">
+    <div class="conts" :class="{ open: rightPanelOpen[signame]}">
+        <div class="rlisttit unselectable" @click="toggleOpen">
             <a v-text="title">Title</a>
             <!-- 新消息数字 -->
             <span class="new" v-if="recent_new">{{ recent_new }}</span>
         </div>
-        <ul class="rlist" v-show="open">
+        <ul class="rlist" v-show="rightPanelOpen[signame]">
             <li v-if="info[id]" v-for="id in list" :key="id" @click="openWindow(id)" :class="{ cur: id === leftWindow.id && signame === leftWindow.signame }">
                 <a class="user-head">
                     <img :src="info[id].avatar || defaultAvatar" alt="id">
@@ -53,51 +53,84 @@
 </template>
 
 <script>
+import setting from '../setting';
 import { mapState, mapMutations } from 'vuex';
-import { VIEW_STATE_CHANGE, VIEW_LEFT_OPEN } from '../store/mutation-types';
+import { VIEW_STATE_CHANGE, VIEW_LEFT_OPEN, VIEW_RIGHT_SWITCH, VIEW_TOGGLE_HISTORY } from '../store/mutation-types';
 
 export default {
     name: 'right-list',
     props: ['signame', 'title', 'list', 'info'],
     computed: {
         recent_new() {
+            let recent_list = this.recent_list_common;
+            if (this.signame === 'im_notice') {
+                recent_list = this.recent_list_notice;
+            }
             let count = 0;
             this.list.forEach((v) => {
-                let recent_new = +this.recent_list[v];
+                let recent_new = +recent_list[v];
                 if (recent_new) {
                     count += recent_new;
                 }
             });
             return count;
         },
+        recent_list() {
+            if (this.signame === 'im_notice') {
+                return this.recent_list_notice;
+            } else {
+                return this.recent_list_common;
+            }
+        },
         ...mapState({
             leftWindow: state => state.leftWindow,
-            recent_list: state => state.recent.list
+            rightPanelOpen: state => state.rightPanel.open,
+            recent_list_common: state => state.recent.list,
+            recent_list_notice: state => state.recent.list.notice
         })
     },
     methods: {
+        toggleOpen() {
+            this.stateRightOpen({
+                signame: this.signame,
+                open: !this.rightPanelOpen[this.signame]
+            });
+        },
         openWindow(id) {
             // let info = this.info[id] || {id: id};
-            let info = this.info[id];
-            info.signame = this.signame;
-            info.title = this.title;
-            info.recent_new = this.recent_list[id];
+            let info = Object.assign({}, this.info[id], {
+                signame: this.signame,
+                title: this.title,
+                recent_new: this.recent_list[id]
+            });
             if (this.signame === 'im_notice') {
                 this.stateChange(['left', 'notice']);
             } else {
                 this.stateChange(['left', 'chat']);
             }
+
+            // 需求刚开始需要点击通讯录切换到消息，后来又取消了，留在当前列表
+            // this.stateChange(['right', 'notice']);
+            this.stateRightOpen({
+                // signame: info.signame.split('_')[2] === 'group' ? 'im_notice_group' : 'im_notice_single',
+                signame: this.signame,
+                open: true
+            });
             this.stateLeftOpen(info);
+            this.toggleHistory({
+                open: 0
+            });
         },
         ...mapMutations({
             'stateChange': VIEW_STATE_CHANGE,
-            'stateLeftOpen': VIEW_LEFT_OPEN
+            'stateLeftOpen': VIEW_LEFT_OPEN,
+            'stateRightOpen': VIEW_RIGHT_SWITCH,
+            'toggleHistory': VIEW_TOGGLE_HISTORY
         })
     },
     data() {
         return {
-            open: false,
-            defaultAvatar: window.FangChat.data.defaultAvatar
+            defaultAvatar: setting.defaultAvatar
         }
     }
 }

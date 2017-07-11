@@ -5,11 +5,19 @@ export default {
         return list;
     },
     history_list(state) {
-        let list = state.history_lists[state.leftWindow.id];
+        let list = state.historyContainer.list;
         list = list ? list.concat().reverse() : [];
         return list;
     },
-    history_nomore(state) {
-        return state.history_nomore[state.leftWindow.id];
+    notice_list(state) {
+        let list = state.notice_lists[state.leftWindow.id];
+        list = list ? list.concat().reverse() : [];
+        return list;
+    },
+    right_panel_open(state) {
+        return state.rightPanel.open[state.leftWindow.signame];
     }
+    // history_nomore(state) {
+    //     return state.history_nomore[state.leftWindow.id];
+    // }
 };

@@ -26,17 +26,20 @@ export default new Vuex.Store({
         },
         // leftWindow - 聊天窗口信息
         leftWindow: {},
+        rightPanel: {
+            open: {}
+        },
         historyContainer: {
             open: false,
             loadState: '',
-            requested: false
+            requested: false,
+            list: [],
+            nomore: false
         },
         // 对话消息列表，以 id 为 key
         message_lists: {},
-        history_lists: {},
-        history_nomore: {},
         // 通知消息列表
-        notice_list: [],
+        notice_lists: {},
         // socket 连接次数
         // 群信息，以 id 为 key
         info_group: {},
@@ -60,7 +63,9 @@ export default new Vuex.Store({
         recent: {
             notice: 0,
             book: 0,
-            list: {}
+            list: {
+                notice: {}
+            }
         }
     },
     // modules: {

@@ -1,5 +1,5 @@
 <template>
-    <div class="zuixiaohua" v-on:click="stateChange(['app', 'max'])">
+    <div class="zuixiaohua" v-on:click="appMax">
         <span class="num" v-if="recent">{{ recent }}</span>
         <span>天下聊</span>
     </div>
@@ -11,12 +11,14 @@
 
     export default {
         name: 'min-im',
-        computed: {
-            ...mapState({
-                recent: state => state.recent.notice
-            })
-        },
+        computed: mapState({
+            recent: state => state.recent.notice
+        }),
         methods: {
+            appMax() {
+                this.stateChange(['right', 'notice']);
+                this.stateChange(['app', 'max']);
+            },
             ...mapMutations({
                 'stateChange': VIEW_STATE_CHANGE // 映射 this.add() 为 this.$store.commit('increment')
             })
@@ -38,9 +40,7 @@
         border: 0;
     }
 
-
     /* 最小化 */
-
     .zuixiaohua {
         width: 140px;
         height: 140px;

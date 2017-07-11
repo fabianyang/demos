@@ -20,18 +20,24 @@ class Storage {
         this.core = window.localStorage;
         this.synctime = {};
 
+        let logintime = new Date().getTime();
         if (ls) {
             let item = ls.getItem(this.key);
             if (item) {
                 let json = JSON.parse(item);
                 if (json.synctime) {
                     this.synctime = json.synctime;
+                    this.synctime.login = logintime;
                 } else {
-                    this.synctime = {};
+                    this.synctime = {
+                        login: logintime
+                    };
                 }
             } else {
                 ls.setItem(this.key, JSON.stringify({
-                    synctime: {}
+                    synctime: {
+                        login: logintime
+                    }
                 }));
             }
         }
@@ -41,8 +47,11 @@ class Storage {
         let item = this.core.getItem(this.key);
         let json = JSON.parse(item);
 
-        this.synctime[id] = time;
-
+        if (time === 0) {
+            delete this.synctime[id];
+        } else {
+            this.synctime[id] = time;
+        }
         json.synctime = this.synctime;
 
         this.core.setItem(this.key, JSON.stringify(json));
@@ -51,7 +60,7 @@ class Storage {
     getSynctime(id) {
         let synctime = this.synctime;
         if (id) {
-            return this.synctime[id];
+            return this.synctime[id] || 0;
         }
 
         let result = Object.keys(synctime).sort((a, b) => {
