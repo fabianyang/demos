@@ -13,7 +13,6 @@ if (window.WebSocket) {
     Socket = require('./longPolling').Socket;
 }
 
-
 class IndexSocket {
     constructor() {
         this.core = new Socket();

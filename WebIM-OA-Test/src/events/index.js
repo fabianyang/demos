@@ -78,6 +78,7 @@ let eventRegister = {
     'view:send:message': 1,
     'view:search:user': 1,
     'view:reconnect:socket': 1,
+    'view:clear:chatarea': 1,
     'socket:search:user:back': 1,
     'store:request:user': 1,
     'store:request:group': 1,

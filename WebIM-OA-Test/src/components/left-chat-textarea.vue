@@ -5,16 +5,14 @@
             <!-- 工具选中时添加类名 cur -->
             <div id="im_facebutton" class="bq" :class="{ cur: emoji_show }" @click="emoji_show = !emoji_show"></div>
             <div class="tp" :class="{ cur: upload_state }">
-                <!--<form method="Post" enctype="multipart/form-data" :action="upload_url" :target="upload_iframe_name">-->
-                <input type="file" title="发送图片" v-if="upload_state !== 'success' && upload_state !== 'fail'" :name="upload_input_name" @change="upload_image" />
-                <!--</form>-->
+                <input type="file" title="发送图片" v-if="upload_state !== 'success' && upload_state !== 'fail'" @change="upload_image" />
             </div>
             <div class="jl" :class="{ cur: historyContainerOpen }" @click="toggleHistoryContainer"></div>
             <!-- 表情 默认隐藏 显示添加 show , yangfan: img 添加个 a 标签-->
             <div class="bqbox" v-show="emoji_show">
                 <div class="bqcon">
-                    <a v-for="(emoji, key, index) in emoji_map" @click="emoji_insert(key)">
-                        <img :src="emoji_path + emoji" width="24" height="24" :title="key" :alt="emoji + '_' + index">
+                    <a v-for="(emoji, key) in emoji_map" @click="emoji_insert(key)">
+                        <img :src="emoji" width="24" height="24" :title="key" :alt="key">
                     </a>
                 </div>
             </div>
@@ -35,7 +33,6 @@
             <p class="upload fail" v-show="upload_state === 'fail'">图片上传失败，请稍后上传
                 <a @click="clear('img')">删除</a>
             </p>
-            <!--<iframe v-if="upload_state !== 'success' && upload_state !== 'fail'" :name="upload_iframe_name" width="0" height="0" scrolling="no" frameBorder="0" style="visibility: hidden;"></iframe>-->
         </div>
     </div>
 </template>
@@ -60,23 +57,10 @@ let getElTextarea = () => {
 
 export default {
     name: 'left-chat-textarea',
-    computed: {
-        upload_iframe_name() {
-            return 'fcfile' + this.sid;
-        },
-        upload_input_name() {
-            return 'file' + this.sid;
-        },
-        upload_url() {
-            var backurl = setting.UPLOAD_IMG_BACK_URL_PATH;
-            var sid = Math.round(Math.random() * 100);
-            return setting.UPLOAD_IMG_PATH + '&sid=' + sid + '&backurl=' + backurl;
-        },
-        ...mapState({
-            historyContainerOpen: state => state.historyContainer.open,
-            leftWindow: state => state.leftWindow
-        }),
-    },
+    computed: mapState({
+        historyContainerOpen: state => state.historyContainer.open,
+        leftWindow: state => state.leftWindow
+    }),
     methods: {
         togglePrompt(e) {
             if (e.type === 'click') {
@@ -151,14 +135,12 @@ export default {
             if (type === 'img') {
                 this.upload_state = '';
                 this.picture = '';
-                this.sid = Math.round(Math.random() * 10000);
             }
             if (type === 'chat') {
                 getElTextarea().innerText = '';
             }
         },
         upload_image: function (ev) {
-                        debugger;
             let that = this;
             if (ev.type === 'paste') {
                 // this.can_paste_upload = true;
@@ -240,6 +222,7 @@ export default {
                     //     // };
                     //     api.pasteUploadImage(base64);
                     // }
+                    console.log(evt.target.result.length);
                     api.pasteUploadImage(evt.target.result);
                 };
                 reader.readAsDataURL(file);
@@ -254,7 +237,6 @@ export default {
             let position = this.caret_position;
             // innerHtml ie 下空值会多出 <br>
             let text = el.innerText;
-
             console.log(text);
             el.innerText = text.slice(0, position) + '[' + key + ']' + text.slice(position, text.length);
             this.emoji_show = false;
@@ -269,46 +251,6 @@ export default {
             var sel = window.getSelection();
             sel.removeAllRanges();
             sel.addRange(range);
-        },
-        // 光标插入和选择替换插入
-        textarea_insert: function (p_text, t) {
-            var $t = this.$el.querySelector('textarea');
-            // 如果是旧版本IE
-            if (document.selection) {
-                $t.focus();
-                var sel = document.selection.createRange();
-                sel.text = p_text;
-                $t.focus();
-                var l = $t.value.length;
-                sel.moveStart('character', -l);
-                var wee = sel.text.length;
-                if (arguments.length == 2) {
-                    sel.moveEnd('character', wee + t);
-                    if (t <= 0) {
-                        sel.moveStart('character', wee - 2 * t - p_text.length);
-                    } else {
-                        sel.moveStart('character', wee - t - p_text.length);
-                    }
-                    sel.select();
-                }
-            } else if ($t.selectionStart || $t.selectionStart == '0') {
-                var startPos = $t.selectionStart;
-                var endPos = $t.selectionEnd;
-                var scrollTop = $t.scrollTop;
-                $t.value = $t.value.substring(0, startPos) + p_text + $t.value.substring(endPos, $t.value.length);
-                $t.focus();
-                $t.selectionStart = startPos + p_text.length;
-                $t.selectionEnd = startPos + p_text.length;
-                $t.scrollTop = scrollTop;
-                if (arguments.length == 2) {
-                    $t.setSelectionRange(startPos - t, $t.selectionEnd + t);
-                    $t.focus();
-                }
-            } else {
-                $t.value += p_text;
-                $t.focus();
-            }
-            return $t.value;
         },
         save_caret_position() {
             // https://stackoverflow.com/questions/35559097/how-to-add-emoji-in-between-the-letters-in-contenteditable-div
@@ -370,12 +312,11 @@ export default {
             prompt_state: true,
             caret_position: 0,
             emoji_show: false,
-            emoji_path: setting.EMOJI.path,
-            emoji_map: setting.EMOJI.map,
+            // emoji_path: setting.EMOJI.path,
+            emoji_map: setting.EMOJI,
             // 用原生获取，不进行双向绑定，插入表情或普通输入有影响
             // message: '',
             picture: '',
-            sid: Math.round(Math.random() * 10000),
             upload_state: ''
         }
     },
@@ -401,6 +342,13 @@ export default {
                 // that.showTip('图片上传成功，请发送。 <a href="' + data + '" target="_blank" data-id="look">\u67e5\u770b</a> <a href="javascript:;" data-id="del">\u5220\u9664</a>');// \u56fe\u7247\u4e0a\u4f20\u6210\u529f\uff0c\u8bf7\u53d1\u9001\u3002
             }
         };
+
+
+        events.on('view:clear:chatarea', ()=> {
+            this.prompt_state = true;
+            that.clear('chat');
+            that.clear('img');
+        });
 
         // 干掉IE http之类地址自动加链接
         try {

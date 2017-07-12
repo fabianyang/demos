@@ -16,18 +16,24 @@ export default {
         title() {
             let data = this.leftWindow;
             if (!data.id) return;
-            let notGroup = data.id.split(':')[0] === 'oa';
-            if (notGroup) {
-                if (data.department.length > 16) {
-                    return data.nickname + data.department.substr(0, 16) + '...)';
+            let isGroup = data.id.split(':')[0] !== 'oa';
+            let department = data.department,
+                nickname = data.nickname;
+            if (!isGroup) {
+                if (department.length > 18) {
+                    department = department.substr(0, 18) + '...';
                 }
-            }
-            if (!notGroup) {
-                if (data.nickname.length > 26) {
-                    return data.nickname.substr(0, 26) + '... ' + data.number;
+                if (department) {
+                    return nickname + '(' + department + ')';
                 }
+                return nickname;
             }
-            return data.nickname + (data.department || data.number);
+            if (isGroup) {
+                if (nickname.length > 28) {
+                    nickname = nickname.substr(0, 28) + '... ';
+                }
+                return nickname + '(' + data.number + ')';
+            }
         },
         email() {
             let data = this.leftWindow;

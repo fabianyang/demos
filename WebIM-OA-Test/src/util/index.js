@@ -106,6 +106,33 @@ class Util {
         return fmt;
     }
 
+    static secondFormat(num) {
+        if (!num) {
+            return 0;
+        }
+
+        let ms = (num % 1).toFixed(3).substr(2);
+        let s = parseInt(num);
+        let m = 0;
+        let h = 0;
+        if (s > 60) {
+            m = parseInt(s / 60);
+            s = parseInt(s % 60);
+            if (m > 60) {
+                h = parseInt(m / 60);
+                m = parseInt(m % 60);
+            }
+        }
+        // let result = '' + parseInt(s) + '秒';
+        // if (m > 0) {
+        //     result = '' + parseInt(m) + '分' + result;
+        // }
+        // if (h > 0) {
+        //     result = '' + parseInt(h) + '小时' + result;
+        // }
+        return (100 + h).toString().substr(1) + ':' + (100 + m).toString().substr(1) + ':' + (100 + s).toString().substr(1);
+    }
+
     static isJSON(str) {
         if (typeof str === 'string') {
             try {

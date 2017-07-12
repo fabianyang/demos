@@ -48,11 +48,11 @@
                     <!-- 定位内容 replylocation -->
                     <div class="replylocation" v-if="item.command === 'location' || item.command === 'group_location'">
                         <div class="info">
-                            <a v-text="item.title0" :href="location_href(item.message)" target="_blank">big title</a>
-                            <a v-text="item.title1" :href="location_href(item.message)" target="_blank">small title</a>
+                            <a v-text="item.title0" :href="location_href(item)" target="_blank">big title</a>
+                            <a v-text="item.title1" :href="location_href(item)" target="_blank">small title</a>
                         </div>
                         <div class="map">
-                            <a :href="location_href(item.message)" target="_blank">
+                            <a :href="location_href(item)" target="_blank">
                                 <img :src="getMapSrc(item)">
                             </a>
                             <!-- 地图内容
@@ -149,8 +149,8 @@ export default {
         })
     },
     methods: {
-        location_href(message) {
-            return 'http://m.test.fang.com/chat/location.jsp?pos_x=' + message.split(',')[0] + '&pos_y=' + message.split(',')[1] + '&message=test&title=test'
+        location_href(item) {
+            return 'http://m.test.fang.com/chat/location.jsp?pos_x=' + item.message.split(',')[0] + '&pos_y=' + item.message.split(',')[1] + '&message=' + item.title1 + '&title=' + item.title0;
         },
         showTimeStamp(index) {
             let prev = this.list[index - 1];
@@ -176,7 +176,7 @@ export default {
             // PDF—— .pdf
             // TXT—— .txt
             let key = extension.substr(0, 3);
-            return this.png[key] || this.png['i'];
+            return setting.filePicture[key] || this.filePicture['i'];
         },
         getAvatar(item) {
             let from = item.from;
@@ -206,7 +206,7 @@ export default {
 
             // 把对应的表情字符转换成表情src
             return msg.replace(/\[([^\]]*)\]/g, function () {
-                return '<img src="' + setting.EMOJI.path + setting.EMOJI.map[arguments[1]] + '" width="24" border="0" style="vertical-align: bottom;" />'
+                return '<img src="' + setting.EMOJI[arguments[1]] + '" width="24" border="0" style="vertical-align: bottom;" />'
             });
         },
         openCard(item) {
@@ -216,7 +216,8 @@ export default {
                 avatar: item.card_avatar,
                 department: item.card_department
             }
-            if (!this.info_user[card.id]) {
+            Object.assign(card, this.info_user[card.id]);
+            if (!card.email) {
                 events.trigger('store:request:user', card);
                 card.bySearch = 1;
             }
@@ -287,14 +288,6 @@ export default {
     },
     data() {
         return {
-            png: {
-                doc: require('../assets/images/file-word.png'),
-                xls: require('../assets/images/file-exal.png'),
-                ppt: require('../assets/images/file-ppt.png'),
-                pdf: require('../assets/images/file-pdf.png'),
-                txt: require('../assets/images/file-txt.png'),
-                i: require('../assets/images/file-wenzi.png')
-            },
             requested: false,
             username: config.username
         }

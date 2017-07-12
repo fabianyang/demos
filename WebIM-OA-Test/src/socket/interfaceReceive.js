@@ -30,8 +30,8 @@ let formatReceiveJSON = (json) => {
     let isGroup = json.command.split('_')[0] === 'group';
     if (isGroup) {
         result.id = json.houseid;
-        json.sendto = json.houseid;
-    } if (result.from === config.username) {
+        result.sendto = json.houseid;
+    } else if (result.from === config.username) {
         result.id = json.sendto;
     } else {
         result.id = result.from;
@@ -61,7 +61,7 @@ class InterfaceReceive {
         // command = 'notice'; // 用于测试，写死
         switch (command) {
             case 'notice':
-                purpose = 'tongzhi'; // 用于测试，写死
+                // purpose = 'tongzhi'; // 用于测试，写死
                 // 将展示名称定为通知标题
                 // json = {"clienttype":"phone","command":"notice","forceread":"false","form":"oa:51060","from":"oa:51060","housetitle":"文字通知","mallName":"王斌斌","message":"文字通知^@http://imgws03.soufunimg.com/SouFunOA/Image/201705/11/BEBD6FE13876A45ADD5529EBF7994908.jpg","messageid":"735145","messagetime":"2017-05-11 16:41:17.983","msgContent":"{\n  \"LogoUrl\" : \"http:\\/\\/img8.soufunimg.com\\/sfwork\\/2016_09\\/06\\/M07\\/0A\\/36\\/wKgEQFfOjRKISy0QAAAonPeoRxUAAW-TAEJdx0AACi0785.jpg\",\n  \"UserTitle\" : \"张永强\"\n}","projinfo":"654313","purpose":"tongzhi","realSendtoClientType":"phone","receiver":"{\n  \"subIds\" : \"\",\n  \"resIds\" : \"44005\",\n  \"agentType\" : \"\",\n  \"emailIds\" : \"\",\n  \"depIds\" : \"\"\n}","sendtime":"2017-05-11 16:41:17.983","sendto":"oa:44005","typeid":"1"}
                 // json = {"clienttype":"phone","command":"notice","forceread":"false","form":"oa:51060","from":"oa:51060","housetitle":"纯链接通知","mallName":"王斌斌","message":"http://www.fang.com^@http://imgws03.soufunimg.com/SouFunOA/Image/201705/11/778926A763CE435557AD51D2D8E868A0.jpg","messageid":"735152","messagetime":"2017-05-11 16:42:02.145","msgContent":"{\n  \"LogoUrl\" : \"http:\\/\\/img8.soufunimg.com\\/sfwork\\/2016_09\\/06\\/M07\\/0A\\/36\\/wKgEQFfOjRKISy0QAAAonPeoRxUAAW-TAEJdx0AACi0785.jpg\",\n  \"title\" : \"【北京房地产门户\\/房地产网】-北京搜房网\",\n  \"pic\" : \"https:\\/\\/static.soufunimg.com\\/common_m\\/m_public\\/201511\\/images\\/app_fang.png\",\n  \"UserTitle\" : \"张永强\",\n  \"desc\" : \"手机搜房网是中国最大的房地产家居移动互联网门户，为亿万用户提供全面及时的房地产新闻资讯内容,为所有楼盘提供网上浏览及业主论坛信息。覆盖全国300多个城市,找新房、找二手房、找租房,更多便捷,更加精准。\"\n}","projinfo":"654320","purpose":"tongzhi","realSendtoClientType":"phone","receiver":"{\n  \"subIds\" : \"\",\n  \"resIds\" : \"44005\",\n  \"agentType\" : \"\",\n  \"emailIds\" : \"\",\n  \"depIds\" : \"\"\n}","sendtime":"2017-05-11 16:42:02.145","sendto":"oa:44005","typeid":"1"}
@@ -210,7 +210,7 @@ class InterfaceReceive {
         if (content) {
             title = content.title.split(';');
             if (content.sharePosition === 'true') {
-                title[0] = '我的位置'
+                title[0] = '我的位置';
             }
         }
         let loc = json.message.split(';').join(',');
@@ -251,7 +251,7 @@ class InterfaceReceive {
         let info = json.message.split(';');
         msg = Object.assign(msg, {
             message: info[0],
-            second: info[2]
+            second: util.secondFormat(+info[2])
         });
         return msg;
     }
