@@ -14,7 +14,7 @@
             <right-list signame="im_book_group" title="群聊" :list="list_group" :info="info_group"></right-list>
             <right-list signame="im_book_manager" title="直接上下级" :list="list_manager" :info="info_user"></right-list>
             <right-list signame="im_book_mate" title="部门同事" :list="list_mate" :info="info_user"></right-list>
-            <right-list signame="im_book_follow" title="特别关注" :list="follow" :info="info_user"></right-list>
+            <right-list signame="im_book_follow" title="特别关注" :list="list_follow" :info="info_user"></right-list>
         </div>
         <!-- 搜索结果组件 -->
         <right-search-result v-if="rightState === 'search'"></right-search-result>
@@ -24,7 +24,7 @@
 </template>
 
 <script>
-    import { mapState } from 'vuex';
+    import { mapState, mapGetters } from 'vuex';
     import rightTitle from '../components/right-title';
     import rightList from '../components/right-list';
     import rightSwitch from '../components/right-switch';
@@ -38,20 +38,24 @@
             rightSwitch,
             rightSearchResult
         },
-        computed: mapState({
-            // 箭头函数可使代码更简练
-            rightState: state => state.right,
-            single: state => state.view_notice_single,
-            group: state => state.view_notice_group,
-            notice: state => state.view_notice,
-            list_buddy: state => state.view_book_buddy,
-            list_manager: state => state.view_book_manager,
-            list_mate: state => state.view_book_mate,
-            list_group: state => state.view_book_group,
-            follow: state => state.view_book_follow,
-            info_user: state => state.info_user,
-            info_group: state => state.info_group
-        })
+        computed: {
+            ...mapGetters({
+                list_buddy: 'sort_list_buddy',
+                list_manager: 'sort_list_manager',
+                list_mate: 'sort_list_mate',
+                list_group: 'sort_list_group',
+                list_follow: 'sort_list_follow',
+            }),
+            ...mapState({
+                // 箭头函数可使代码更简练
+                rightState: state => state.right,
+                single: state => state.view_notice_single,
+                group: state => state.view_notice_group,
+                notice: state => state.view_notice,
+                info_user: state => state.info_user,
+                info_group: state => state.info_group
+            })
+        }
     }
 </script>
 

@@ -24,7 +24,7 @@ let closeGroupInfo = (count, resolve) => {
 
 let PromiseResolve = {},
     PromiseRejectTimer = {},
-    outSecond = 1000,
+    outSecond = 5000,
     heart_timer = null;
 
 class WS {
@@ -77,6 +77,7 @@ class WS {
                 });
             } catch (e) {
                 console.log('new webSocket error', e);
+                receiveApi.socket_error();
                 reject();
             }
         });
@@ -131,10 +132,10 @@ class WS {
                     case 'location':
                     case 'group_location':
                     case 'card':
+                    case 'group_card':
                     case 'file':
                     case 'group_file':
                     case 'red_packets_cash':
-                        // 收到自己发的消息过滤掉
                         events.trigger('socket:receive:message', json);
                         break;
                 }

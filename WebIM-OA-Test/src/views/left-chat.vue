@@ -10,11 +10,14 @@
         <left-chat-textarea></left-chat-textarea>
         <!-- 下载 -->
         <div class="fbbutr">
+            <a href="http://work.fang.com/v2/request/approve/WfRequestDetailAct.do?method=toRequestDetail&workflowid=3996&isagentCreater=0&beagenter=" target="_blank">产品意见反馈</a>
+            <!--
             <a @click.stop="show_download = !show_download">下载天下聊pc客户端</a>
             <div id="im_downloadbox" class="imBox" v-show="show_download">
                 <a :href="win_url"><img class="impic" src="http://js.soufunimg.com/oa/platform_web/images/login/btn-Windows.png?jsc=2017-06-22 18:13:30"></a>
                 <a :href="mac_url"><img class="impic" src="http://js.soufunimg.com/oa/platform_web/images/login/btn-Mac.png?jsc=2017-06-22 18:13:30"></a>
             </div>
+            -->
         </div>
     </div>
 </template>
@@ -32,23 +35,23 @@ let config = window.FangChat.config;
             leftTitle,
             leftChatContent,
             leftChatTextarea
-        },
-        data() {
-            return {
-                show_download: false,
-                mac_url: config.macUrl || 'javascript:;',
-                win_url: config.winUrl || 'javascript:;'
-            }
-        },
-        created() {
-            this.$nextTick(() => {
-                document.getElementById('im_app').addEventListener('click', (e) => {
-                    if (!document.getElementById('im_downloadbox').contains(e.target)) {
-                        this.show_download = false;
-                    }
-                });
-            });
         }
+        // data() {
+        //     return {
+        //         show_download: false,
+        //         mac_url: config.macUrl || 'javascript:;',
+        //         win_url: config.winUrl || 'javascript:;'
+        //     }
+        // },
+        // created() {
+        //     this.$nextTick(() => {
+        //         document.getElementById('im_app').addEventListener('click', (e) => {
+        //             if (!document.getElementById('im_downloadbox').contains(e.target)) {
+        //                 this.show_download = false;
+        //             }
+        //         });
+        //     });
+        // }
     }
 </script>
 

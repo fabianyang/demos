@@ -1,7 +1,8 @@
 import axios from 'axios';
-import InterfaceReceive from './interfaceReceive';
 import setting from '../setting';
+import events from '../events';
 import util from '../util';
+import receiveApi from './interfaceReceive';
 
 let config = window.FangChat.config;
 
@@ -22,10 +23,113 @@ let closeGroupInfo = (count, resolve) => {
     };
 };
 
-class LongPolling extends InterfaceReceive {
+class LongPolling {
     constructor() {
-        super();
-        this.imei = this.imei();
+        this.imei = receiveApi.imei();
+    }
+
+    // loginout
+    login(command = 'login') {
+        return new Promise((resolve, reject) => {
+            console.log('longPolling loging', config, this.imei);
+            axios({
+                url: setting.LONGPOLLING_CHAT,
+                method: 'post',
+                data: util.queryStringify({
+                    clienttype: config.clienttype,
+                    type: config.usertype,
+                    username: config.username,
+                    nickname: config.nickname,
+                    agentid: config.agentid,
+                    city: config.city,
+                    os: config.os,
+                    imei: this.imei,
+                    command: command
+                })
+            }).then((res) => {
+                let data = res.data;
+                if (data && data.state === '200') {
+                    this.request();
+                    resolve();
+                } else {
+                    receiveApi.socket_error();
+                    reject();
+                }
+            }).catch((err) => {
+                console.log('longpolling login error', err);
+                receiveApi.socket_error();
+                reject();
+            });
+        });
+    }
+
+
+    request() {
+        let requestid = util.guid();
+        if (this.polling) {
+            this.polling.reject();
+        }
+        this.polling = axios({
+            url: setting.LONGPOLLING_CHAT,
+            method: 'post',
+            data: util.queryStringify({
+                clienttype: config.clienttype,
+                type: config.usertype,
+                username: config.username,
+                nickname: config.nickname,
+                agentid: config.agentid,
+                city: config.city,
+                os: config.os,
+                imei: this.imei,
+                requestid: requestid,
+                command: 'request'
+            })
+        }).then((res) => {
+            this.polling = null;
+            let data = res.data;
+            console.log(data);
+            if (data && data.command === 'close') {
+                return;
+            }
+            if (data && data.state === '-100') {
+                this.login();
+                return;
+            }
+            this.request();
+
+            let json = util.isJSON(data.data);
+            if (json) {
+                let command = json.command;
+                switch (command) {
+                    case 'notice':
+                        events.trigger('socket:receive:message', json);
+                        break;
+                    case 'chat':
+                    case 'group_chat':
+                    case 'batchchat':
+                    case 'group_batchchat':
+                    case 'img':
+                    case 'group_img':
+                    case 'voice':
+                    case 'group_voice':
+                    case 'video':
+                    case 'group_video':
+                    case 'location':
+                    case 'group_location':
+                    case 'card':
+                    case 'group_card':
+                    case 'file':
+                    case 'group_file':
+                    case 'red_packets_cash':
+                        events.trigger('socket:receive:message', json);
+                        break;
+                }
+            }
+        }).catch(function (error) {
+            this.polling = null;
+            this.request();
+            console.log('longpolling request error', error);
+        });
     }
 
     // 与 websocket 请求方式不同的需要提出
@@ -83,12 +187,10 @@ class LongPolling extends InterfaceReceive {
 
     socketSendMessage(message) {
         return new Promise((resolve, reject) => {
-            this.sendMessage(message).then((data) => {
-                if (data.status === 200) {
-                    resolve({
-                        messagekey: message.messagekey,
-                        sendto: message.sendto
-                    });
+            this.sendMessage(message).then((res) => {
+                let data = res.data;
+                if (data.state === '200') {
+                    resolve(message.messagekey);
                 } else {
                     reject(data.message);
                 }
@@ -118,58 +220,6 @@ class LongPolling extends InterfaceReceive {
             })
         }).catch(function (error) {
             console.log('longpolling sendMessage error', error);
-        });
-    }
-
-    // loginout
-    login(command = 'login') {
-        return new Promise((resolve, reject) => {
-            console.log(config, this.imei);
-            axios({
-                url: setting.LONGPOLLING_CHAT,
-                method: 'post',
-                data: util.queryStringify({
-                    clienttype: config.clienttype,
-                    type: config.usertype,
-                    username: config.username,
-                    nickname: config.nickname,
-                    agentid: config.agentid,
-                    city: config.city,
-                    os: config.os,
-                    imei: this.imei,
-                    command: command
-                })
-            }).then((data) => {
-                if (data.status === 200) {
-                    this.polling = setInterval(() => {
-                        this.request(util.guid());
-                    }, 30 * 1000);
-                    resolve();
-                }
-            }).catch((err) => {
-                console.log('longpolling login error', err);
-            });
-        });
-    }
-
-    request(requestid) {
-        return axios({
-            url: setting.LONGPOLLING_CHAT,
-            method: 'post',
-            data: util.queryStringify({
-                clienttype: config.clienttype,
-                type: config.usertype,
-                username: config.username,
-                nickname: config.nickname,
-                agentid: config.agentid,
-                city: config.city,
-                os: config.os,
-                imei: this.imei,
-                requestid: requestid,
-                command: 'request'
-            })
-        }).catch(function (error) {
-            console.log('longpolling request error', error);
         });
     }
 

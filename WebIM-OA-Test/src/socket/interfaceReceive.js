@@ -12,7 +12,10 @@ let formatReceiveJSON = (json) => {
     //         console.log('is send to: ' + json.sendto);
     //     }
     // }
-    let messagetime = json.messagetime.substr(0, json.messagetime.lastIndexOf('.'));
+    let messagetime = json.messagetime;
+    if (json.messagetime.lastIndexOf('.') !== -1) {
+        messagetime = json.messagetime.substr(0, json.messagetime.lastIndexOf('.'));
+    }
     let time = new Date(messagetime).getTime();
     let result = {
         // 进行 msgList 信息列表区分。 VIEW_CHAT_CHANGE 使用
@@ -112,6 +115,7 @@ class InterfaceReceive {
                 // json = {"agentname":"张永强","city":"北京","clienttype":"phone","command":"location","form":"oa:51060","from":"oa:51060","houseid":"","housetitle":"","ip":"","message":"116.310756;39.814532","messageid":"2019452","messagekey":"F14F4211-5A4B-459A-9604-C90C224804B0","messagetime":"2017-05-11 16:45:09","msgContent":"{\n  \"title\" : \"郭公庄701号;樊羊路附近\",\n  \"pic\" : \"http:\\/\\/imgws03.soufunimg.com\\/SouFunOA\\/Image\\/201705\\/11\\/5546B3FC3BFD163E9A3F71939476A6D1.jpg\"\n}","nickname":"张永强","realSendtoClientType":"phone","sendtime":"2017-05-11 16:45:09","sendto":"oa:184241","type":"oa"};
                 return this.receiveLocation(json);
             case 'card':
+            case 'group_card':
                 // message   名片内容，中有4个字段分号相隔。分别为 姓名、头像、部门、IM用户名
                 // json = {"agentId":"51060","agentcity":"北京","agentname":"张永强","city":"北京","clienttype":"phone","command":"card","form":"oa:51060","from":"oa:51060","houseid":"","housetitle":"","ip":"","message":"岳彦磊;http://img8.soufunimg.com/sfwork/2016_12/06/M01/0A/36/wKgEQlhGtViINzyjAABbmBqQVLAAAW-UQPN_ckAAFuw888.jpg;前端技术研究组/平台技术中心;oa:13124","messageid":"2019462","messagekey":"A52DC2C2-E31B-4C89-92CA-4EEF05081C3C","messagetime":"2017-05-11 16:46:16","nickname":"张永强","realSendtoClientType":"phone","sendtime":"2017-05-11 16:46:16","sendto":"oa:184241","type":"oa"}
                 return this.receiveCard(json);
@@ -122,7 +126,9 @@ class InterfaceReceive {
                 return this.receiveFile(json);
             case 'red_packets_cash':
                 // json = {"agentname":"张永强","city":"北京","clienttype":"phone","command":"red_packets_cash","form":"oa:51060","from":"oa:51060","houseid":"","housetitle":"","message":"恭喜发财，大吉大利！","messageid":"2019482","messagetime":"2017-05-11 16:49:54","msgContent":"http://m.fang.com/my/?c=my&a=receiveRedBag&redBagId=4F959A6D3BAFEC0E3A44E4C6A24D611AF39FE9BFD95A9EC27968754734E762D5&sendPid=55710295&sendUname=rentapp4268031&acceptPid=55232425&acceptUname=&imSendUname=oa%3A51060&imAcceptUname=oa%3A44005&sendOAId=51060&acceptOAId=44005&vcode=aab5f7de3a54bb77df2b3711e0a45ee7","nickname":"张永强","purpose":"received","realSendtoClientType":"phone","sendtime":"2017-05-11 16:49:54","sendto":"oa:184241","type":"oa","typeid":"1"}
-                return this.receiveRedBag(json);
+                if (purpose === 'received') {
+                    return this.receiveRedBag(json);
+                }
         }
     }
 

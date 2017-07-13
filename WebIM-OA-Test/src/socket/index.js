@@ -3,8 +3,6 @@ import events from '../events';
 import storage from '../store/storage';
 import receiveApi from './interfaceReceive';
 
-// let config = window.FangChat.config;
-
 let Socket = null;
 if (window.WebSocket) {
     Socket = require('./webSocket').Socket;
@@ -19,11 +17,11 @@ class IndexSocket {
         this.tempSend = [];
     }
 
-    init(config, isReco) {
+    init(config, isReconnect) {
         try {
-            this.core.login(config, isReco).then(() => {
+            this.core.login(config).then(() => {
                 setTimeout(() => {
-                    if (!isReco) {
+                    if (!isReconnect) {
                         events.trigger('socket:state:change', 'syncing');
                         this.sync().then(() => {
                             setTimeout(() => {
@@ -62,53 +60,40 @@ class IndexSocket {
                 view_notice: storage.coreGet('view_notice') || [],
                 view_notice_single: storage.coreGet('view_notice_single') || [],
                 view_notice_group: storage.coreGet('view_notice_group') || [],
-                view_book_group: storage.coreGet('view_book_group') || [],
-                view_book_buddy: storage.coreGet('view_book_buddy') || [],
-                view_book_manager: storage.coreGet('view_book_manager') || [],
-                view_book_mate: storage.coreGet('view_book_mate') || [],
-                view_book_follow: storage.coreGet('view_book_follow') || [],
-                notice_lists: storage.coreGet('notice_lists') || []
+                // view_book_group: storage.coreGet('view_book_group') || [],
+                // view_book_buddy: storage.coreGet('view_book_buddy') || [],
+                // view_book_manager: storage.coreGet('view_book_manager') || [],
+                // view_book_mate: storage.coreGet('view_book_mate') || [],
+                // view_book_follow: storage.coreGet('view_book_follow') || [],
+                notice_lists: storage.coreGet('notice_lists') || [],
+                message_lists: storage.coreGet('message_lists') || {}
             };
 
             let sync_http = (hasSyncFromStorage) => {
-                Promise.all([
-                    this.sync_buddy(),
-                    this.sync_group(),
-                    this.sync_manager(),
-                    this.sync_mate()
-                ]).then((data) => {
-                    console.log(data);
-                    resolve();
-                }).catch((err) => {
-                    console.log(err);
-                    // 这里应该判断是哪个出错了，继续同步后面的。
-                    if (hasSyncFromStorage) {
-                        resolve();
-                    } else {
-                        this.sync_buddy();
-                        this.sync_group();
-                        this.sync_manager();
-                        this.sync_mate();
-                        setTimeout(() => {
-                            resolve();
-                        }, 5000);
-                    }
-                });
+                // 有一个发生错误都会断掉
+                // Promise.all([
+                // ]).then((data) => {
+                //     console.log(data);
+                //     resolve();
+                // }).catch((err) => {
+                //     console.log('sync error', err);
+                //     events.trigger('socket:state:change', 'error');
+                // });
             };
 
             // 有存储备份信息。
-            if (Object.keys(data.info_user).length) {
-                let promise = new Promise((resolve, reject) => {
-                    data.resolve = resolve;
-                    events.trigger('socket:restore:info', data);
-                });
-                promise.then(() => {
-                    console.log('sync from localstorage finish!');
-                    sync_http(true);
-                });
-            } else {
-                sync_http(false);
-            }
+            let promise = new Promise((resolve, reject) => {
+                data.resolve = resolve;
+                events.trigger('socket:restore:info', data);
+            });
+            promise.then(() => {
+                console.log('sync from localstorage finish!');
+                resolve();
+            });
+            this.sync_buddy();
+            this.sync_group();
+            this.sync_manager();
+            this.sync_mate();
         });
     }
 
@@ -185,7 +170,7 @@ class IndexSocket {
                 data = data.Data;
                 let list = data.map((v) => {
                     let id = 'oa:' + v.SoufunId;
-                    return Object.assign(info[id], {
+                    return Object.assign({}, info[id], {
                         nickname: v.TrueName,
                         phone: v.Phone,
                         avatar: v.LogoUrl,
@@ -207,7 +192,12 @@ class IndexSocket {
         try {
             return new Promise((resolve, reject) => {
                 this.core.syncGroup().then((data) => {
-                    that.getGroupInfo(data).then((data) => {
+                    let list = data.map((v) => {
+                        return {
+                            id: v
+                        };
+                    });
+                    that.getGroupInfo(list).then((data) => {
                         resolve(data);
                     }).catch((data) => {
                         console.log('getGroupInfo error', data);
@@ -228,9 +218,18 @@ class IndexSocket {
      * 直接触发事件
      */
     getGroupInfo(groups) {
+        let ids = [],
+            info = {};
+        groups.forEach((v) => {
+            ids.push(v.id);
+            info[v.id] = v;
+        });
         return new Promise((resolve, reject) => {
-            this.core.socketGroupInfo(groups).then((data) => {
-                events.trigger('socket:receive:group', data);
+            this.core.socketGroupInfo(ids).then((data) => {
+                let list = data.map((v) => {
+                    return Object.assign({}, info[v.id], v);
+                });
+                events.trigger('socket:receive:group', list);
                 resolve(data);
             }).catch((data) => {
                 console.log('socketGroupInfo error', data);

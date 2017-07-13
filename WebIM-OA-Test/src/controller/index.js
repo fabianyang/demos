@@ -49,9 +49,9 @@ events.on('socket:state:change', function (data) {
 events.on('view:reconnect:socket', (data) => {
     // 需要清空所有的存储信息，目前是联系人列表
     store.commit(SOCKET_STATE_CHANGE, 'connecting');
-    // store.commit(SOCKET_RECONNECT);
+    store.commit(SOCKET_RECONNECT);
     // 重新初始化
-    socket.init(data, true);
+    socket.init(data);
 });
 
 events.on('socket:restore:info', (data) => {
@@ -71,7 +71,7 @@ events.on('store:request:user', (data) => {
 });
 
 events.on('store:request:group', (data) => {
-    socket.getGroupInfo(data);
+    socket.getGroupInfo([data]);
 });
 
 events.on('store:request:history', (data) => {
@@ -131,8 +131,7 @@ events.on('socket:receive:history', (data) => {
 // 缺少一个人发多条的代码考虑。
 events.on('socket:receive:notice', (data) => {
     let msg = Object.assign(data, {
-        isLink: /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?$/i.test(data.message),
-        messagetime: data.messagetime.substring(0, data.messagetime.lastIndexOf('.'))
+        isLink: /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?$/i.test(data.message)
     });
 
     store.commit(SOCKET_NOTICE_CHANGE, msg);

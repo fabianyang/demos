@@ -22,12 +22,13 @@ import storage from './storage';
 import util from '../util';
 import events from '../events';
 
-let messageMaxCount = 40;
+let messageMaxCount = 30;
+let config = window.FangChat.config;
 
 let formatNotSyncInfo = (data, view_name) => {
     let ret = {
         id: data.id,
-        nickname: data.nickname
+        nickname: data.id
     };
     if (view_name) {
         ret.view_name = view_name;
@@ -52,12 +53,10 @@ let requestGroupInfo = (state, data, view_name) => {
     state.info_group = Object.assign({}, state.info_group, {
         [data.id]: info
     });
-    // 接收到一个群消息但是不在群列表中，需要添加到群列表，同时同步群信息
-    state.view_book_group = state.view_book_group.concat([data.id]);
     events.trigger('store:request:group', info);
 };
 
-let addViewNoticeList = (state, view_name, id) => {
+let addViewList = (state, view_name, id) => {
     let list = state[view_name];
     if (list.length) {
         let i = list.length;
@@ -176,19 +175,8 @@ let diffNoticeRecentNew = (state) => {
 
 export default {
     [SOCKET_RECONNECT](state) {
-        state.info_group = {};
-        state.info_user = {};
-        state.view_notice = [];
-        state.view_notice_single = [];
-        state.view_notice_group = [];
-        state.view_book_group = [];
-        state.view_book_buddy = [];
-        state.view_book_manager = [];
-        state.view_book_mate = [];
-        state.view_book_follow = [];
-        state.notice_list = [];
-        // 重连需要清空聊天记录？？重连，不再同步未读消息
-        // state.message_lists = {};
+        state.notice_lists = storage.coreGet('notice_lists') || [];
+        state.message_lists = storage.coreGet('message_lists') || {};
     },
     [SOCKET_RESTORE_INFO](state, data) {
         state.info_group = data.info_group ;
@@ -196,12 +184,14 @@ export default {
         state.view_notice = data.view_notice ;
         state.view_notice_single = data.view_notice_single ;
         state.view_notice_group = data.view_notice_group ;
-        state.view_book_group = data.view_book_group ;
-        state.view_book_buddy = data.view_book_buddy ;
-        state.view_book_manager = data.view_book_manager ;
-        state.view_book_mate = data.view_book_mate ;
-        state.view_book_follow = data.view_book_follow ;
+        // 不能保存通讯录，有可能增加、也有可能减少，不好处理
+        // state.view_book_group = data.view_book_group ;
+        // state.view_book_buddy = data.view_book_buddy ;
+        // state.view_book_manager = data.view_book_manager ;
+        // state.view_book_mate = data.view_book_mate ;
+        // state.view_book_follow = data.view_book_follow ;
         state.notice_lists = data.notice_lists ;
+        state.message_lists = data.message_lists;
         data.resolve();
     },
     // 同步组信息
@@ -215,13 +205,18 @@ export default {
                 o[id] = Object.assign(info[id], v);
             } else {
                 o[id] = v;
-                l.push(id);
+            }
+            l.push(id);
+
+            if (v.view_name) {
+                addViewList(state, v.view_name, id);
             }
         });
         if (l.length) {
             state.view_book_group = state.view_book_group.concat(l);
         }
         state.info_group = Object.assign({}, info, o);
+        storage.coreSet('info_group', state.info_group);
     },
     // 同步用户信息
     [SOCKET_USER_CHANGE](state, data) {
@@ -237,14 +232,15 @@ export default {
                 o[id] = Object.assign(info[id], v);
             } else {
                 o[id] = v;
-                bl.push(id);
-                if (v.follow) {
-                    fl.push(v.id);
-                }
+            }
+
+            bl.push(id);
+            if (v.follow) {
+                fl.push(id);
             }
 
             if (v.view_name) {
-                addViewNoticeList(state, v.view_name, id);
+                addViewList(state, v.view_name, id);
             }
 
             // 搜索用户情况，signame 传过去了
@@ -255,10 +251,10 @@ export default {
         });
         if (bl.length) {
             state.view_book_buddy = state.view_book_buddy.concat(bl);
-            storage.coreSet('view_book_buddy', state.view_book_buddy);
+            // storage.coreSet('view_book_buddy', state.view_book_buddy);
             if (fl.length) {
                 state.view_book_follow = state.view_book_follow.concat(fl);
-                storage.coreSet('view_book_follow', state.view_book_follow);
+                // storage.coreSet('view_book_follow', state.view_book_follow);
             }
         }
         state.info_user = Object.assign({}, info, o);
@@ -275,12 +271,12 @@ export default {
                 o[id] = Object.assign(info[id], v);
             } else {
                 o[id] = v;
-                l.push(id);
             }
+            l.push(id);
         });
         if (l.length) {
             state.view_book_manager = state.view_book_manager.concat(l);
-            storage.coreSet('view_book_manager', state.view_book_manager);
+            // storage.coreSet('view_book_manager', state.view_book_manager);
         }
         state.info_user = Object.assign({}, info, o);
         storage.coreSet('info_user', state.info_user);
@@ -296,12 +292,12 @@ export default {
                 o[id] = Object.assign(info[id], v);
             } else {
                 o[id] = v;
-                l.push(id);
             }
+            l.push(id);
         });
         if (l.length) {
             state.view_book_mate = state.view_book_mate.concat(l);
-            storage.coreSet('view_book_mate', state.view_book_mate);
+            // storage.coreSet('view_book_mate', state.view_book_mate);
         }
         state.info_user = Object.assign({}, info, o);
         storage.coreSet('info_user', state.info_user);
@@ -315,7 +311,7 @@ export default {
             // 通知发送人 id 列表更新
             // state.view_notice = state.view_notice.concat([id]);
         } else {
-            addViewNoticeList(state, 'view_notice', id);
+            addViewList(state, 'view_notice', id);
         }
         let leftWindow = state.leftWindow;
         // 接收到新消息，没有打开左侧聊天窗口，或者当前窗口不是消息发送人，或者最小化状态，记录新条数
@@ -346,7 +342,7 @@ export default {
     //             return;
     //         }
 
-    //         addViewNoticeList(state, 'view_notice_group', v.id);
+    //         addViewList(state, 'view_notice_group', v.id);
     //         addRecentNew(state, v.id, v.recent_new);
     //     });
 
@@ -368,7 +364,7 @@ export default {
     //         if (!buddy) {
     //             requestUserInfo(state, v, 'view_notice_single');
     //         } else {
-    //             addViewNoticeList(state, 'view_notice_single', v.id);
+    //             addViewList(state, 'view_notice_single', v.id);
     //         }
     //     });
     // },
@@ -428,6 +424,7 @@ export default {
                     state.message_lists = Object.assign({}, lists, {
                         [id]: list
                     });
+                    storage.coreSet('message_lists', state.message_lists);
                     break;
                 }
             }
@@ -481,14 +478,16 @@ export default {
         if (isGroup) {
             // 群人员数量
             leftWindow.number = opts.number ? opts.number : '';
-            addViewNoticeList(state, 'view_notice_group', id);
+            // addViewList(state, 'view_notice_group', id);
         } else {
             let department = opts.department;
             if (!department || department === 'null/null') {
                 department = '';
             }
             leftWindow.department = department;
-            addViewNoticeList(state, 'view_notice_single', id);
+            // if (opts.signame !== 'view_notice') {
+                // addViewList(state, 'view_notice_single', id);
+            // }
         }
 
         state.leftWindow = leftWindow;
@@ -573,9 +572,9 @@ export default {
             //     } else {
             //         addRecentNew(state, id, recent_new);
             //         if (id.split(':')[0] === 'oa') {
-            //             addViewNoticeList(state, 'view_notice_single', id);
+            //             addViewList(state, 'view_notice_single', id);
             //         } else {
-            //             addViewNoticeList(state, 'view_notice_group', id);
+            //             addViewList(state, 'view_notice_group', id);
             //         }
             //     }
             // }
@@ -593,31 +592,9 @@ export default {
                 state.message_lists = Object.assign({}, lists, {
                     [id]: list
                 });
+                storage.coreSet('message_lists', state.message_lists);
             }
         } else {
-            // debugger;
-            // 这里只添加信息，不添加具体信息 在 view messageList 中添加具体消息
-            if (isGroup) {
-                if (!state.info_group[data.id]) {
-                    requestGroupInfo(state, data, 'view_notice_group');
-                } else {
-                    addViewNoticeList(state, 'view_notice_group', id);
-                }
-                // 如果收到消息的群成员没有信息，请求一次
-                if (!state.info_user[data.from]) {
-                    requestUserInfo(state, {
-                        id: data.from,
-                        nickname: data.nickname
-                    });
-                }
-            } else {
-                if (!state.info_user[data.id]) {
-                    requestUserInfo(state, data, 'view_notice_single');
-                } else {
-                    addViewNoticeList(state, 'view_notice_single', id);
-                }
-            }
-
             let leftWindow = state.leftWindow;
             // 接收到新消息，没有打开左侧聊天窗口，或者当前窗口不是消息发送人，或者最小化状态，记录新条数
             if (state.app === 'min' || !leftWindow.id || leftWindow.id !== id || leftWindow.signame === 'im_notice') {
@@ -625,33 +602,61 @@ export default {
                 // if (!storage.getSynctime(data.id)) {
                 //     storage.setSynctime(data.id, data.time);
                 // }
-                addRecentNew(state, id);
+                // 收到自己发的消息，不记录新消息
+                if (data.from !== config.username) {
+                    addRecentNew(state, id);
+                }
             }
         }
+
     },
     [VIEW_CHAT_CHANGE](state, data) {
         let id = data.id;
-        // 只有当前窗口时才更新列表，否则只在 SOCKET_CHAT_CHANGE 中更新新消息条数
+        let isGroup = id.split(':')[0] !== 'oa';
+        // 只有当前窗口时才更新列表，否则只在 SOCKET_CHAT_CHANGE 中更新新消息条数、send 的情况
         if (state.leftWindow.id === id) {
             // storage.setSynctime(data.id, data.time);
             if (state.historyContainer.open) {
                 state.historyContainer.state = '';
                 state.historyContainer.open = false;
             }
-
-            let lists = state.message_lists;
-            let list = lists[id];
-            if (!list) {
-                list = lists[id] = [];
-            }
-
-            if (list.length > messageMaxCount) {
-                list.pop();
-            }
-            list.unshift(data);
-            state.message_lists = Object.assign({}, lists, {
-                [id]: list
-            });
         }
+
+        // 这里只添加信息，不添加具体信息 在 view messageList 中添加具体消息
+        if (isGroup) {
+            if (!state.info_group[data.id]) {
+                requestGroupInfo(state, data, 'view_notice_group');
+            } else {
+                addViewList(state, 'view_notice_group', id);
+            }
+            // 如果收到消息的群成员没有信息，请求一次
+            if (!state.info_user[data.from]) {
+                requestUserInfo(state, {
+                    id: data.from,
+                    nickname: data.nickname
+                });
+            }
+        } else {
+            if (!state.info_user[data.id]) {
+                requestUserInfo(state, data, 'view_notice_single');
+            } else {
+                addViewList(state, 'view_notice_single', id);
+            }
+        }
+
+        let lists = state.message_lists;
+        let list = lists[id];
+        if (!list) {
+            list = lists[id] = [];
+        }
+
+        if (list.length > messageMaxCount) {
+            list.pop();
+        }
+        list.unshift(data);
+        state.message_lists = Object.assign({}, lists, {
+            [id]: list
+        });
+        storage.coreSet('message_lists', state.message_lists);
     }
 };

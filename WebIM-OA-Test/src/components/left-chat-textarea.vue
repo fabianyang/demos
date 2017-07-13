@@ -34,6 +34,9 @@
                 <a @click="clear('img')">删除</a>
             </p>
         </div>
+        <transition name="fade">
+            <div class="im_error_box" v-if="error_show">{{ error_text }}</div>
+        </transition>
     </div>
 </template>
 
@@ -79,6 +82,7 @@ export default {
                 }
             }
             this.prompt_state = true;
+            this.clear('chat');
         },
         send(cmd, event = { ctrlKey: true, preventDefault() { } }) {
             event.preventDefault();
@@ -86,20 +90,34 @@ export default {
                 return;
             }
 
-            let message = getElTextarea().innerText;
+            let message = getElTextarea().innerText.trim();
             if (cmd === 'chat') {
                 if (!message) {
-                    alert('请输入发送消息');
+                    this.clear('chat');
+                    this.prompt_state = false;
+                    if (!this.show) {
+                        this.error_show = true;
+                        this.error_text = '请输入发送消息';
+                        setTimeout(() => {
+                            this.error_show = false;
+                        }, 500);
+                    }
                     return;
                 }
                 if (message.length > 1000) {
-                    alert('最多输入1000字');
+                    if (!this.error_show) {
+                        this.error_show = true;
+                        this.error_text = '最多输入1000字';
+                        setTimeout(() => {
+                            this.error_show = false;
+                        }, 1000);
+                    }
                     return;
                 }
             }
 
             if (cmd === 'img') {
-                message = this.picture
+                message = this.picture;
             }
             let date = new Date();
             let signame = this.leftWindow.signame.split('_');
@@ -278,7 +296,7 @@ export default {
                 return caretOffset;
             }
             this.caret_position = getCaretCharacterOffsetWithin(getElTextarea());
-            console.log('caret position', this.caret_position);
+            // console.log('caret position', this.caret_position);
         },
         emoji_close(e) {
             if (!document.getElementById('im_facebutton').contains(e.target)) {
@@ -317,7 +335,9 @@ export default {
             // 用原生获取，不进行双向绑定，插入表情或普通输入有影响
             // message: '',
             picture: '',
-            upload_state: ''
+            upload_state: '',
+            error_text: '',
+            error_show: false
         }
     },
     created() {
@@ -342,7 +362,6 @@ export default {
                 // that.showTip('图片上传成功，请发送。 <a href="' + data + '" target="_blank" data-id="look">\u67e5\u770b</a> <a href="javascript:;" data-id="del">\u5220\u9664</a>');// \u56fe\u7247\u4e0a\u4f20\u6210\u529f\uff0c\u8bf7\u53d1\u9001\u3002
             }
         };
-
 
         events.on('view:clear:chatarea', ()=> {
             this.prompt_state = true;
@@ -515,9 +534,10 @@ a:hover {
     display: inline-block;
 }
 
-
+.fbtools .bqbox .bqcon a:hover img {
+    transform: scale(1.1);
+}
 /* 输入内容 */
-
 .textarea {
     width: 510px;
     height: 115px;
@@ -584,5 +604,24 @@ a:hover {
     position: absolute;
     top: 0;
     left: 0;
+}
+.im_error_box {
+    position: absolute;
+    left: 20%;
+    top: 30%;
+    z-index: 1000;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 10px;
+    width: 200px;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 14px;
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
+  opacity: 0
 }
 </style>

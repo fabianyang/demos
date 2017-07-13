@@ -61,7 +61,7 @@
                         </div>
                     </div>
                     <!-- 名片内容 replyuser -->
-                    <div class="replyuser" v-if="item.command === 'card'" @click="openCard(item)">
+                    <div class="replyuser" v-if="item.command === 'card' || item.command === 'group_card'" @click="openCard(item)">
                         <div class="title">
                             <div class="info">
                                 <a v-text="item.card_nickname">card Nickname</a>
@@ -133,7 +133,12 @@ export default {
             }
         },
         isGroup() {
-            return this.leftWindow.signame.split('_')[2] === 'group';
+            // 关闭窗口会将 leftWindow = {} 会报错
+            if (this.leftWindow.signame) {
+                return this.leftWindow.signame.split('_')[2] === 'group';
+            } else {
+                return false;
+            }
         },
         ...mapGetters({
             message_list: 'message_list',
@@ -456,6 +461,8 @@ ul li .replybox.group .name {
     font-size: 12px;
     position: absolute;
     top: -21px;
+    // yangfan: 输入文字小于名字长度会换行
+    width: 36px;
 }
 
 ul li.odd .replybox.group .name {
