@@ -1,6 +1,6 @@
 <template>
     <!-- 所有聊天内容都放在 replybox 中，发送中添加active，失败添加fail -->
-    <ul @mousewheel="onMousewheel($event)">
+    <ul @scroll="onScroll">
         <li class="load" v-show="historyContainerState === 'loading'"></li>
         <li class="nomore" v-show="historyContainerOpen && historyContainerNomore && historyContainerState !== 'loading'">没有更多了</li>
         <li class="nomore" v-show="historyContainerOpen && !historyContainerNomore && historyContainerState !== 'loading'">以下为历史记录</li>
@@ -11,7 +11,8 @@
                 <a class="user">
                     <img :src="getAvatar(item)">
                 </a>
-                <div class="replybox" :class="{ group: isGroup, active: item.sendto !== username && item.messagestate === 0 }">
+                <div class="replybox" :class="{ group: isGroup, active: item.messagestate === 0 }">
+                    <div class="fail" v-show="item.messagestate === 2" @click="reSend(item)"></div>
                     <p class="name" v-text="getNickname(item)" v-if="isGroup">Nickname</p>
                     <!-- 文字内容 replycontent; 群聊中添加姓名 replybox 添加类名 group -->
                     <div class="replycontent" :data-time="item.messagetime" v-if="item.command === 'chat' || item.command === 'group_chat'" v-html="pack_msg(item.message)">Message</div>
@@ -97,10 +98,12 @@
 <script>
 import events from '../events';
 import setting from '../setting';
+import util from '../util';
 import { mapState, mapGetters, mapMutations } from 'vuex';
-import {VIEW_TOGGLE_HISTORY,VIEW_LEFT_OPEN,VIEW_STATE_CHANGE,VIEW_RIGHT_SWITCH} from '../store/mutation-types';
+import {VIEW_TOGGLE_HISTORY,VIEW_LEFT_OPEN,VIEW_STATE_CHANGE,VIEW_RIGHT_SWITCH,VIEW_CHAT_CHANGE,VIEW_CHAT_MSGKEY} from '../store/mutation-types';
 let timer = null;
 let lock = false;
+let historyRequested = false;
 
 let config = window.FangChat.config;
 let defaultAvatar = setting.defaultAvatar;
@@ -113,13 +116,12 @@ export default {
     watch: {
         list() {
             this.$nextTick(() => {
-                // var container = this.$el.querySelector("#im_content");
-                let container = this.$el;
-                // console.log(container);
-                if (this.historyContainerOpen) {
-                    container.scrollTop = 0;
-                } else {
-                    container.scrollTop = container.scrollHeight;
+                // 请求返回数据，渲染后解锁
+                lock = false;
+                if (!historyRequested) {
+                    let el = this.$el;
+                    // var container = this.$el.querySelector("#im_content");
+                    el.scrollTop = el.scrollHeight;
                 }
             })
         }
@@ -129,6 +131,7 @@ export default {
             if (this.historyContainerOpen) {
                 return this.history_list;
             } else {
+                historyRequested = false;
                 return this.message_list;
             }
         },
@@ -148,7 +151,6 @@ export default {
             leftWindow: state => state.leftWindow,
             historyContainerOpen: state => state.historyContainer.open,
             historyContainerState: state => state.historyContainer.loadState,
-            historyContainerRequested: state => state.historyContainer.requested,
             historyContainerNomore: state => state.historyContainer.nomore,
             info_user: state => state.info_user
         })
@@ -238,62 +240,54 @@ export default {
                 open: 0
             });
         },
-        onMousewheel(e) {
-            if (!this.list.length || lock) {
+        onScroll(e) {
+            // console.log(e.target.scrollTop);
+            // 非历史记录界面 return; 点击历史记录按钮就会请求，所以 history.length > 0
+            if (!this.history_list.length || !this.historyContainerOpen || this.historyContainerNomore || lock) {
                return;
             }
-            lock = true;
-            setTimeout(() => {
-                lock = false;
-            }, 1000);
-            clearTimeout(timer);
-            let wheelup = false;
-            if (e.wheelDelta) {  //判断浏览器IE，谷歌滑轮事件
-                if (e.wheelDelta > 0) { //当滑轮向上滚动时
-                    wheelup = true;
-                }
-                if (e.wheelDelta < 0) { //当滑轮向下滚动时
-                    wheelup = false;
-                }
-            } else if (e.detail) {  //Firefox滑轮事件
-                if (e.detail> 0) { //当滑轮向上滚动时
-                    wheelup = true;
-                }
-                if (e.detail< 0) { //当滑轮向下滚动时
-                    wheelup = false;
-                }
-            }
+            if (e.target.scrollTop < 20) {
+                lock = true;
+                setTimeout(() => {
+                    lock = false;
+                }, 2000)
+                historyRequested = true;
+                events.trigger('store:request:history', {
+                    id: this.leftWindow.id,
+                    messageid: this.history_list[0].messageid,
+                    fn: 'p',
+                    exec: 'more_history'
+                });
 
-            let that = this;
-            let request = (exec) => {
-                timer = setTimeout(() => {
-                    events.trigger('store:request:history', {
-                        id: that.leftWindow.id,
-                        messageid: that.list[0].messageid,
-                        fn: 'p',
-                        exec: exec
-                    });
-                }, 1000);
+                this.toggleHistory({
+                    state: 'loading'
+                });
             }
-            if (this.historyContainerOpen) {
-                if (wheelup && !this.historyContainerNomore) {
-                    this.toggleHistory({
-                        state: 'loading'
-                    });
-                    request('more_history');
-                }
-            }
+        },
+        reSend(item) {
+            this.viewRemoveMsg({
+                messagekey: item.messagekey,
+                sendto: item.sendto,
+                remove: 1
+            });
+            let msg = Object.assign({}, item, {
+                messagekey: util.guid(),
+                messagestate: 0
+            });
+            this.viewChatMsg(item);
+            events.trigger('view:send:message', item);
         },
         ...mapMutations({
             'toggleHistory': VIEW_TOGGLE_HISTORY,
             'stateLeftOpen': VIEW_LEFT_OPEN,
             'stateChange': VIEW_STATE_CHANGE,
-            'stateRightOpen': VIEW_RIGHT_SWITCH
+            'stateRightOpen': VIEW_RIGHT_SWITCH,
+            'viewChatMsg': VIEW_CHAT_CHANGE,
+            'viewRemoveMsg': VIEW_CHAT_MSGKEY
         })
     },
     data() {
         return {
-            requested: false,
             username: config.username
         }
     }
@@ -352,7 +346,6 @@ p {
 }
 
 /* 对话列表 */
-
 ul {
     width: 100%;
     height: 318px;
@@ -392,11 +385,7 @@ ul li.even .user {
     margin-left: 10px;
 }
 
-
-
-
 /* 发送内容 */
-
 ul li .replybox {
     max-width: 360px;
     position: relative;
@@ -414,7 +403,6 @@ ul li.even .replybox {
 
 
 /* 发送中 发送失败 */
-
 ul li .replybox:after {
     content: "";
     width: 15px;
@@ -442,13 +430,24 @@ ul li .replybox.active:after {
     display: block;
 }
 
-ul li .replybox.fail:after {
+// ul li .replybox.fail:after {
+//     background-image: url(../assets/images/icon-fail.png);
+//     display: block;
+// }
+
+ul li .replybox .fail {
     background-image: url(../assets/images/icon-fail.png);
-    display: block;
+    width: 15px;
+    height: 15px;
+    background-size: 15px;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: absolute;
+    top: 50%;
+    margin-top: -8px;
+    left: -20px;
+    cursor: pointer;
 }
-
-
-
 
 /* 群聊姓名 */
 

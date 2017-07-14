@@ -24,7 +24,6 @@ let closeGroupInfo = (count, resolve) => {
 
 let PromiseResolve = {},
     PromiseRejectTimer = {},
-    outSecond = 5000,
     heart_timer = null;
 
 class WS {
@@ -33,7 +32,7 @@ class WS {
     }
 
     // 这里应该可以传参重新初始化
-    login(data) {
+    login() {
         return new Promise((resolve, reject) => {
             let params = {
                 command: 'login',
@@ -45,41 +44,37 @@ class WS {
                 os: config.os,
                 imei: this.imei
             };
-            if (data) {
-                params = Object.assign(params, data);
-            }
 
-            try {
-                let ws = this.ws = new WebSocket(setting.WEBSOCKET_CHAT + '?' + util.queryStringify(params));
+            receiveApi.socket_connecting();
+            let ws = this.ws = new WebSocket(setting.WEBSOCKET_CHAT + '?' + util.queryStringify(params));
 
-                ws.addEventListener('open', (event) => {
-                    resolve();
-                    // 开启心跳
-                    heart_timer = setInterval(() => {
-                        ws.send('t');
-                    }, 80 * 1000);
-                });
-
+            let resolveTimer = null;
+            ws.addEventListener('open', (event) => {
                 this.initMessageEvent();
+                clearTimeout(resolveTimer);
+                resolveTimer = setTimeout(() => {
+                    receiveApi.socket_open();
+                    resolve();
+                }, 1000);
+                // 开启心跳
+                heart_timer = setInterval(() => {
+                    ws.send('t');
+                }, 80 * 1000);
+            });
 
-                ws.addEventListener('error', (event) => {
-                    clearInterval(heart_timer);
-                    receiveApi.socket_error();
-                });
-
-                ws.addEventListener('close', (event) => {
-                    // var code = event.code;
-                    // var reason = event.reason;
-                    // var wasClean = event.wasClean;
-                    // handle close event
-                    clearInterval(heart_timer);
-                    receiveApi.socket_close();
-                });
-            } catch (e) {
-                console.log('new webSocket error', e);
+            ws.addEventListener('error', (event) => {
+                clearInterval(heart_timer);
                 receiveApi.socket_error();
-                reject();
-            }
+            });
+
+            ws.addEventListener('close', (event) => {
+                // var code = event.code;
+                // var reason = event.reason;
+                // var wasClean = event.wasClean;
+                // handle close event
+                clearInterval(heart_timer);
+                receiveApi.socket_close();
+            });
         });
     }
 
@@ -147,7 +142,6 @@ class WS {
                     pr && pr(array[1]);
                 }
             }
-
         });
     }
 
@@ -167,7 +161,7 @@ class WS {
             PromiseResolve[ret] = resolve;
             PromiseRejectTimer[ret] = setTimeout(() => {
                 reject();
-            }, outSecond);
+            }, 5 * 1000);
         });
     }
 
@@ -187,7 +181,7 @@ class WS {
             PromiseResolve[ret] = resolve;
             PromiseRejectTimer[ret] = setTimeout(() => {
                 reject();
-            }, outSecond * 2);
+            }, 10 * 1000);
         });
     }
 
@@ -228,7 +222,7 @@ class WS {
             PromiseResolve[key] = resolve;
             PromiseRejectTimer[key] = setTimeout(() => {
                 reject();
-            }, outSecond);
+            }, 5 * 1000);
         });
     }
 
@@ -254,7 +248,7 @@ class WS {
             PromiseResolve[key] = resolve;
             PromiseRejectTimer[key] = setTimeout(() => {
                 reject(msg.messagekey);
-            }, outSecond);
+            }, 3 * 1000);
         });
     }
 
@@ -298,11 +292,20 @@ class WS {
     // }
 
     send(data) {
-        try {
-            this.ws.send(JSON.stringify(data));
-        } catch (e) {
-            // 需要判断已经断开的情况
-            console.log('websocket send error', e);
+        switch (this.ws.readyState) {
+            case WebSocket.CONNECTING:
+                console.log('WebSocket.CONNECTING');
+                break;
+            case WebSocket.OPEN:
+                this.ws.send(JSON.stringify(data));
+                break;
+            case WebSocket.CLOSING:
+                console.log('WebSocket.CLOSING');
+                break;
+            case WebSocket.CLOSED:
+                console.log('WebSocket.CLOSED');
+                this.login(data);
+                break;
         }
     }
 }

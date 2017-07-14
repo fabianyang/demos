@@ -46,12 +46,12 @@ events.on('socket:state:change', function (data) {
 }
  */
 
-events.on('view:reconnect:socket', (data) => {
+events.on('view:reconnect:socket', () => {
     // 需要清空所有的存储信息，目前是联系人列表
     store.commit(SOCKET_STATE_CHANGE, 'connecting');
-    store.commit(SOCKET_RECONNECT);
+    // store.commit(SOCKET_RECONNECT);
     // 重新初始化
-    socket.init(data);
+    socket.init();
 });
 
 events.on('socket:restore:info', (data) => {

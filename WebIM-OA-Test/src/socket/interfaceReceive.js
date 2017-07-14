@@ -298,6 +298,14 @@ class InterfaceReceive {
         events.trigger('socket:state:change', 'close');
     }
 
+    socket_open() {
+        events.trigger('socket:state:change', 'open');
+    }
+
+    socket_connecting() {
+        events.trigger('socket:state:change', 'connecting');
+    }
+
     imei() {
         let imei = util.getCookie('fang_oaim_imei');
         if (!imei) {

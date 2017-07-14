@@ -15,41 +15,34 @@ class IndexSocket {
     constructor() {
         this.core = new Socket();
         this.tempSend = [];
+        this.retryCount = 0;
+        this.hasRestore = false;
+        this.syncError = {
+            buddy: true,
+            group: true,
+            manager: true,
+            mate: true
+        };
     }
 
-    init(config, isReconnect) {
-        try {
-            this.core.login(config).then(() => {
-                setTimeout(() => {
-                    if (!isReconnect) {
-                        events.trigger('socket:state:change', 'syncing');
-                        this.sync().then(() => {
-                            setTimeout(() => {
-                                events.trigger('socket:state:change', 'open');
-                                // events.trigger('socket:state:change', 'close');
-                            }, 1000);
-
-                            // 同步联系人完成后，同步未读消息
-                            // 不同步未读消息了
-                            // let time = storage.getSynctime();
-                            // console.log('sync time: ' + time);
-                            // if (time) {
-                            //     this.syncRecentCount(time);
-                            // }
-                        }).catch(() => {
-                            console.log('sync error');
-                        });
-                    } else {
-                        events.trigger('socket:state:change', 'open');
-                    }
-                }, 1000);
-            }).catch(function (error) {
-                console.log('login', error);
-                events.trigger('socket:state:change', 'error');
+    init(callback) {
+        this.core.login().then(() => {
+            this.sync().then(() => {
+                callback && callback();
+                // 同步联系人完成后，同步未读消息
+                // 不同步未读消息了
+                // let time = storage.getSynctime();
+                // console.log('sync time: ' + time);
+                // if (time) {
+                //     this.syncRecentCount(time);
+                // }
+            }).catch(() => {
+                console.log('sync error');
             });
-        } catch (e) {
-            console.error('login', e);
-        }
+        }).catch(function (error) {
+            console.log('login', error);
+            events.trigger('socket:state:change', 'error');
+        });
     }
 
     sync() {
@@ -60,96 +53,119 @@ class IndexSocket {
                 view_notice: storage.coreGet('view_notice') || [],
                 view_notice_single: storage.coreGet('view_notice_single') || [],
                 view_notice_group: storage.coreGet('view_notice_group') || [],
-                // view_book_group: storage.coreGet('view_book_group') || [],
-                // view_book_buddy: storage.coreGet('view_book_buddy') || [],
-                // view_book_manager: storage.coreGet('view_book_manager') || [],
-                // view_book_mate: storage.coreGet('view_book_mate') || [],
-                // view_book_follow: storage.coreGet('view_book_follow') || [],
                 notice_lists: storage.coreGet('notice_lists') || [],
                 message_lists: storage.coreGet('message_lists') || {}
             };
 
-            let sync_http = (hasSyncFromStorage) => {
-                // 有一个发生错误都会断掉
-                // Promise.all([
-                // ]).then((data) => {
-                //     console.log(data);
-                //     resolve();
-                // }).catch((err) => {
-                //     console.log('sync error', err);
-                //     events.trigger('socket:state:change', 'error');
-                // });
-            };
+            // 有一个发生错误都会断掉
+            // Promise.all([
+            // ]).then((data) => {
+            //     console.log(data);
+            //     resolve();
+            // }).catch((err) => {
+            //     console.log('sync error', err);
+            //     events.trigger('socket:state:change', 'error');
+            // });
 
             // 有存储备份信息。
-            let promise = new Promise((resolve, reject) => {
-                data.resolve = resolve;
-                events.trigger('socket:restore:info', data);
-            });
-            promise.then(() => {
-                console.log('sync from localstorage finish!');
-                resolve();
-            });
-            this.sync_buddy();
-            this.sync_group();
-            this.sync_manager();
-            this.sync_mate();
+
+            if (!this.hasRestore) {
+                let promise = new Promise((resolve, reject) => {
+                    data.resolve = resolve;
+                    events.trigger('socket:restore:info', data);
+                });
+                promise.then(() => {
+                    console.log('sync from localstorage finish!');
+                    this.hasRestore = true;
+                    resolve();
+                });
+            }
+            if (this.syncError.buddy) {
+                this.sync_buddy().then(() => {
+                    this.syncError.buddy = false;
+                }).catch(() => {
+                    this.syncError.buddy = true;
+                });
+            }
+            if (this.syncError.group) {
+                this.sync_group().then(() => {
+                    this.syncError.group = false;
+                }).catch(() => {
+                    this.syncError.group = true;
+                });
+            }
+            if (this.syncError.manager) {
+                this.sync_manager().then(() => {
+                    this.syncError.manager = false;
+                }).catch(() => {
+                    this.syncError.manager = true;
+                });
+            }
+            if (this.syncError.mate) {
+                this.sync_mate().then(() => {
+                    this.syncError.mate = false;
+                }).catch(() => {
+                    this.syncError.mate = true;
+                });
+            }
         });
     }
 
     sendMessage(msg) {
-        try {
-            // 消息重发机制
-            // this.tempSend.push(msg);
-            this.core.socketSendMessage(msg).then((data) => {
-                // this.removeTempSend();
-                events.trigger('socket:messagekey:back', {
-                    messagekey: data,
-                    sendto: msg.sendto,
-                    state: 1
-                });
-            }).catch((data) => {
-                console.log('sendMessage error', data);
-                events.trigger('socket:messagekey:back', {
-                    messagekey: data,
-                    sendto: msg.sendto,
-                    state: 2
-                });
+        if (this.core.ws.readyState === WebSocket.CLOSED) {
+            console.log('socket re init!');
+            this.init(() => {
+                this.sendMessage(msg);
             });
-        } catch (e) {
-            console.error('sendMessage', e);
+            return;
         }
+        // 消息重发机制
+        // this.tempSend.push(msg);
+        this.core.socketSendMessage(msg).then((data) => {
+            // this.removeTempSend();
+            events.trigger('socket:messagekey:back', {
+                messagekey: data,
+                sendto: msg.sendto,
+                state: 1
+            });
+        }).catch((data) => {
+            console.log('sendMessage error', data);
+            events.trigger('socket:messagekey:back', {
+                messagekey: data,
+                sendto: msg.sendto,
+                state: 2
+            });
+        });
     }
 
     sync_buddy() {
-        try {
-            return new Promise((resolve, reject) => {
-                this.core.syncBuddy().then((data) => {
-                    if (data.length) {
-                        let list = data.map((v) => {
-                            let l = v.split(',');
-                            return {
-                                // 发消息使用 username
-                                id: l[0],
-                                // 用于判断是否为联系人时使用
-                                follow: +l[3] ? 'follow' : '',
-                                online: +l[4]
-                            };
-                        });
-                        this.postUserInfo(list).then((data) => {
-                            resolve(data);
-                        }).catch((data) => {
-                            reject(data);
-                        });
-                    } else {
-                        console.log('core.syncBuddy return Array(0)');
+        return new Promise((resolve, reject) => {
+            this.core.syncBuddy().then((data) => {
+                if (data.length) {
+                    let list = data.map((v) => {
+                        let l = v.split(',');
+                        return {
+                            // 发消息使用 username
+                            id: l[0],
+                            // 用于判断是否为联系人时使用
+                            follow: +l[3] ? 'follow' : '',
+                            online: +l[4]
+                        };
+                    });
+                    this.postUserInfo(list).then((data) => {
+                        resolve(data);
+                    }).catch((data) => {
                         reject(data);
-                    }
-                });
+                    });
+                } else {
+                    console.log('core.syncBuddy return Array(0)');
+                    reject(data);
+                }
+            }).catch((data) => {
+                console.log('core.syncBuddy error', data);
+                reject(data);
             });
-        } catch (e) {
-            console.error('sync_buddy', e);
-        }
+        });
     }
 
     postUserInfo(users) {
@@ -188,29 +204,24 @@ class IndexSocket {
      * core.sync_group.then([]) reponse is array
      */
     sync_group() {
-        let that = this;
-        try {
-            return new Promise((resolve, reject) => {
-                this.core.syncGroup().then((data) => {
-                    let list = data.map((v) => {
-                        return {
-                            id: v
-                        };
-                    });
-                    that.getGroupInfo(list).then((data) => {
-                        resolve(data);
-                    }).catch((data) => {
-                        console.log('getGroupInfo error', data);
-                        reject(data);
-                    });
+        return new Promise((resolve, reject) => {
+            this.core.syncGroup().then((data) => {
+                let list = data.map((v) => {
+                    return {
+                        id: v
+                    };
+                });
+                this.getGroupInfo(list).then((data) => {
+                    resolve(data);
                 }).catch((data) => {
-                    console.log('core.syncGroup error', data);
+                    console.log('getGroupInfo error', data);
                     reject(data);
                 });
+            }).catch((data) => {
+                console.log('core.syncGroup error', data);
+                reject(data);
             });
-        } catch (e) {
-            console.error('sync_group', e);
-        }
+        });
     }
 
     /**
@@ -374,10 +385,15 @@ class IndexSocket {
             // console.log(response.data.message);
             let list = [];
             response.data.message.forEach((v, i) => {
-                let message = receiveApi.receiveSwitch(v);
-                // command = 'livechat' 就返回 undefined
-                if (message) {
-                    list.push(message);
+                try {
+                    let message = receiveApi.receiveSwitch(v);
+                    // command = 'livechat' 就返回 undefined
+                    if (message) {
+                        list.push(message);
+                    }
+                } catch (e) {
+                    console.log('receiveSwitch error!', 'value: ', v, 'index: ', i);
+                    console.log(e);
                 }
             });
             events.trigger('socket:receive:history', {

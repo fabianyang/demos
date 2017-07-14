@@ -420,7 +420,11 @@ export default {
         if (list) {
             for (let i = 0; i < list.length; i++) {
                 if (list[i].messagekey === data.messagekey) {
-                    list[i].messagestate = 1;
+                    if (data.remove) {
+                        list.splice(i, 1);
+                    } else {
+                        list[i].messagestate = data.state;
+                    }
                     state.message_lists = Object.assign({}, lists, {
                         [id]: list
                     });
@@ -516,9 +520,8 @@ export default {
         let isGroup = id.split(':')[0] !== 'oa';
         // 多条，历史记录请求，点击窗口已经判断是否有 info, 应该都是一个人的，打开窗口的
         if (history) {
-            if (history.length < 20) {
-                state.historyContainer.nomore = true;
-            }
+            state.historyContainer.loadState = '';
+            state.historyContainer.nomore = !history.length;
 
             let list = [];
             // let recent_new = 0;
@@ -552,8 +555,6 @@ export default {
                 //     }
                 // }
             });
-
-            state.historyContainer.loadState = '';
 
             if (data.exec === 'more_history') {
                 let history_list = state.historyContainer.list;
@@ -608,7 +609,6 @@ export default {
                 }
             }
         }
-
     },
     [VIEW_CHAT_CHANGE](state, data) {
         let id = data.id;
