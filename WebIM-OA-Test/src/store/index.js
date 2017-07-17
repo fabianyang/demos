@@ -32,7 +32,6 @@ export default new Vuex.Store({
         historyContainer: {
             open: false,
             loadState: '',
-            requested: false,
             list: [],
             nomore: false
         },
@@ -66,7 +65,8 @@ export default new Vuex.Store({
             list: {
                 notice: {}
             }
-        }
+        },
+        welcome: {}
     },
     // modules: {
     //     view,

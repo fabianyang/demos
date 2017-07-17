@@ -27,7 +27,8 @@ let formatReceiveJSON = (json) => {
         messageid: json.messageid,
         messagekey: json.messagekey,
         messagetime: messagetime,
-        time: time
+        time: time,
+        source: 'receive'
     };
 
     let isGroup = json.command.split('_')[0] === 'group';
@@ -36,6 +37,10 @@ let formatReceiveJSON = (json) => {
         result.sendto = json.houseid;
     } else if (result.from === config.username) {
         result.id = json.sendto;
+        // 历史记录会进行判断是否为自己发送的。
+        if (json.clienttype === config.clienttype) {
+            result.source = 'send';
+        }
     } else {
         result.id = result.from;
     }

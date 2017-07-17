@@ -134,7 +134,8 @@ export default {
                 messagestate: 0,
                 messagekey: util.guid(),
                 messagetime: util.dateFormat(date),
-                time: date.getTime()
+                time: date.getTime(),
+                source: 'send'
             }
 
             if (!this.historyContainerOpen) {

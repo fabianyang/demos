@@ -2,13 +2,13 @@
     <!-- 所有聊天内容都放在 replybox 中，发送中添加active，失败添加fail -->
     <ul @scroll="onScroll">
         <li class="load" v-show="historyContainerState === 'loading'"></li>
-        <li class="nomore" v-show="historyContainerOpen && historyContainerNomore && historyContainerState !== 'loading'">没有更多了</li>
-        <li class="nomore" v-show="historyContainerOpen && !historyContainerNomore && historyContainerState !== 'loading'">以下为历史记录</li>
+        <li class="nomore" v-show="historyContainerOpen && historyContainerState !== 'loading'">{{  historyContainerNomore ? '没有更多了' :  '以下为历史记录' }}</li>
         <li class="nomore" v-show="list.length && !historyContainerOpen && historyContainerState !== 'loading'">更多请查看历史记录</li>
+        <li class="im_welcome" v-if='welcome_index === -1'><p>网页版天下聊仅收取登录期间的聊天消息，如要查看完整聊天内容，请点击下方<i></i>按钮</p></li>
         <template v-for="(item, index) in list">
             <li class="time" v-text="item.messagetime">messagetime</li>
-            <li :class="{ even: item.from === username, odd: item.from !== username }">
-                <a class="user">
+            <li :class="{ even: item.source === 'send', odd: item.source === 'receive' }">
+                <a class="user" @click="openWindow(item)">
                     <img :src="getAvatar(item)">
                 </a>
                 <div class="replybox" :class="{ group: isGroup, active: item.messagestate === 0 }">
@@ -91,6 +91,7 @@
                     </div>
                 </div>
             </li>
+            <li class="im_welcome" v-if='index === welcome_index'><p>网页版天下聊仅收取登录期间的聊天消息，如要查看完整聊天内容，请点击下方<i></i>按钮</p></li>
         </template>
     </ul>
 </template>
@@ -106,7 +107,6 @@ let lock = false;
 let historyRequested = false;
 
 let config = window.FangChat.config;
-let defaultAvatar = setting.defaultAvatar;
 /**
  * getAvatar() getNickname 基本都会执行 2 遍，一遍发送刷新视图，一遍返回发送状态刷新视图
  **/
@@ -143,6 +143,9 @@ export default {
                 return false;
             }
         },
+        welcome_index() {
+            return this.welcome[this.leftWindow.id];
+        },
         ...mapGetters({
             message_list: 'message_list',
             history_list: 'history_list'
@@ -152,6 +155,7 @@ export default {
             historyContainerOpen: state => state.historyContainer.open,
             historyContainerState: state => state.historyContainer.loadState,
             historyContainerNomore: state => state.historyContainer.nomore,
+            welcome: state => state.welcome,
             info_user: state => state.info_user
         })
     },
@@ -186,21 +190,13 @@ export default {
             return setting.filePicture[key] || this.filePicture['i'];
         },
         getAvatar(item) {
-            let from = item.from;
-            if (from === this.username) {
-                return config.avatar;
-            }
-            let info = this.info_user[from];
+            let info = this.info_user[item.from];
             if (info) {
-                return info.avatar || defaultAvatar;
+                return info.avatar || setting.defaultAvatar;
             }
         },
         getNickname(item) {
-            let from = item.from;
-            if (from === this.username) {
-                return config.nickname;
-            }
-            let info = this.info_user[from];
+            let info = this.info_user[item.from];
             if (info) {
                 return info.nickname || 'fang.com';
             }
@@ -238,6 +234,26 @@ export default {
             });
             this.toggleHistory({
                 open: 0
+            });
+        },
+        openWindow(item) {
+            let info = this.info_user[item.from];
+            if (!info) {
+                info = {
+                    id: item.from,
+                    nickname: item.nickname
+                }
+                events.trigger('store:request:user', info);
+                info.bySearch = 1;
+            }
+            // 重置窗口
+            info.signame = 'im_notice_single';
+            this.stateChange(['left', 'chat']);
+            this.stateLeftOpen(info);
+            this.stateChange(['right', 'notice']);
+            this.stateRightOpen({
+                signame: 'im_notice_single',
+                open: true
             });
         },
         onScroll(e) {
@@ -535,7 +551,6 @@ ul li .replyimg img {
     border-radius: 5px;
 }
 
-
 /* 视频内容 */
 
 ul li .replyvideo {
@@ -646,9 +661,6 @@ ul li.even .replyuser:after {
     right: -8px;
 }
 
-
-
-
 /* 文件内容 */
 
 ul li .replyfile {
@@ -710,9 +722,6 @@ ul li.even .replyfile:after {
     border-left: 8px solid #f7f7f7;
     right: -8px;
 }
-
-
-
 
 /* 链接内容 */
 
@@ -898,7 +907,6 @@ ul li.nomore:after {
 }
 
 /* 聊天时间 */
-
 ul li.time {
     height: 15px;
     line-height: 15px;
@@ -906,5 +914,29 @@ ul li.time {
     font-size: 12px;
     text-align: center;
     margin: 0 auto 15px;
+}
+
+ul li.im_welcome {
+    background-color: #eee;
+    padding: 10px;
+    border-radius: 5px;
+    width: 90%;
+    margin: 0 auto 15px;
+}
+
+ul li.im_welcome p {
+    color: #999;
+    font-size: 12px;
+    line-height: 1.6;
+    letter-spacing: 1px;
+}
+
+ul li.im_welcome i{
+    background-image: url(../assets/images/icom-welcome-history.png);
+    width: 12px;
+    height: 12px;
+    vertical-align: middle;
+    display: inline-block;
+    margin: -2px 2px 0;
 }
 </style>

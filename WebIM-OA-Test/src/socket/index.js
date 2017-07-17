@@ -10,6 +10,7 @@ if (window.WebSocket) {
     console.log('not support websocket!');
     Socket = require('./longPolling').Socket;
 }
+let config = window.FangChat.config;
 
 class IndexSocket {
     constructor() {
@@ -29,6 +30,11 @@ class IndexSocket {
         this.core.login().then(() => {
             this.sync().then(() => {
                 callback && callback();
+                // 获取登录人信息
+                this.postUserInfo([{
+                    id: config.username
+                }]);
+
                 // 同步联系人完成后，同步未读消息
                 // 不同步未读消息了
                 // let time = storage.getSynctime();
@@ -141,26 +147,21 @@ class IndexSocket {
     sync_buddy() {
         return new Promise((resolve, reject) => {
             this.core.syncBuddy().then((data) => {
-                if (data.length) {
-                    let list = data.map((v) => {
-                        let l = v.split(',');
-                        return {
-                            // 发消息使用 username
-                            id: l[0],
-                            // 用于判断是否为联系人时使用
-                            follow: +l[3] ? 'follow' : '',
-                            online: +l[4]
-                        };
-                    });
-                    this.postUserInfo(list).then((data) => {
-                        resolve(data);
-                    }).catch((data) => {
-                        reject(data);
-                    });
-                } else {
-                    console.log('core.syncBuddy return Array(0)');
+                let list = data.map((v) => {
+                    let l = v.split(',');
+                    return {
+                        // 发消息使用 username
+                        id: l[0],
+                        // 用于判断是否为联系人时使用
+                        follow: +l[3] ? 'follow' : '',
+                        online: +l[4]
+                    };
+                });
+                this.postUserInfo(list).then((data) => {
+                    resolve(data);
+                }).catch((data) => {
                     reject(data);
-                }
+                });
             }).catch((data) => {
                 console.log('core.syncBuddy error', data);
                 reject(data);

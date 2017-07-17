@@ -234,7 +234,10 @@ export default {
                 o[id] = v;
             }
 
-            bl.push(id);
+            // 不将登录的信息添加到队列，因为要置顶
+            if (id !== config.username) {
+                bl.push(id);
+            }
             if (v.follow) {
                 fl.push(id);
             }
@@ -510,6 +513,20 @@ export default {
                 });
             }
             // storage.setSynctime(opts.id);
+            return;
+        }
+
+        // 添加提示信息
+        let welcome = state.welcome,
+            message_list = state.message_lists[id];
+        if (!welcome.hasOwnProperty(id)) {
+            if (message_list) {
+                state.welcome[id] = message_list.length - 1;
+            } else {
+                state.welcome[id] = -1;
+            }
+        } else {
+            state.welcome[id] = -100;
         }
     },
     [SOCKET_CHAT_CHANGE](state, data) {
