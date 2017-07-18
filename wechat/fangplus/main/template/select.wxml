@@ -1,0 +1,18 @@
+<template name="select">
+  <view class="floatBox" style="{{selectInfo.showSelect?'display:block':'display:none'}}">
+    <view class="dbmenu">
+      <view class="tt">
+        <view catchtap="cancelTap" class="cancel">取消</view>
+      </view>
+      <view class="con">
+       <scroll-view scroll-y="true" class="h100">
+        <view>
+            <view class='liCls' catchtap="selectTap" wx:for="{{selectInfo.selectArr}}" wx:key="" wx:for-index="idx" wx:for-item="ele" data-idx="{{idx}}">
+              {{ele.val}}
+            </view>
+        </view>
+         </scroll-view>
+      </view>
+    </view>
+  </view>
+</template>

@@ -1,0 +1,50 @@
+<!--pages/xf/index/index.wxml-->
+<import src="components/filter.wxml" />
+<import src="components/list.wxml" />
+<import src="../../../template/search.wxml" />
+<scroll-view class="page" style="display:{{ !!filter.open || !!searchInfo.isSearch ? 'none' : '' }}" scroll-y="true" bindscrolltolower="loadmore">
+  <view class="searchBox">
+    <div class="sea-b pdL15">
+      <a catchtap="toggleSearch" class="input" data-type="xf" data-searchType="xf" data-typename="新房" data-placeholder="楼盘名/地名/开发商等" data-value="{{keyword}}">
+        <i></i>{{ keyword || '楼盘名/地名/开发商等' }}
+      </a> 
+    </div>
+  </view>
+
+  <view class="scTab">
+    <ul>
+      <li catchtap="tabTap" data-key="district">
+        <a><span>{{ filter.text.comarea || filter.text.district || '区域' }}</span></a>
+      </li>
+      <li catchtap="tabTap" data-key="price">
+        <a><span>{{ filter.text.price || '均价'}}</span></a> 
+      </li>
+      <li catchtap="tabTap" data-key="bedroom">
+        <a><span>{{ filter.text.bedroom || '户型'}}</span></a> 
+      </li>
+    </ul>
+  </view>
+  <!-- not loading, no data -->
+  <template is="xf.index.list" wx:if="{{ list.data.length }}" data="{{ ...list }}" />
+  <!-- not loading, no data -->
+  <view class="sear_null" style="display:{{ !list.data.length && !loading ? '' : 'none' }}">
+    <div class="img"></div>
+    <p>没有找到符合条件的楼盘，</p>
+    <p>换个条件试试</p>
+  </view>
+  <!-- loading -->
+  <view class="moreList" style="display:{{ loading ? '' : 'none' }}">
+    <span style="display:{{ isEnd ? '' : 'none' }}">没有更多了...</span> 
+    <span style="display:{{ isEnd ? 'none' : '' }}"><i></i>努力加载中...</span> 
+  </view>
+</scroll-view>
+<template is="xf.index.filter" data="{{ ...filter }}" />
+<template is="search" data="{{...searchInfo}}" />
+<view style="display:{{ filter.alterText ? '' : 'none' }}">
+    <div class="pdt1">
+        <div class="prompt w150">
+            <a class="btnClose" catchtap="alterHide"></a>
+            <p>{{filter.alterText}}</p>
+        </div>
+    </div>
+</view>

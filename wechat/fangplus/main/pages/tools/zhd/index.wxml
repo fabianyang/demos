@@ -1,0 +1,274 @@
+<scroll-view class="page" scroll-y="true" scroll-into-view="{{calcScrollTo}}">
+    <!--贷款-->
+    <div class="jsqTab mb6">
+        <div class="jsqbox">
+            <a catchtap="selectLoanType" data-act="0" data-name="index" data-folder="tools"
+               class="{{act == 0 ? 'active' : ''}}"><span>商业贷</span></a>
+            <a catchtap="selectLoanType" data-act="1" data-name="index" data-folder="jsq"
+               class="{{act == 1 ? 'active' : ''}}"><span>公积金贷</span></a>
+            <a data-act="2" data-name="index" data-folder="jsq"
+               class="{{act == 2 ? 'active' : ''}}"><span>组合贷</span></a>
+        </div>
+        <div class="radioBox">
+            <div class="label" data-val="1" catchtap="selectJsType">
+                <i class="{{dkType && 'ipt'}}"></i>
+                <span>按贷款总额计算</span>
+            </div>
+            <div class="label last-label" data-val="0" catchtap="selectJsType">
+                <i class="{{fjType && 'ipt'}}"></i>
+                <span>按房价总额计算</span>
+            </div>
+        </div>
+    </div>
+    <div class="jsqBox whitebg" wx:if="{{dkType}}">
+        <ul class="jsq-list">
+            <li>
+                <div class="fl">贷款总额</div>
+                <div class="fr">
+                    <input type="number" class="ipt-text" bindinput="dkzeInput" maxlength="5" placeholder="请输入金额"
+                           data-name="dkze" data-flag="_dk" bindblur="inputBlur" value="{{dkze_dk}}"></input>
+                    <span>万</span>
+                </div>
+            </li>
+            <li>
+                <div class="fl nowrap">公积金贷款</div>
+                <div class="fr">
+                    <input type="number" class="ipt-text" bindinput="gjjInput" placeholder="请输入金额"
+                           bindfocus="checkDkze" data-flag="_dk" data-name="gjjdk" bindblur="inputBlur"
+                           value="{{gjjdk_dk}}"></input>
+                    <span>万</span>
+                </div>
+            </li>
+            <li data-flag="_dk" catchtap="selectGjjBox">
+                <div class="fl nowrap">公积金利率</div>
+                <div class="fr arr-rt fr-arr">
+                    {{fundRateMsg_dk}}
+                </div>
+            </li>
+            <li>
+                <div class="fl">商业贷款</div>
+                <div class="fr">
+                    <input type="number" bindinput="sydkInput" class="ipt-text" placeholder="请输入金额"
+                           bindfocus="checkDkze" data-flag="_dk" data-name="sydk" bindblur="inputBlur"
+                           value="{{sydk_dk}}"></input>
+                    <span>万</span>
+                </div>
+            </li>
+            <li data-flag="_dk" catchtap="selectSdlv">
+                <div class="fl">商贷利率</div>
+                <div class="fr arr-rt fr-arr">
+                    {{rateMsg_dk}}
+                </div>
+            </li>
+            <li catchtap="selectDknx">
+                <div class="fl">贷款年限</div>
+                <div class="fr arr-rt fr-arr">
+                    {{dknx_dk}}
+                </div>
+            </li>
+        </ul>
+        <div class="jsq-btn pdT30"><a href="#" class="" data-dknx="{{dknx_dk_val}}" data-dkze="{{dkze_dk}}"
+                                      data-sydk="{{sydk_dk}}"
+                                      data-gjjdk="{{gjjdk_dk}}" data-gjjlv="{{fundRate_dk}}" data-flag="_dk"
+                                      data-sdlv="{{rate_dk}}" catchtap="calculate">开始计算</a></div>
+    </div>
+    <div class="jsqBox whitebg" wx:if="{{fjType}}">
+        <ul class="jsq-list">
+            <li>
+                <div class="fl">房价总额</div>
+                <div class="fr">
+                    <input type="number" class="ipt-text" placeholder="请输入金额"
+                           data-name="fjze" bindinput="fjzeInput" data-flag="_fj" bindblur="inputBlur"
+                           value="{{fjze_fj}}"></input>
+                    <span>万</span>
+                </div>
+            </li>
+            <li catchtap="selectSfbl">
+                <div class="fl">首付比例</div>
+                <div class="fr arr-rt fr-arr">
+                    {{sfbl}}
+                </div>
+            </li>
+            <li>
+                <div class="fl">贷款总额</div>
+                <div class="fr" catchtap="dktap" data-name="dkze" data-flag="_fj" data-value="{{dkze_fj}}">
+                    <!--<input type="number" data-fjze="{{fjze_fj}}" disabled="true" catchtap="dktap" bindinput="dkzeInput" value="{{dkze_fj}}"
+                           class="ipt-text"
+                           data-name="dkze" data-flag="_fj" bindblur="inputBlur" bindfocus="checkDkze"></input>-->
+                    <!--<span>万</span>-->
+                    {{dkze_fj}} 万
+                </div>
+            </li>
+            <li>
+                <div class="fl nowrap">公积金贷款</div>
+                <div class="fr">
+                    <input type="number" bindinput="gjjInput" class="ipt-text" placeholder="请输入金额"
+                           data-name="gjjdk" data-flag="_fj" bindblur="inputBlur" bindfocus="checkDkze"
+                           value="{{gjjdk_fj}}"></input>
+                    <span>万</span>
+                </div>
+            </li>
+            <li data-flag="_fj"  catchtap="selectGjjBox">
+                <div class="fl nowrap">公积金利率</div>
+                <div class="fr arr-rt fr-arr">
+                    {{fundRateMsg_fj}}
+                </div>
+            </li>
+            <li>
+                <div class="fl">商业贷款</div>
+                <div class="fr">
+                    <input type="number" class="ipt-text" placeholder="请输入金额" bindinput="sydkInput"
+                           data-name="sydk" data-flag="_fj" bindblur="inputBlur" bindfocus="checkDkze"
+                           value="{{sydk_fj}}"></input>
+                    <span>万</span>
+                </div>
+            </li>
+            <li data-flag="_fj"  catchtap="selectSdlv">
+                <div class="fl">商贷利率</div>
+                <div class="fr arr-rt fr-arr">
+                    {{rateMsg_fj}}
+                </div>
+            </li>
+            <li catchtap="selectDknx">
+                <div class="fl">贷款年限</div>
+                <div class="fr arr-rt fr-arr">
+                    {{dknx_fj}}
+                </div>
+            </li>
+        </ul>
+        <div class="jsq-btn"><a href="#" data-dknx="{{dknx_fj_val}}" data-gjjlv="{{fundRate_fj}}"
+                                data-sfbl="{{sfbl_fj}}" data-sdlv="{{rate_fj}}" class=""
+                                data-dkze="{{dkze_fj}}" data-gjjdk="{{gjjdk_fj}}" data-flag="_fj"
+                                data-sydk="{{sydk_fj}}" data-fjze="{{fjze_fj}}" catchtap="calculate">开始计算</a></div>
+    </div>
+
+    <div class="sjq-de" wx:if="{{showResult}}">
+        <view class="mTab" id="calcBtn">
+            <a data-rtype="0" class="{{rtype == 0 ? 'active' : ''}}" catchtap="selectResultType">等额本息</a>
+            <a data-rtype="1" class="{{rtype == 1 ? 'active' : ''}}" catchtap="selectResultType">等额本金</a>
+        </view>
+        <!--<p>每月还款额固定<br/>其中本金部分逐月递增、利息部分逐月递减。</p>-->
+
+        <p style="display: {{ rtype == 1 ? 'none' : '' }}; ">每月还款额固定</p>
+        <!--<p> 其中本金部分逐月递增、利息部分逐月递减。</p>-->
+        <p style="display: {{ rtype == 1 ? 'none' : '' }}; margin-top: 5px;">所还总利息较多，适合收入稳定者。</p>
+        <p style="display: {{ rtype == 1 ? '' : 'none' }}; ">每月还款额递减</p>
+        <p style="display: {{ rtype == 1 ? '' : 'none' }}; margin-top: 5px; ">所还总利息较低，前期还款额较大。</p>
+    </div>
+    <div class="monthPays" wx:if="{{showResult}}">
+        <div class="monthPay" catchtap="href" data-param="{{resultParam}}">
+            <p style="display:{{rtype == 0 ? 'block' : 'none'}}">参考月供</p>
+            <p style="display:{{rtype == 1 ? 'block' : 'none'}}">首月月供</p>
+            <a class="arr-rt">¥<b>{{payMonth}}</b><span>查看详情</span></a>
+            <p>每月{{rtype == 0 ?'还款额固定' : '递减'+different + '元'}}</p>
+        </div>
+        <div class="pays">
+            <ul>
+                <li>
+                    贷款总额(元)
+                    <span>{{dkMoney}}</span>
+                </li>
+                <li>
+                    支付利息(元)
+                    <span>{{payLx}}</span>
+                </li>
+                <li>
+                    还款总额（元）
+                    <span>{{hkTotalMoney}}</span>
+                </li>
+            </ul>
+        </div>
+        <div class="cankao">
+            <span>以上信息仅供参考</span>
+        </div>
+    </div>
+</scroll-view>
+<div class="floatBox" wx:if="{{floatBox}}" catchtap="close">
+    <div class="dbmenu2" wx:if="{{sdlvFlag}}">
+        <div class="tt">
+            <div class="cancel" data-type="0" catchtap="cancelBox">取消</div>
+            <div class="info">商贷利率</div>
+        </div>
+        <scroll-view scroll-y="true" class="con" scroll-into-view="{{sdId}}"  style="height:260px;">
+            <ul>
+                <view wx:for="{{sdList}}" wx:for-item="item" wx:key="" class="{{item.cla}}" wx:for-index="idx"
+                    data-index="{{idx}}" id="sd{{item.id}}"
+                    data-text="{{item.text}}" catchtap="selectSd" data-val="{{item.val}}">{{item.text}}
+                </view>
+            </ul>
+        </scroll-view>
+        <div class="define" catchtap="stopPropagation">
+            <div class="width1">自定义利率：</div>
+            <div class="width2">
+                <div class="flexbox">
+                    <input type="digit" bindinput="bindLlInput" data-flag="sd" bindfocus="bindFocus" data-name="zdysd" value="{{zdysd}}" class="ipt-text" placeholder="0<自定义利率（%）<=100"/>
+                    <a catchtap="confirmBox" class="btn">确认</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--首付比例-->
+    <div class="dbmenu2" wx:if="{{sfblFlag}}">
+        <div class="tt">
+            <div class="cancel" data-type="1" catchtap="cancelBox">取消</div>
+            <div class="info">首付比例</div>
+        </div>
+        <scroll-view scroll-y="true" class="con" scroll-into-view="{{sfId}}"  style="height:172px;">
+            <ul>
+                <view wx:for="{{sfList}}" wx:for-item="item" wx:key="" class="{{item.cla}}" wx:for-index="idx"
+                    data-index="{{idx}}" id="sf{{item.id}}"
+                    data-val="{{item.val}}" data-text="{{item.text}}" catchtap="selectSf">{{item.text}}
+                </view>
+            </ul>
+        </scroll-view>
+    </div>
+    <!--公积金利率-->
+    <div class="dbmenu2" wx:if="{{gjjFlag}}">
+        <div class="tt">
+            <div class="cancel" data-type="2" catchtap="cancelBox">取消</div>
+            <div class="info">公积金利率</div>
+        </div>
+        <scroll-view scroll-y="true" class="con" scroll-into-view="{{gjjId}}" style="height:260px;">
+            <ul>
+                <view wx:for="{{gjjList}}" wx:for-item="item" wx:key="" class="{{item.cla}}" data-val="{{item.val}}"
+                    wx:for-index="idx" data-index="{{idx}}" id="gjj{{item.id}}"
+                    data-text="{{item.text}}" catchtap="selectGjj">{{item.text}}
+                </view>
+            </ul>
+        </scroll-view>
+        <div class="define" catchtap="stopPropagation">
+            <div class="width1">自定义利率：</div>
+            <div class="width2">
+                <div class="flexbox">
+                    <input type="digit" bindinput="bindLlInput" data-flag="gjj" bindfocus="bindFocus" data-name="zdygjj" value="{{zdygjj}}" class="ipt-text"
+                           placeholder="0<自定义利率（%）<=100"/>
+                    <a catchtap="zdyGjj" class="btn">确认</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--贷款年限-->
+    <div class="dbmenu2" wx:if="{{dknxFlag}}">
+        <div class="tt">
+            <div class="cancel" data-type="3" catchtap="cancelBox">取消</div>
+            <div class="info">贷款年限</div>
+        </div>
+        <scroll-view scroll-y="true" class="con" scroll-into-view="year{{selectId}}" style="height:214px;">
+            <ul>
+                <view wx:for="{{yearList}}" wx:for-item="item" wx:key="" class="{{item.cla}}" wx:for-index="idx"
+                    data-index="{{idx}}"
+                    data-year="{{item.text}}" id="year{{item.yearId}}" data-val="{{item.val}}" catchtap="selectYear">{{item.text}}
+                </view>
+            </ul>
+        </scroll-view>
+    </div>
+</div>
+<div wx:if="{{errFlag}}">
+    <div class="pdt1">
+        <div class="prompt w150 alertTip" style="z-index: 9999; top:{{ sdlvFlag || gjjFlag ? 'auto' : '' }}; bottom:{{ sdlvFlag || gjjFlag ? '30%' : '' }};">
+            <a class="btnClose" catchtap="hideFloat"></a>
+
+            <p>{{errMsg}}</p>
+        </div>
+    </div>
+</div>

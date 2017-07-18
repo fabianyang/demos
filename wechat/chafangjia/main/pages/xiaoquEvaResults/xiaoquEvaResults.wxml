@@ -1,0 +1,70 @@
+<block wx:if="{{dataLoad || !dataLoad}}">
+  <scroll-view class="page" scroll-y="true">
+    <div class="result bb10">
+      <div class="h3"><span class="infor">建筑面积{{pageInfo.pgdetail.buildArea}}平<i></i>{{pageInfo.pgdetail.forward}}</span>  {{pageInfo.pgdetail.projName}}</div>
+      <div class="con">
+        <ul class="flextable">
+          <li>
+            <span class="c000">房屋总价</span> 
+            <p class="cf54">
+              <b>{{pageInfo.pgdetail.totalPrice}}万元</b>
+            </p>
+          </li>
+          <li>
+            <span>房屋单价</span> 
+            <p>{{pageInfo.pgdetail.avagePgPrice}}元/平</p>
+          </li>
+          <li>
+            <span>环比上月</span> 
+            <p><span class="{{pageInfo.pgdetail.arrowFlag}}">{{pageInfo.pgdetail.monthadd}}</span>  </p>
+          </li>
+          <li>
+            <span>小区均价</span> 
+            <p>{{pageInfo.pgdetail.avagePrice}}元/平</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="bb10" wx:if="{{pageInfo.neighborSearch.length}}">
+      <div class="pdX15 title">
+        <p>邻居们在查</p>
+      </div>
+      <div class="chaList">
+        <dl class="first">
+          <dd class="w30">户型</dd>
+          <dd class="w40">建筑面积(㎡)</dd>
+          <dd class="w30">总价</dd>
+        </dl>
+        <dl wx:for="{{pageInfo.neighborSearch}}" wx:key="" wx:for-index="idx" wx:for-item="ele" data-idx="{{idx}}">
+
+          <!--使用不等于0，直接写目前是无效-->
+          <dd wx:if="{{ele.Room != 0 || ele.Hall !=0}}" class="w30">{{ele.Room+'室'+ele.Hall+'厅'}}</dd>
+          <dd wx:else class="w30">暂无</dd>
+          <dd class="w40">{{ele.BuildArea}}</dd>
+          <dd class="w30">{{ele.pgPrice}}万</dd>
+        </dl>
+      </div>
+    </div>
+    <div wx:if="{{pageInfo.record.count}}" class="houseList">
+      <div class="title">
+        <p>小区成交案例</p>
+      </div>
+      <ul>
+        <li wx:for="{{pageInfo.record.hit}}" wx:key="" wx:for-index="idx" wx:for-item="hit" style="{{idx < pageInfo.pgdetail.hasShowSize?'display:block':'display:none'}}">
+          <div class="img">
+            <image src="http:{{hit.photourl || '//static.soufunimg.com/common_m/m_wechat/public/images/default_logo.jpg'}}"></image>
+          </div>
+          <div class="txt f11">
+            <div class="h3">{{hit.room}}室{{hit.hall}}厅 {{hit.buildarea}}平米 {{hit.forwardstr}} {{hit.floor}}/{{hit.totalfloor}}层</div>
+            <p><span class="price flor">{{hit.avgprice+'元/平米'}}</span>  签约价格：<span class="red_f54">{{hit.dealmoney+'万'}}</span>  </p>
+            <p>签约时间：{{hit.inserttime}}</p>
+            <p>来源：{{housetype==='1'?'房天下成交':'市场信息'}}</p>
+          </div>
+        </li>
+      </ul>
+      <div catchtap="showMore" wx:if="{{pageInfo.record.count > 3 && pageInfo.pgdetail.hasShowSize < pageInfo.record.count}}" class="btnKx">
+        <a>查看更多（共{{pageInfo.record.count}}套）</a> 
+      </div>
+    </div>
+  </scroll-view>
+</block>

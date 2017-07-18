@@ -1,0 +1,321 @@
+<div class="main" id="main">
+<section class="secTab listtab1" id="navMenu" wx:if="{{showDai}}">
+    <div class="flexbox">
+        <a wx:for="{{todos}}" wx:for-index="idx" wx:key="" data-index="{{idx}}" wx:for-item="item" class="{{item.cal}}" catchtap="change"><span>{{item.text}}</span></a>
+    </div>
+</section>
+<div id="mainBody">
+    <section wx:if="{{showDai}}">
+        <block>
+            <div class="sjq-t bb" wx:if="{{viewName ==='taxs'}}">
+                <div class="mTab">
+                    <div class="flexbox">
+                        <a data-tax="xftaxs" class="{{xfCal}}" catchtap="changeTax">新房</a>
+                        <a data-tax="esftaxs" class="{{esfCal}}" catchtap="changeTax">二手房</a>
+                    </div>
+                </div>
+            </div>
+        </block>
+        <div class="jsqBox">
+            <block>
+                <div wx:if="{{viewName ==='daikuan' || viewName ==='gjj'}}">
+                    <ul class="jsq-list">
+                        <li>
+                            <div>房款总价：</div>
+                            <div>
+                                <div class="flexbox">
+                                    <input type="number" value="{{totalMoney}}" class="ipt-text" pattern="[0-9]*" bindinput="inputLimit1"/>
+                                    <span>万元</span>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div>首付比例：</div>
+                            <div class="arr-rt" data-value="{{propotion}}" catchtap="payClick">{{propotionMsg}}</div>
+                        </li>
+                        <li>
+                            <div>贷款总额：</div>
+                            <div> 
+                                <div class="flexbox">
+                                    <input value="{{dkTotalMoney}}" bindinput="inputLimit" type="number" class="ipt-text" pattern="[0-9]*"/>
+                                    <span>万元</span>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div>按揭年数：</div>
+                            <div class="arr-rt" data-value="{{year}}" catchtap="syYearClick">{{yearMsg}}</div>
+                        </li>
+                        <li>
+                            <div>利<em></em><em></em><em></em><em></em>率：</div>
+                            <div class="arr-rt" data-value="{{rate}}" catchtap="rateClick">{{rateMsg}}</div>
+                        </li>
+                    </ul>
+                </div>
+                <div wx:if="{{viewName ==='zh'}}">
+                    <ul class="jsq-list zhd">
+                        <li>
+                            <div>商业贷款：</div>
+                            <div>
+                                <div class="flexbox"><input type="number" class="ipt-text" pattern="[0-9]*"
+                                                            value="{{syMoney}}" placeholder="{{syHint}}"
+                               bindinput="syInputLimit"/><span>万元</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <div>商业贷款按揭年数：</div>
+                            <div class="arr-rt" data-value="{{syYear}}" catchtap="syYearClick">{{syMsg}}</div>
+                        </li>
+                        <li>
+                            <div>公积金贷款：</div>
+                            <div>
+                                <div class="flexbox"><input type="number" class="ipt-text" pattern="[0-9]*"
+                                                            placeholder="{{syHint}}"  value="{{gjjMoney}}"
+                                bindinput="syInputLimit"/><span>万元</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <div>公积金贷款按揭年数：</div>
+                            <div class="arr-rt" data-value="{{gjjYear}}" catchtap="syYearClick">{{gjjMsg}}</div>
+                        </li>
+                        <li>
+                            <div>商业利率：</div>
+                            <div class="arr-rt" data-value="{{syRate}}" catchtap="syRateClick">{{syRateMsg}}</div>
+                        </li>
+                        <li>
+                            <div>公积金利率：</div>
+                            <div class="arr-rt" data-value="{{gjjRate}}" catchtap="gjjRateClick">{{gjjRateMsg}}</div>
+                        </li>
+                    </ul>
+                </div>
+                <div wx:if="{{viewName ==='taxs' && tax === 'xftaxs'}}">
+                    <ul class="jsq-list">
+                        <li>
+                            <div>建筑面积：</div>
+                            <div>
+                                <div class="flexbox"><input type="number" class="ipt-text" pattern="[0-9]*"/><span>㎡</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <div>面积单价：</div>
+                            <div>
+                                <div class="flexbox"><input type="number" class="ipt-text" pattern="[0-9]*"/><span>元</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <div>房屋性质：</div>
+                            <div class="arr-rt" data-value="0">普通住宅</div>
+                        </li>
+                        <li>
+                            <div>是否唯一：</div>
+                            <div class="radioBox"><label><input type="radio" class="ipt-rd" id="isUnique" value="1" checked="checked"
+                                                                name="unique"/>是</label><label><input type="radio" class="ipt-rd"
+                                                                                                    id="noUnique" value="0"                                           name="unique"/>否</label>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </block>
+            <block wx:if="{{viewName ==='taxs' && tax === 'esftaxs'}}">
+                <ul class="jsq-list ll">
+                    <li>
+                        <div>物业类型：</div>
+                        <div class="arr-rt" id="esfHouseProp" data-value="1">普通住宅</div>
+                    </li>
+                    <li>
+                        <div>计算方式：</div>
+                        <div class="arr-rt" id="countwayProp" data-value="1">按总价计算</div>
+                    </li>
+                    <li>
+                        <div>房产购置年限：</div>
+                        <div class="arr-rt" id="houseYear" data-value="1">不满两年</div>
+                    </li>
+                    <li>
+                        <div>是否首次购房：</div>
+                        <div class="radioBox"><label><input type="radio" class="ipt-rd" id="isUnique" value="1" checked="checked"
+                                                            name="first"/>是</label><label><input type="radio" class="ipt-rd"
+                                                                                                id="noUnique" value="0"
+                                                                                                name="first"/>否</label></div>
+                    </li>
+                    <li>
+                        <div>是否唯一住房：</div>
+                        <div class="radioBox"><label><input type="radio" class="ipt-rd" id="isUnique" value="1" checked="checked"
+                                                            name="unique"/>是</label><label><input type="radio" class="ipt-rd"
+                                                                                                id="noUnique" value="0" name="unique"/>否                             </label>
+                        </div>
+                    </li>
+                    <li>
+                        <div>建筑面积：</div>
+                        <div>
+                            <div class="flexbox"><input type="number" class="ipt-text" pattern="[0-9]*"/><span>㎡</span></div>
+                        </div>
+                    </li>
+                    <li>
+                        <div>总价：</div>
+                        <div>
+                            <div class="flexbox"><input type="number" class="ipt-text" pattern="[0-9]*"/><span>万元</span></div>
+                        </div>
+                    </li>
+                    <li style="display: none;">
+                        <div>原价：</div>
+                        <div>
+                            <div class="flexbox"><input type="number" class="ipt-text" id="yuanJia" pattern="[0-9]*"/><span>万元</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </block>
+            <div class="jsq-btn" id="btnCal">
+                <input type="button" bindinput="calculate" value="开始计算"/>
+            </div>
+        </div>
+        <section class="jsresults resultBox mt8" style="display:none">
+            <div id="resultWraper">
+                <section>
+                    <div class="result-t methodboxa">
+                        <div class="mTab">
+                            <div class="flexbox" id="payMethod"><a id="fixedPayment" class="active">等额本息</a><a
+                                    id="fixedBasis" class="">等额本金</a></div>
+                        </div>
+                        <p class="f14">每月还款额固定，所还总利息较多，适合收入稳定者。</p>
+
+                        <p class="f14" style="display: none;">每月还款额递减，所还总利息较低，前期还款额较大。</p></div>
+                </section>
+                <div class="jsresults01 cirqueBox"><a id="detailLink" class="arr-rt">
+                    <div class="cirque">
+                        <div id="pieCon1" style="overflow: visible; transform: translateZ(0px);">
+                            <canvas width="280" height="280" style="height: 140px; width: 140px;"></canvas>
+                        </div>
+                        <div class="intro"><span class="info">月供</span> <span id="monthPay">￥4582</span></div>
+                    </div>
+                </a></div>
+                <div class="jsresults02 resultList">
+                    <dl>
+                        <dt><span>房款总价：</span></dt>
+                        <dd><span>100</span>万元</dd>
+                    </dl>
+                    <dl>
+                        <dt class="blue-i"><span>首付金额：</span></dt>
+                        <dd><span>30</span>万元</dd>
+                    </dl>
+                    <dl>
+                        <dt class="yellow-i"><span>贷款总额：</span></dt>
+                        <dd><span>70</span>万元</dd>
+                    </dl>
+                    <dl>
+                        <dt class="pink-i"><span>支付利息：</span></dt>
+                        <dd><span>399467</span>元</dd>
+                    </dl>
+                    <dl>
+                        <dt><span>利<i></i>率：</span></dt>
+                        <dd><span>4.90</span>%</dd>
+                    </dl>
+                    <dl>
+                        <dt><span>首月月供：</span></dt>
+                        <dd><span>4582</span>元/月</dd>
+                    </dl>
+                    <dl style="display: none;">
+                        <dt><span>每月递减：</span></dt>
+                        <dd><span>0</span>元/月</dd>
+                    </dl>
+                </div>
+                <p class="gray-b f12 center mt20" id="cankao">以上结果仅供参考</p></div>
+        </section>
+    </section>
+    <section class="repay" id="detailPage" style="display: none;">
+        <div class="repay-t" id="listInfo">
+            <div class="repay-tab" id="payMethodType">
+                <ul>
+                    <li id="pay0" class="">等额本息</li>
+                    <li id="pay1" class="">等额本金</li>
+                </ul>
+            </div>
+            <ul id="monthPay">
+                <li>月均还款(元)：<span class="f16"></span></li>
+            </ul>
+            <ul id="detailUl">
+                <li>还款总额(万): <span></span></li>
+                <li>贷款总额(万): <span></span></li>
+                <li>支付利息(万): <span></span></li>
+                <li style="display: none;">贷款月数(月): <span></span></li>
+                <li style="display: none;">商业贷款月数(月): <span></span></li>
+                <li style="display: none;">公积金贷款月数(月): <span></span></li>
+                <li style="display: none;">月均利息(万): <span>99.60</span></li>
+            </ul>
+        </div>
+        <div class="dataList">
+            <table cellpadding="0" cellspacing="0" class="dataTable">
+                <tbody>
+                <tr>
+                    <th width="13%">月份</th>
+                    <th width="18%">月供</th>
+                    <th width="20%">月供本金</th>
+                    <th width="20%">月供利息</th>
+                    <th width="29%">剩余贷款</th>
+                </tr>
+                </tbody>
+            </table>
+            <div class="year-box" id="yearChange"><span>第1年</span></div>
+        </div>
+        <div class="data-box">
+            <div class="dataList" id="listHtml"></div>
+        </div>
+    </section>
+    <div class="sf-maskFixed" id="floatDiv" style=""  wx:if="{{ajShow}}">
+        <div class="sf-bdmenu">
+            <div class="tt">
+                <div class="cancel" catchtap="cancelSyAj">取消</div>
+            </div>
+            <div class="con">
+                <section style="height: 202px;overflow: hidden;">
+                    <ul>
+                        <li wx:for="{{ajTodos}}" wx:for-item="item"  class="{{item.cla}}"
+                             wx:for-index="idx" data-index="{{idx}}" data-val="{{item.val}}" catchtap="syFill">{{item.text}}
+                        </li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </div>
+    <section id="ratePage" class="ratePageSec" style=""  wx:if="{{lvShow}}">
+        <ul class="jsq-list">
+            <li>
+                <div class="width2">自定义利率：</div>
+                <div>
+                    <div class="flexbox">
+                        <input type="text" class="ipt-text" id="lilvDef" bindinput="keydownEvent" value="{{zdyUserRate}}"
+                           placeholder="{{lvHint}}"/>
+                        <span class="gray-8">%</span><a href="javascript:;" class="btn" catchtap="rateBtnClick" id="btnRateOk">确
+                        定</a></div>
+                </div>
+            </li>
+        </ul>
+        <div class="c-list">
+            <div class="list-t">或者选择常用利率</div>
+            <ul>
+                <li wx:for="{{lvTodos}}" wx:for-item="item"  class="{{item.cla}}"
+                             wx:for-index="idx" data-index="{{idx}}" data-val="{{item.val}}" catchtap="lvFill">{{item.text}}
+                </li>
+            </ul>
+        </div>
+    </section>
+</div>
+<section wx:if="{{showPro}}" id="sfRatePage" class="sfRatePageSec">
+    <ul class="jsq-list">
+        <li>
+            <div>自定义：</div>
+            <div>
+                <div class="flexbox"><input type="number" class="ipt-text" id="inputDai" bindinput="inputLimit"
+                                            value="{{userVal}}" placeholder="{{hint}}"/><span
+                        class="gray-8">万元</span><a href="javascript:void(0);" bindtap="userDefined" class="btn">确 定</a></div>
+            </div>
+        </li>
+    </ul>
+    <div class="c-list">
+        <div class="list-t">或者选择首付比例</div>
+        <ul>
+            <li wx:for="{{downtodos}}" wx:for-item="item"  class="{{item.cla}}"  data-text="{{item.text}}" data-val="{{item.val}}" catchtap="handlePay">{{item.text}}</li>
+        </ul>
+    </div>
+</section>
+</div>

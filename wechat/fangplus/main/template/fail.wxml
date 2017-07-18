@@ -1,0 +1,11 @@
+<template name="fail">
+  <div class="page" wx:if="{{showFail}}">
+    <div catchtap="reloadTap" class="failBox">
+      <div class="img">
+        <image style="width:62px;height:85px" src="http://static.test.soufunimg.com/common_m/m_wechat/public/images/default_fail.png" width="62"> </image>
+      </div>
+      <p>加载失败，请点击此处重新加载</p>
+      <a class="btn_again">重新加载</a> 
+    </div>
+  </div>
+</template>

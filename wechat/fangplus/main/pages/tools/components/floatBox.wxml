@@ -1,0 +1,77 @@
+<template name="tools.floatBox">
+
+  <!--商贷利率-->
+  <view class="floatBox" catchtap="floatBox.close" style="display: {{ ( box.open === 'lendRate' || box.open === 'fundRate' ) ? 'block' : 'none' }};">
+    <view class="dbmenu2">
+      <view class="tt">
+        <view class="cancel" catchtap="floatBox.close">取消</view>
+        <view class="info">商贷利率</view>
+      </view>
+      <scroll-view class="con" style="height:260px;" scroll-y="true" scroll-into-view="{{  box.open ? box.open + form.selected[box.open].idx : '' }}">
+        <view catchtap="floatBox.select" class="{{ form.selected[box.open].val === item.val && !form.selected[box.open].custom ? 'active' : '' }}" wx:for="{{ form.listRate }}" wx:key="val" wx:for-index="idx" id="{{ box.open + idx }}" wx:for-item="item"
+        data-idx="{{ idx }}" data-txt="{{ item.txt }}" data-val="{{ item.val }}">{{ item.txt }}</view>
+      </scroll-view>
+      <!--<scroll-view class="con" style="height:260px; display: {{ box.open === 'lendRate' ? '' : 'none' }};" scroll-y="true" scroll-into-view="{{ 'lendRate' + form.selected['lendRate'].idx }}">
+        <view catchtap="floatBox.select" class="{{ form.selected['lendRate'].val === item.val && !form.selected['lendRate'].custom ? 'active' : '' }}" wx:for="{{ form.listRate }}" wx:key="val" wx:for-index="idx" id="{{ 'lendRate' + idx }}" wx:for-item="item"
+        data-idx="{{ idx }}" data-txt="{{ item.txt }}" data-val="{{ item.val }}">{{ item.txt }}</view>
+      </scroll-view>-->
+      <!--<scroll-view class="con" style="height:260px; display: {{ box.open === 'fundRate' ? '' : 'none' }};" scroll-y="true" scroll-into-view="{{ 'fundRate' + form.selected['fundRate'].idx }}">
+      <view catchtap="floatBox.select" class="{{ form.selected['fundRate'].val === item.val && !form.selected['fundRate'].custom ? 'active' : '' }}" wx:for="{{ form.listRate }}" wx:key="val" wx:for-index="idx" id="{{ 'fundRate' + idx }}" wx:for-item="item"
+        data-idx="{{ idx }}" data-txt="{{ item.txt }}" data-val="{{ item.val }}">{{ item.txt }}</view>
+      </scroll-view>-->
+      <view class="define" catchtap="stopPropagation">
+        <view class="width1">自定义利率：</view>
+        <view class="width2">
+          <view class="flexbox">
+            <input type="digit" class="ipt-text" placeholder="0<自定义利率（%）<=100" bindfocus="floatBox.focus" bindblur="floatBox.blur" bindinput="floatBox.input" data-name="{{ box.open }}" value="{{ form.custom[box.open] }}"></input>
+            <a href="#" class="btn" catchtap="floatBox.confirm" data-name="{{ box.open }}">确认</a> 
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!--首付比例-->
+  <view class="floatBox" catchtap="floatBox.close" style="display: {{ box.open === 'payRatio' ? 'block' : 'none' }};">
+    <view class="dbmenu2">
+      <view class="tt">
+        <view class="cancel" catchtap="floatBox.close">取消</view>
+        <view class="info">首付比例</view>
+      </view>
+      <scroll-view class="con" style="height:172px;" scroll-y="true" scroll-into-view="{{ 'payRatio' + form.selected['payRatio'].idx }}">
+        <view catchtap="floatBox.select" class="{{ form.selected['payRatio'].val === item.val ? 'active' : '' }}" wx:for="{{ form['payRatio'] }}" wx:key="val" wx:for-index="idx" id="{{ 'payRatio' + idx }}" wx:for-item="item" data-idx="{{ idx }}" data-txt="{{ item.txt }}"
+        data-val="{{ item.val }}">{{ item.txt }}</view>
+
+        <!--<li data-val="0.25">25%</li>
+          <li data-val="0.3">30%</li>
+          <li class="active" data-val="0.35">35%</li>
+          <li data-val="0.4">40%</li>
+          <li data-val="0.45">45%</li>
+          <li data-val="0.5">50%</li>
+          <li data-val="0.55">55%</li>-->
+      </scroll-view>
+    </view>
+  </view>
+
+  <!--贷款年限-->
+  <view class="floatBox" catchtap="floatBox.close" style="display: {{ box.open === 'loanTerm' ? 'block' : 'none' }};">
+    <view class="dbmenu2">
+      <view class="tt">
+        <view class="cancel" catchtap="floatBox.close">取消</view>
+        <view class="info">贷款年限</view>
+      </view>
+      <scroll-view class="con" style="height:214px;" scroll-y="true" scroll-into-view="{{ 'loanTerm' + form.selected['loanTerm'].idx }}">
+        <view catchtap="floatBox.select" class="{{ form.selected['loanTerm'].val === item.val ? 'active' : '' }}" wx:for="{{ form['loanTerm'] }}" wx:key="val" wx:for-index="idx" id="{{ 'loanTerm' + idx }}" wx:for-item="item" data-idx="{{ idx }}" data-txt="{{ item.txt }}"
+        data-val="{{ item.val }}">{{ item.txt }}</view>
+
+        <!--<li data-val="204">17年（204期）</li>
+          <li data-val="216">18年（216期）</li>
+          <li class="active" data-val="228">19年（228期）</li>
+          <li data-val="240">20年（240期）</li>
+          <li data-val="252">21年（252期）</li>
+          <li data-val="264">22年（264期）</li>
+          <li data-val="276">23年（276期）</li>-->
+      </scroll-view>
+    </view>
+  </view>
+</template>

@@ -1,0 +1,94 @@
+<import src="modules/citySearch.wxml"/>
+<template is="citySearch" data="{{...cityInfo}}"/>
+<block wx:if="{{!cityInfo.searchShow}}">
+    <view class="searchBox" style="position:fixed;top:0;z-index:10;">
+        <view class="sea-b pdL15">
+            <view class="input" catchtap="showSearch" data-type="citySearch" data-placeholder="输入城市名称进行搜索">
+                <text style="display:block;"><i></i>输入城市名称进行搜索</text>
+            </view>
+        </view>
+    </view>
+    <view style="height: 44px;"></view>
+    <scroll-view class="page" scroll-y="true" scroll-into-view="{{cityInfo.active}}" style="height:{{scrollHeight}}">
+        <view class="his_tit">当前定位城市</view>
+        <view class="city">
+            <view class="citya" href="#" catchtap="cityPick" data-id="{{cityInfo.positionCity}}" data-citytype="positionCity">
+                <text class="f5 cityspan" catchtap="reLocate"></text>
+                <text class="cityspan">{{cityInfo.positionCity}}</text>
+                GPS定位
+            </view>
+        </view>
+        <block wx:if="{{cityInfo.history.length}}">
+            <view class="his_tit" id="cityInfoHistory">最近访问的城市</view>
+            <div class="hisCity clearfix">
+                <text class="hisCitya" wx:for="{{cityInfo.history}}" wx:key="" wx:for-item="city" catchtap="cityPick" data-id="{{city}}"
+                      data-citytype="selectCity">{{city}}
+                </text>
+            </div>
+        </block>
+        <block wx:for="{{cityInfo.category}}" wx:key="" wx:for-item="item">
+            <block wx:if="{{item.cities.length && item.cities[0]}}">
+                <view class="his_tit" id="{{item.key}}">{{item.name}}</view>
+                <view class="cities">
+                    <view class="citiesli" wx:for="{{item.cities}}" wx:key="" wx:for-item="city">
+                        <text class="citiesa" catchtap="cityPick" data-id="{{city}}" data-citytype="selectCity">{{city}}</text>
+                    </view>
+                </view>
+            </block>
+        </block>
+        <view class="hotBox">
+            <view>
+                <view class="hotBoxli" wx:if="{{cityInfo.history.length}}" bindtap="cityTab" data-id="cityInfoHistory">
+                    <text class="hotBoxa">历史</text>
+                </view>
+                <block wx:for="{{cityInfo.category}}" wx:key="" wx:for-item="item">
+                    <view class="hotBoxli" bindtap="cityTab" wx:if="{{item.cities.length && item.cities[0]}}" data-id="{{item.key}}">
+                        <text class="hotBoxa">{{item.name === '热门城市' ? '热门' :
+                            item.name}}
+                        </text>
+                    </view>
+                </block>
+            </view>
+        </view>
+    </scroll-view>
+    <block>
+        <view wx:if="{{cityInfo.showCurrentLocation}}">
+            <view class="pdt1">
+                <view class="prompt w150 alertTip">
+                    <text class="btnClose" catchtap="hideFloat"></text>
+                    <view class="promptp">当前位置</view>
+                    <view class="promptp">{{cityInfo.location}}</view>
+                </view>
+            </view>
+        </view>
+        <view wx:if="{{cityInfo.showFailLocation}}">
+            <view class="pdt1">
+                <view class="prompt w200 alertTip">
+                    <text class="btnClose" catchtap="hideFloat"></text>
+                    <view class="promptp">定位失败</view>
+                    <view class="promptp">请稍后重试</view>
+                </view>
+            </view>
+        </view>
+        <view wx:if="{{cityInfo.showCityMsg}}">
+            <view class="pdt1">
+                <view class="prompt w150 alertTip">
+                    <text class="btnClose" catchtap="hideFloat"></text>
+                    <view class="promptp">提示</view>
+                    <view class="promptp">您所在的城市不在服务范围之内</view>
+                </view>
+            </view>
+        </view>
+        <view wx:if="{{cityInfo.showNetwork}}">
+            <view class="pdt1">
+                <view class="prompt w150 alertTip">
+                    <text class="btnClose" catchtap="hideFloat"></text>
+                    <view class="promptp">网络异常</view>
+                    <view class="promptp">请稍后重试</view>
+                </view>
+            </view>
+        </view>
+    </block>
+</block>
+
+

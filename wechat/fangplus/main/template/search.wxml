@@ -1,0 +1,74 @@
+<template name="search">
+    <scroll-view class="page bg_efe" wx-if="{{isSearch}}" bindtap="hideDropBox" scroll-y="false">
+        <div class="search bb">
+            <div class="searbox">
+                <div class="ipt">
+                    <div class="searchDrop" wx:if="{{type === 'index'}}" catchtap="showDropBox">
+                        <block wx:if="{{searchtype === 'esf'}}"><a>二手房</a></block>
+                        <block wx:else><a>新<i></i>房</a></block>
+                    </div>
+                    <span class="sear-icon"></span>
+                    <input bindinput="searchInput" bindconfirm="searchTap" data-searchtype="{{searchtype}}" type="text" placeholder="{{placeholder}}" focus="true" value="{{value}}"></input>
+                    <a wx-if="{{valueInput}}" catchtap="clearInput" href="#" class="off"></a>
+                </div>
+                <a catchtap="{{isIndex && valueInput?'searchTap':'toggleSearch'}}" data-type="{{type}}" data-searchtype="{{searchtype}}" data-do="close"
+                   href="#" class="btn">
+                    <block wx:if="{{isIndex && valueInput}}"><i></i></block>
+                    <block wx:else>取消</block>
+                </a>
+            </div>
+        </div>
+        <div class="dropBox" style="display:block;" wx:if="{{type === 'index' && !hideDropBox}}">
+            <ul>
+                <li class="{{searchtype === 'xf' ? 'cur':''}}" catchtap="switchSearch" data-searchtype="xf"><a href="#"><i class="xf"></i>新<span
+                        class="space2"></span>房</a></li>
+                <li class="{{searchtype === 'esf' ? 'cur':''}}" catchtap="switchSearch" data-searchtype="esf"><a href="#"><i class="esf"></i>二手房</a></li>
+            </ul>
+            <i></i>
+        </div>
+        <block wx-if="{{showHistory===1}}">
+            <div class="his_tit"><i></i>搜索历史</div>
+            <div class="searList">
+                <ul>
+                    <li catchtap="historyTap" wx:for="{{history}}" wx:key="" wx:for-index="idx" wx:for-item="name" data-name="{{name.raw}}" data-type="{{type}}"
+                        data-searchtype="{{searchtype}}">
+                        <a href="#" class="arr-rt">{{name.name}} <i wx:if="{{name.suffix}}">{{name.suffix}}</i></a>
+                    </li>
+                </ul>
+                <div catchtap="clearHistory" class="clearBtn">
+                    <a href="#">清空搜索历史</a>
+                </div>
+            </div>
+        </block>
+        <block wx-if="{{showHistory===2}}">
+            <div class="searList lianx">
+                <ul>
+                    <li catchtap="historyTap" wx:for="{{promptArr}}" wx:key="" wx:for-index="idx" wx:for-item="prompt" data-name="{{prompt.raw}}"
+                        data-type="{{type}}" data-searchtype="{{searchtype}}">
+                        <a href="#">
+                            <block>
+                                <span wx:if="{{prompt.left}}" class="{{prompt.redStr === 'left' ? 'red' : ''}}">{{prompt.left}}</span>
+                                <span wx:if="{{prompt.module}}" class="{{prompt.redStr === 'module' ? 'red' : ''}}">{{prompt.module}}</span>
+                                <span wx:if="{{prompt.right}}" class="{{prompt.redStr === 'right' ? 'red' : ''}}">{{prompt.right}}</span>
+                            </block>
+                            <i wx:if="{{prompt.suffix}}">{{prompt.suffix}}</i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </block>
+        <block wx-if="{{showHistory===3}}">
+            <div class="sear_null">
+                <div class="img"></div>
+                <p>没有找到符合搜索条件的小区，</p>
+                <p>换个搜索条件试试</p>
+            </div>
+        </block>
+        <div class="pdt1" wx:if="{{deleteHistoryAlert}}">
+            <div class="prompt w110">
+                <a class="btnClose" catchtap="hideDelFloat"></a>
+                <p>已删除</p>
+            </div>
+        </div>
+    </scroll-view>
+</template>

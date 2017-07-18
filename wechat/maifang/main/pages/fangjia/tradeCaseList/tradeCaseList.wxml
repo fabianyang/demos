@@ -1,0 +1,27 @@
+<import src="../../../template/filter.wxml"/>
+<block wx:if="{{dataLoad}}">
+    <scroll-view  class="page bg_efe" wx:if="{{!pageInfo.filterInfo.isFilter}}" scroll-y="true" bindscrolltolower="loadmore" lower-threshold="0" scroll-into-view="{{pageInfo.loading?'loading':''}}"> 
+        <template is="filterTab" data="{{...pageInfo.filterInfo}}"/>
+        <div class="houseList" wx:if="{{pageInfo.hit}}">
+            <ul>
+                <li wx:for="{{pageInfo.hit}}" wx:key="" wx:for-index="idx" wx:for-item="hit">
+                    <div class="img"><image src="http:{{hit.photourl || '//static.soufunimg.com/common_m/m_wechat/public/images/default_logo.jpg'}}"></image></div>
+                    <div class="txt f11">
+                        <div class="h3">{{hit.room}}室{{hit.hall}}厅 {{hit.buildarea}}平米 {{hit.forwardstr}} {{hit.floor}}层/{{hit.totalfloor}}层</div>
+                        <p><span class="price flor">{{hit.avgprice+'元/㎡'}}</span>签约价格：<span class="red_f54">{{hit.dealmoney+'万'}}</span></p>
+                        <p>签约时间：{{hit.inserttime}}</p>
+                        <p>来源：{{hit.housetype==='1'?'房天下成交':'市场信息'}}</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <block wx:else>
+            <div class="sear_null">
+                <div class="img"></div>
+                <p>没有找到符合条件的房源，</p><p>换个条件试试</p>
+            </div>
+        </block>
+        <view id="loading" class="moreList" wx-if="{{pageInfo.loading}}"><span><i></i>努力加载中...</span></view>
+    </scroll-view>
+    <template is="filter" data="{{...pageInfo.filterInfo}}"/>
+</block>

@@ -1,0 +1,155 @@
+<template name="tools.form">
+  <ul class="jsq-list" style="display: {{ (titleSelector.index !== '2' && loanSelector.index === '0') ? '' : 'none' }};">
+    <li>
+      <view class="fl">贷款总额</view>
+      <view class="fr">
+        <input type="number" class="ipt-text" placeholder="请输入金额" bindinput="form.input" data-name="lendMoney" value="{{ form.input.lendMoney || '' }}"></input>
+        <span>万</span> 
+      </view>
+    </li>
+    <li catchtap="form.tap" data-name="loanTerm">
+      <view class="fl">贷款年限</view>
+      <view class="fr arr-rt fr-arr">
+        <!--20年（240期）-->
+        {{ form.selected['loanTerm'].txt }}
+      </view>
+    </li>
+    <li catchtap="form.tap" data-name="{{ titleSelector.index === '1' ? 'fundRate' : 'lendRate' }}">
+      <view class="fl nowrap">{{ titleSelector.index === '1'? '公积金利率' : '商贷利率' }}</view>
+      <view class="fr arr-rt fr-arr">
+        <!--基准利率（4.9%）-->
+        {{ titleSelector.index === '1' ? form.selected['fundRate'].txt : form.selected['lendRate'].txt }}
+      </view>
+    </li>
+  </ul>
+  <ul class="jsq-list" style="display: {{ (titleSelector.index !== '2' && loanSelector.index === '1') ? '' : 'none' }};">
+    <li>
+      <view class="fl">房价总额</view>
+      <view class="fr">
+        <input type="number" class="ipt-text" placeholder="请输入金额" maxlength="14" bindinput="form.input" data-link="lendMoneyDis" data-name="houseMoney" value="{{ form.input.houseMoney || '' }}"></input>
+        <span>万</span> 
+      </view>
+    </li>
+    <li catchtap="form.tap" data-name="payRatio">
+      <view class="fl">首付比例</view>
+      <view class="fr arr-rt fr-arr">
+        <!--35%-->
+        {{ form.selected['payRatio'].txt }}
+      </view>
+    </li>
+    <li>
+      <view class="fl">贷款总额</view>
+      <view class="fr" catchtap="form.tap" data-disabled="lendMoneyDis">
+        {{ form.input.lendMoneyDis || '' }} 万
+      </view>
+    </li>
+    <li catchtap="form.tap" data-name="loanTerm">
+      <view class="fl">贷款年限</view>
+      <view class="fr arr-rt fr-arr">
+        <!--20年（240期）-->
+        {{ form.selected['loanTerm'].txt }}
+      </view>
+    </li>
+    <li catchtap="form.tap" data-name="{{ titleSelector.index === '1' ? 'fundRate' : 'lendRate' }}">
+      <view class="fl nowrap">{{ titleSelector.index === '1'? '公积金利率' : '商贷利率' }}</view>
+      <view class="fr arr-rt fr-arr">
+        <!--基准利率（4.9%）-->
+        {{ titleSelector.index === '1' ? form.selected['fundRate'].txt : form.selected['lendRate'].txt }}
+      </view>
+    </li>
+  </ul>
+  <ul class="jsq-list" style="display: {{ (titleSelector.index === '2' && loanSelector.index === '0') ? '' : 'none' }};">
+    <li>
+      <view class="fl">贷款总额</view>
+      <view class="fr">
+        <input type="number" class="ipt-text" placeholder="请输入金额" maxlength="14" bindinput="form.input2" data-name="fullMoney" value="{{ form.input.fullMoney || '' }}"></input>
+        <span>万</span> 
+      </view>
+    </li>
+    <li>
+      <view class="fl nowrap">公积金贷款</view>
+      <view class="fr">
+        <input type="number" class="ipt-text" placeholder="请输入金额" maxlength="14" bindfocus="form.focus2" bindinput="form.input2" data-link="lendMoney" data-name="fundMoney" value="{{ form.input.fundMoney || '' }}"></input>
+        <span>万</span> 
+      </view>
+    </li>
+    <li catchtap="form.tap" data-name="fundRate">
+      <view class="fl nowrap">公积金利率</view>
+      <view class="fr arr-rt fr-arr">
+        {{ form.selected['fundRate'].txt }}
+      </view>
+    </li>
+    <li>
+      <view class="fl">商业贷款</view>
+      <view class="fr">
+        <input type="number" class="ipt-text" placeholder="请输入金额" maxlength="14" bindfocus="form.focus2" bindinput="form.input2" data-link="fundMoney" data-name="lendMoney" value="{{ form.input.lendMoney || '' }}"></input>
+        <span>万</span> 
+      </view>
+    </li>
+    <li catchtap="form.tap" data-name="lendRate">
+      <view class="fl">商贷利率</view>
+      <view class="fr arr-rt fr-arr">
+        {{ form.selected['lendRate'].txt }}
+      </view>
+    </li>
+    <li catchtap="form.tap" data-name="loanTerm">
+      <view class="fl">贷款年限</view>
+      <view class="fr arr-rt fr-arr">
+        {{ form.selected['loanTerm'].txt }}
+      </view>
+    </li>
+  </ul>
+  <ul class="jsq-list" style="display: {{ (titleSelector.index === '2' && loanSelector.index === '1') ? '' : 'none' }};">
+    <li>
+      <view class="fl">房价总额</view>
+      <view class="fr">
+        <input type="number" class="ipt-text" placeholder="请输入金额" maxlength="14" bindinput="form.input2" data-link="fullMoneyDis" data-name="houseMoney" value="{{ form.input.houseMoney || '' }}"></input>
+        <span>万</span> 
+      </view>
+    </li>
+    <li catchtap="form.tap" data-name="payRatio">
+      <view class="fl">首付比例</view>
+      <view class="fr arr-rt fr-arr">
+        {{ form.selected['payRatio'].txt }}
+      </view>
+    </li>
+    <li>
+      <view class="fl">贷款总额</view>
+      <view class="fr" catchtap="form.tap" data-disabled="fullMoneyDis">
+        {{ form.input.fullMoneyDis || '' }} 万
+      </view>
+    </li>
+    <li>
+      <view class="fl nowrap">公积金贷款</view>
+      <view class="fr">
+        <input type="number" class="ipt-text" placeholder="请输入金额" maxlength="14" bindfocus="form.focus2" bindinput="form.input2" data-link="lendMoney" data-name="fundMoney" value="{{ form.input.fundMoney || '' }}"></input>
+        <span>万</span> 
+      </view>
+    </li>
+    <li catchtap="form.tap" data-name="fundRate">
+      <view class="fl nowrap">公积金利率</view>
+      <view class="fr arr-rt fr-arr">
+        {{ form.selected['fundRate'].txt }}
+      </view>
+    </li>
+    <li>
+      <view class="fl">商业贷款</view>
+      <view class="fr">
+        <input type="number" class="ipt-text" placeholder="请输入金额" maxlength="14" bindfocus="form.focus2" bindinput="form.input2" data-link="fundMoney" data-name="lendMoney" value="{{ form.input.lendMoney || '' }}"></input>
+        <span>万</span> 
+      </view>
+    </li>
+    <li catchtap="form.tap" data-name="lendRate">
+      <view class="fl">商贷利率</view>
+      <view class="fr arr-rt fr-arr">
+        {{ form.selected['lendRate'].txt }}
+      </view>
+    </li>
+    <li catchtap="form.tap" data-name="loanTerm">
+      <view class="fl">贷款年限</view>
+      <view class="fr arr-rt fr-arr">
+        {{ form.selected['loanTerm'].txt }}
+      </view>
+    </li>
+  </ul>
+</template>

@@ -1,0 +1,16 @@
+
+/* 跳转箭头 */
+.arr-rt:after{ position:absolute; content:''; right:0; top:50%; margin-top:-8px; width:8px; height:14px; background:url(https://static.soufunimg.com/common_m/m_wechat/public/images/arr-rt2.png) 0 0 no-repeat; background-size:8px auto;}
+
+
+/*.jsq-placeholder {
+    margin-top: 2px;
+}*/
+
+/*.jsq-list .ipt-text {
+    height: auto;
+}
+
+.jsq-list wx-li .fr span {
+    vertical-align:middle;
+}*/

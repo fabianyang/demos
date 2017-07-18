@@ -1,0 +1,37 @@
+<div class="page">
+    <div class="rePay dingH">
+        <div class="jsqbox W50">
+            <a catchtap="selectReimbursementType" data-act="0" class="{{payMethodType == 0 ? 'active' : ''}}"><span>等额本息</span></a>
+            <a catchtap="selectReimbursementType" data-act="1" class="{{payMethodType == 1 ? 'active' : ''}}" ><span>等额本金</span></a>
+        </div>
+        <div class="pay-lists">
+            <ul>
+                <li>贷款总额<span>{{dkmoney}}万</span></li>
+                <li>还款总额<span>{{hkmoney}}万</span></li>
+                <li>支付利息<span>{{payLx}}万</span></li>
+                <li>贷款年限<span>{{dkmonth}}</span></li>
+            </ul>
+        </div>
+    </div>
+    <div class="dataList dingH">
+        <table cellpadding="0" cellspacing="0" class="dataTable">
+            <tbody>
+                <tr><th>期数</th><th>月供</th><th>月供本金</th><th>月供利息</th><th>剩余贷款</th></tr>
+            </tbody>
+        </table>
+        <div class="year-box"><span>第{{titleYear}}年</span></div>
+    </div>
+    <scroll-view class="data-box" scroll-y="true" style="height:{{scrollHeight}}px;" bindscroll="updateScrollTitle">
+        <div class="dataList2">
+            <block wx:for="{{itemArr}}" wx:for-index="i" wx:key="" wx:for-item="ydata">
+                <div class="year-box" wx:if="{{i !== 0}}"><span>第{{i+1}}年</span></div>
+                <table cellpadding="0" cellspacing="0" class="dataTable">
+                    <tbody>
+                    <tr wx:for="{{ydata}}" wx:for-index="j" wx:key="" wx:for-item="mdata"><td>{{mdata[0]}}</td><td>{{mdata[1]}}</td><td>{{mdata[2]}}</td><td>{{mdata[3]}}</td><td>{{mdata[4]}}</td></tr>
+                    </tbody>
+                </table>
+            </block>
+        </div>
+    </scroll-view>
+
+</div>

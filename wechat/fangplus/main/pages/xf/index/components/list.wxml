@@ -1,0 +1,67 @@
+<template name="xf.index.list">
+  <view class="houseList">
+    <ul>
+      <block wx:for="{{ data }}" wx:key="" wx:for-index="idx" wx:for-item="item">
+        <block wx:if="{{ item.zhiding === '2' }}">
+          <li class="arr-rt" catchtap="specialTap" data-projcode="{{ item.projcode }}" data-projname="{{ item.projname }}">
+            <div class="img">
+              <image src="http:{{ item.imgurl || '//static.soufunimg.com/common_m/m_wechat/public/images/default_logo.jpg' }}"></image>
+              <span wx:if="{{ item.zhiding === '1' || newKeywordAd }}" class="tag-icon">广告</span> 
+            </div>
+            <div class="txt">
+              <div class="h3">{{ item.projname }}</div>
+              <p>
+                <span class="price flor">
+                  <i>{{ item.priceNum || item.price }}</i>{{ item.priceUnit }}
+                </span> {{ item.zongFen }}分
+                <em></em> {{ item.dpCount - 0 ? item.dpCount + '条评论' : '暂无评论' }}
+              </p>
+              <p>
+                {{ !item.comarea || item.district === item.comarea ? item.district : item.district + '-' + item.comarea }}
+                <!-- <block wx:for="{{ item.character }}" wx:key="*this" wx:for-index="idx2" wx:for-item="item2" wx:if="{{ idx2 < 3 }}">
+                  <em></em> {{ item2 }}
+                </block> -->
+                <block wx:for="{{ item.housetag }}" wx:key="*this" wx:for-index="idx3" wx:for-item="item3" wx:if="{{ idx3 < 3 }}">
+                  <em></em> {{ item3 }}
+                </block>
+              </p>
+              <div class="redbag">
+                <span class="rb">网上直销</span> 
+                <span class="surp">支持<span class="red_df">{{ item.topdsredcount }}</span> 个楼盘</span> 
+              </div>
+            </div>
+          </li>
+        </block>
+        <block wx:else>
+          <li class="{{ !!item.showtags[0] ? '' : 'txt_row3' }}" catchtap="commonTap" data-newcode="{{ item.newcode }}" data-projcode="{{ item.projcode }}" data-projname="{{ item.projname }}">
+            <div class="img">
+              <image src="http:{{ item.imgurl || '//static.soufunimg.com/common_m/m_wechat/public/images/default_logo.jpg' }}"></image>
+              <span wx:if="{{ item.zhiding === '1' || item.newKeywordAd }}" class="tag-icon">广告</span> 
+            </div>
+            <div class="txt">
+              <div class="h3">{{ item.projname }}</div>
+              <p>
+                <span class="price flor">
+                  <i>{{ item.priceNum || item.price }}</i>{{ item.priceUnit }}
+                </span> {{ item.zongFen }}分
+                <em></em> {{ item.dpCount - 0 ? item.dpCount + '条评论' : '暂无评论' }}
+              </p>
+              <p>
+                {{ !item.comarea || item.district === item.comarea ? item.district:item.district + '-' + item.comarea }}
+                <!-- <block wx:for="{{ item.character }}" wx:key="*this" wx:for-index="idx2" wx:for-item="item2" wx:if="{{ idx2 < 3 }}">
+                  <em></em> {{ item2 }}
+                </block> -->
+                <block wx:for="{{ item.housetag }}" wx:key="*this" wx:for-index="idx3" wx:for-item="item3" wx:if="{{ idx3 < 3 }}">
+                  <em></em> {{ item3 }}
+                </block>
+              </p>
+              <p wx:if="{{ !!item.showtags[0] }}" class="stag">
+                <span wx:for="{{ item.showtags }}" wx:key="*this" wx:for-index="idx2" wx:for-item="item2" wx:if="{{ !!item2 }}">{{ item2 }}</span> 
+              </p>
+            </div>
+          </li>
+        </block>
+      </block>
+    </ul>
+  </view>
+</template>

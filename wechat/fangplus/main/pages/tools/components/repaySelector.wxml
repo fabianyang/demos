@@ -1,0 +1,56 @@
+<template name="tools.repaySelector">
+  <view class="sjq-de" id="calcBtn">
+    <view class="mTab">
+      <a class="{{ selector.index === '0' ? 'active' : '' }}" catchtap="repaySelector.tap" data-index="0">等额本息</a> 
+      <a class="{{ selector.index === '1' ? 'active' : '' }}" catchtap="repaySelector.tap" data-index="1">等额本金</a> 
+    </view>
+      <p style="display: {{ selector.index === '0' ? '' : 'none' }};">每月还款额固定</p>
+     <!--<p> 其中本金部分逐月递增、利息部分逐月递减。</p>-->
+      <p style="display: {{ selector.index === '0' ? '' : 'none' }}; margin-top: 5px;">所还总利息较多，适合收入稳定者。</p>
+      <p style="display: {{ selector.index === '1' ? '' : 'none' }}; ">每月还款额递减</p>
+      <p style="display: {{ selector.index === '1' ? '' : 'none' }}; margin-top: 5px; ">所还总利息较低，前期还款额较大。</p>
+  </view>
+  <view class="monthPays">
+    <view class="monthPay" catchtap="repaySelector.href" data-params="{{ result.hrefParams }}">
+      <p style="display: {{ selector.index === '0' ? '' : 'none' }};">参考月供</p>
+      <p style="display: {{ selector.index === '1' ? '' : 'none' }};">首月月供</p>
+      <a href="#" class="arr-rt">¥
+        <b>
+          <!--1,633,224-->
+          {{ result.payMonth }}
+        </b>
+        <span>查看详情</span>
+      </a> 
+      <p style="display: {{ selector.index === '0' ? '' : 'none' }};">每月还款额固定</p>
+      <p style="display: {{ selector.index === '1' ? '' : 'none' }};">每月递减{{ result.diff }}元</p>
+    </view>
+    <view class="pays">
+      <ul>
+        <li>
+          贷款总额(元)
+          <span>
+          <!--460.26万-->
+          {{ result.lendMoney }}
+          </span> 
+        </li>
+        <li>
+          支付利息(元)
+          <span>
+          <!--60.26万-->
+          {{ result.interest }}
+          </span> 
+        </li>
+        <li>
+          还款总额（元）
+          <span>
+          <!--460.26万-->
+          {{ result.payMoney }}
+          </span> 
+        </li>
+      </ul>
+    </view>
+    <view class="cankao">
+      <span>以上信息仅供参考</span> 
+    </view>
+  </view>
+</template>

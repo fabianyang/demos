@@ -1,0 +1,7 @@
+/* pages/esf/index/index.wxss */
+
+/*列表红包样式*/
+.houseList li div.yelbag{display:inline-block;line-height:12px;font-size:10px;color:#333333;border:1px solid #fd994e;white-space:nowrap;}
+.houseList li div.yelbag .rb{position:relative;display:inline-block;padding:1px 5px 0;background-color:#fd994e; color:#fff;}
+.houseList li div.yelbag .surp{display: inline-block;padding:1px 3px 0;height:12px;line-height:12px;background:#fff;}
+.houseList li div.yelbag .surp .yel_fd{ color:#fd994e;}

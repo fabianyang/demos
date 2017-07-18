@@ -1,0 +1,51 @@
+<template name="filterTab">
+    <div class="scTab {{filterChannel == 'esf' && !onSale ?'tab2':''}}">
+        <ul>
+            <li catchtap="menuTap" wx:for="{{filterArr}}" wx:key="" wx:for-index="idx" wx:for-item="filter" data-idx="{{idx}}">
+                <a><span>{{filter.params[1]!=='不限'&&filter.params[1]||filter.params[0]!=='不限'&&filter.params[0]||filter.name}}</span></a>
+            </li>
+        </ul>
+    </div>
+</template>
+<template name="filter">
+    <div class="page bg_efe" style="{{isFilter?'':'display:none'}}"> 
+        <div class="scTab {{filterChannel == 'esf' && !onSale ?'tab2':''}}">
+            <ul>
+                <li catchtap="menuTap" wx:for="{{filterArr}}" wx:key="" wx:for-index="idx" wx:for-item="filter" class="{{filter.isShow?'active':''}}" data-idx="{{idx}}">
+                    <a><span>{{filter.params[1]!=='不限'&&filter.params[1]||filter.params[0]!=='不限'&&filter.params[0]||filter.name}}</span></a>
+                </li>
+            </ul>
+            <div catchtap="menuTap" wx:for="{{filterArr}}" wx:key="" wx:for-item="filter" class="contBox" style="{{filter.isShow?'':'display:none;'}}">
+                <div catchtap="stopPropgation" class="con" style="height:80%">
+                    <div class="{{filter.hasSub && (filter.hasParams?filter.activeBak:filter.active)&&(filter.hasParams?filter.activeBak:filter.active)!=='不限'?'one':'onlyone'}}">
+                        <dl>
+                            <scroll-view scroll-y="true" style="height:100%;">
+                                <dd catchtap="optionTap" wx:for="{{filter.data}}" wx:key="" wx:for-index="idx" wx:for-item="firstFilterInfo" class="{{(filter.flag?firstFilterInfo.name:firstFilterInfo.id)===(filter.hasParams?filter.activeBak:filter.active)?'active':''}}" data-id="{{filter.flag?firstFilterInfo.name:firstFilterInfo.id}}" data-first="{{true}}" data-jump="{{!(filter.hasSub && idx)}}" data-idx="{{idx}}"><a href="#">{{firstFilterInfo.name}}</a></dd>
+                                <div class="custom" wx:if="{{filter.needCustom}}">
+                                    <div class="box">
+                                        <span>自定义</span>
+                                        <input type="number" placeholder="最小" bindinput="customInput" data-type="min"></input><i></i><input type="number" placeholder="最大" bindinput="customInput" data-type="max"></input>
+                                        <a class="submit" catchtap="customSubmit">确定</a>
+                                        <div class="clear"></div>
+                                    </div>
+                                </div>
+                            </scroll-view>
+                        </dl>
+                    </div>
+                    
+                    <block wx-if="{{filter.hasSub}}">
+                    <div class="two" wx:for="{{filter.data}}" wx:key="" wx:for-item="firstFilterInfo" style="{{(filter.flag?firstFilterInfo.name:firstFilterInfo.id) ===(filter.hasParams?filter.activeBak:filter.active)?'':'display:none'}}">
+                        <dl>
+                            <scroll-view scroll-y="true" style="height:100%;">
+                                <dd catchtap="optionTap" wx:for="{{firstFilterInfo.sub.data}}" wx:key="" wx:for-index="idx" wx:for-item="SecondFilter" class="{{(filter.flag?SecondFilter.name:SecondFilter.id)===(filter.hasParams?firstFilterInfo.sub.activeBak:firstFilterInfo.sub.active)?'active':''}}" data-id="{{filter.flag?SecondFilter.name:SecondFilter.id}}" data-jump="{{true}}" data-idx="{{idx}}"><a href="#">{{SecondFilter.name}}</a></dd>
+                            </scroll-view>
+                        </dl>
+                    </div>    
+                    </block>
+                    
+                </div>
+                <div class="clear" wx:if="{{filter.hasSub}}"/>
+            </div>
+        </div>
+    </div> 
+</template>

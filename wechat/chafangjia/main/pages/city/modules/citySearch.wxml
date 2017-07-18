@@ -1,0 +1,37 @@
+<template name="citySearch">
+    <block wx-if="{{searchShow}}">
+        <div class="search" style="position:fixed;top:0;z-index:10;width: 96%;">
+            <div class="searbox" >
+                <div class="ipt">
+                    <span class="sear-icon"></span>
+                    <input bindinput="searchInput" bindconfirm="confirm" type="text" placeholder="{{placeholder}}" value="{{value}}" focus="{{true}}"></input>
+                    <a wx-if="{{valueInput}}" catchtap="clearInput" href="#" class="off"></a>
+                </div>
+                <a catchtap="hideSearch" href="#" class="btn">取消</a>
+            </div>
+        </div>
+        <scroll-view class="page bg_efe" scroll-y="{{true}}" wx:if="{{listShow}}">
+            <view style="height: 44px;"></view>
+            <div class="searList lianx">
+                <ul>
+                    <li catchtap="cityTap" wx:for="{{promptArr}}" wx:key="" wx:for-index="idx" wx:for-item="prompt" data-name="{{prompt.raw}}"
+                        data-type="{{type}}">
+                        <a href="#">
+                            <block>
+                                <span wx:if="{{prompt.left}}" class="{{prompt.redStr === 'left' ? 'red' : ''}}">{{prompt.left}}</span>
+                                <span wx:if="{{prompt.module}}" class="{{prompt.redStr === 'module' ? 'red' : ''}}">{{prompt.module}}</span>
+                                <span wx:if="{{prompt.right}}" class="{{prompt.redStr === 'right' ? 'red' : ''}}">{{prompt.right}}</span>
+                            </block>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pdt1" wx:if="{{deleteHistoryAlert}}">
+                <div class="prompt w110">
+                    <a class="btnClose"></a>
+                    <p>已删除</p>
+                </div>
+            </div>
+        </scroll-view>
+    </block>
+</template>

@@ -1,0 +1,314 @@
+
+<!--pages/xf/detail/detail.wxml-->
+<scroll-view style="bottom: -50px;position: fixed;" class="main pdb50 h100" scroll-y="true">
+  <div class="xqfocus bb7">
+    <swiper wx:if="{{pageInfo.img.length}}" indicator-dots="{{swiper.indicatorDots}}" autoplay="{{swiper.autoplay}}" interval="{{swiper.interval}}" duration="{{swiper.duration}}" circular="{{swiper.circular}}">
+      <block wx:key="" wx:for="{{pageInfo.img}}">
+        <swiper-item>
+          <image mode="aspectFill" src="https:{{item || '//static.soufunimg.com/common_m/m_wechat/public/images/default_logo.jpg'}}" class="slide-image" style="height:100%;width:100%"></image>
+        </swiper-item>
+      </block>
+    </swiper>
+    <div class="xfxq">
+      <p>{{pageInfo.projname}}</p>
+      <div class="byname" wx:if="{{pageInfo.aProjname}}"><span>别名：{{pageInfo.aProjname}}</span>  </div>
+    </div>
+  </div>
+
+  <!--信息-->
+  <div class="xfbox bb7">
+    <div class="lp-price">
+      <span class="red-df">{{pageInfo.price}}</span> 
+    </div>
+    <div class="lp-taps">
+      <span wx:key="" wx:for-index="idx" wx:for-item="item" wx:for="{{pageInfo.tags}}">{{item}}</span> 
+    </div>
+    <ul class="lp-xinxi" style="{{showPageInfoMore?'':'max-height:75px;overflow:hidden;'}}">
+      <li>
+        <span>地<em></em>址：</span>
+        <p>
+          {{pageInfo.address}}
+        </p>
+      </li>
+      <li>
+        <span>开<em></em>盘：</span>
+        <p>{{pageInfo.sale_date}}</p>
+      </li>
+      <li>
+        <span>交<em></em>房：</span>
+        <p>{{pageInfo.livetime}}</p>
+      </li>
+      <li>
+        <span>售<i></i>楼<i></i>处：</span> 
+        <p>{{pageInfo.sale_address}}</p>
+      </li>
+      <li>
+        <span>物业类型：</span> 
+        <p>{{pageInfo.proj_type}}</p>
+      </li>
+      <li>
+        <span>建筑类别：</span> 
+        <p>{{pageInfo.buildtype}}</p>
+      </li>
+      <li>
+        <span>装修状况：</span> 
+        <p>{{pageInfo.fitment}}</p>
+      </li>
+      <li>
+        <span>住<i></i>户<i></i>数：</span> 
+        <p>{{pageInfo.total_door}}</p>
+      </li>
+      <li>
+        <span>容<i></i>积<i></i>率：</span> 
+        <p>{{pageInfo.rongji}}</p>
+      </li>
+      <li>
+        <span>绿<i></i>化<i></i>率：</span> 
+        <p>{{pageInfo.lvhua}}</p>
+      </li>
+      <li>
+        <span>停<i></i>车<i></i>位：</span> 
+        <p>{{pageInfo.park}}</p>
+      </li>
+      <li>
+        <span>产权年限：</span> 
+        <p>{{pageInfo.right_year}}</p>
+      </li>
+      <li>
+        <span>开<i></i>发<i></i>商：</span> 
+        <p>{{pageInfo.buildcompany}}</p>
+      </li>
+      <li>
+        <span>预售许可：</span> 
+        <p>{{pageInfo.sale_card}}</p>
+      </li>
+      <li>
+        <span>物业公司：</span> 
+        <p>{{pageInfo.wuyecompany}}</p>
+      </li>
+      <li>
+        <span>物<i></i>业<i></i>费：</span> 
+        <p>{{pageInfo.wuyefei}}</p>
+      </li>
+    </ul>
+    <div class="lpxx-more" catchtap="showMoreProjInfo">
+      <a class="{{showPageInfoMore?'arr-up':'arr-more'}}">{{showPageInfoMore?'收起':'查看更多信息'}}</a> 
+    </div>
+  </div>
+
+  <!--主力户型-->
+  <div wx:if="{{pageInfo.zhulihuxing.length}}" class="xfbox bb7">
+    <div class="hTitle">主力户型({{pageInfo.zhulihuxing.length}})</div>
+    <div style="padding-bottom:10px;" class="hxScroll">
+      <scroll-view scroll-x="true">
+        <ul style="width:{{164*pageInfo.zhulihuxing.length}}px">
+          <block wx:key="" wx:for-index="idx" wx:for-item="item" wx:for="{{pageInfo.zhulihuxing}}">
+            <li style="margin-bottom: 10px;">
+              <a>
+                <div class="hx-cont">
+                  <p>{{item.hximg_detail}}</p>
+                  <p class="red"><span class="flor">{{item.hx_salestatus}}</span>  {{item.hx_price+''+item.hx_price_type}}</p>
+                   <!-- 户型评分 -->
+                <div wx:if="{{item.hx_score}}" class="star-s" star="5.0">
+                  <span>{{item.hx_score}}分</span> 
+                  <i wx:key="" wx:for-index="idx" wx:for-item="item" wx:for="{{item.scoreArr}}" class="{{item}}"></i>
+                </div>
+                </div>
+                <div class="hx-pic">
+                  <image mode="aspectFit" class="h100 w100" src="https:{{item.hx_img}}" alt=""></image>
+                </div>
+              </a> 
+            </li>
+          </block>
+        </ul>
+      </scroll-view>
+    </div>
+  </div>
+
+  <!-- 最新动态（共{{pageInfo.dongtai_dongtaiNum}}条） -->
+  <div wx:if="{{pageInfo.dongtai_dongtaiNum}}" class="xfbox bb7" catchtap="showDtMoreTap">
+    <div class="hTitle">最新动态</div>
+    <div class="newsTrend">
+      <a>
+        <div class="h4">{{pageInfo.dongtai_title}}</div>
+        <div class="xq-text" style="{{showDtMore?'display:block':'max-height:48px'}}">
+          <p>{{pageInfo.dongtai_content}}</p>
+        </div>
+        <p class="newsTap">{{pageInfo.dongtai_date}}</p>
+      </a> 
+    </div>
+  </div>
+
+  <!-- 点评（{{dp.count}}） -->
+  <div wx:if="{{dp.commentList.length}}" class="xfbox bb7">
+    <div class="hTitle">点评</div>
+    <div class="tab-box">
+      <div class="x-comment-all">
+        <dl>
+          <dd>
+            <div class="ico-star" star="4.1">
+              <i wx:key="" wx:for-index="idx" wx:for-item="item" wx:for="{{dp.scoreArr}}" class="{{item}}"></i>
+            </div>
+          </dd>
+          <dt><strong>{{dp.totalScore}}</strong>  分</dt>
+        </dl>
+        <div class="num">
+          <span>价格{{dp.jiage}}分</span> 
+          <span>地段{{dp.diduan}}分</span> 
+          <span>配套{{dp.peitao}}分</span> 
+          <span>交通{{dp.jiaotong}}分</span> 
+          <span>环境{{dp.huanjing}}分</span> 
+        </div>
+      </div>
+      <ul class="x-comment-list">
+        <li style="{{index>2?'display:none':''}}" wx:key="" wx:for-index="index" wx:for-item="el" wx:for="{{dp.commentList}}">
+          <a>
+            <dl class="x-comment-head">
+              <dt>
+                <image class="h100 w100" src="{{el.userPhoto}}" alt=""></image>
+              </dt>
+              <dd>
+                <div class="h3">{{el.username}}</div>
+                <div class="stars">
+                  <span class="time">{{el.createTime}}<i wx:if="{{el.isjiajing==='1'}}"></i></span> 
+                  <div class="ico-star" star="4">
+                    <i wx:key="" wx:for-index="idx" wx:for-item="item" wx:for="{{el.scoreArr}}" class="{{item}}"></i>
+                  </div>
+                </div>
+              </dd>
+            </dl>
+            <div catchtap="dpShowMore" data-idx="{{index}}" data-show="{{el.showMore}}" style="{{el.showMore?'':'max-height:72px'}}" class="x-comment-text">
+              <p wx:key="" wx:for-index="idx" wx:for-item="it" wx:for="{{el.zhuContentArr}}">{{it}}</p>
+            </div>
+          </a> 
+        </li>
+      </ul>
+      <div wx:if="{{dp.count > 3}}" class="x-dp-btn">
+        <a class="xf-btn">在房天下APP可查看更多</a> 
+      </div>
+    </div>
+  </div>
+
+  <!--位置及周边-->
+  <div class="basic bb7">
+    <div class="h3" wx:if="{{pageInfo.mapx_t && pageInfo.mapy_t}}">位置及周边</div>
+    <div wx:if="{{pageInfo.mapx_t && pageInfo.mapy_t}}" class="map2">
+
+      <!--scale为2表示高清-->
+      <image mode="scaleToFill" style="width:100%" src="http://apis.map.qq.com/ws/staticmap/v2/?center={{pageInfo.mapy_t}},{{pageInfo.mapx_t}}&scale=1&zoom=14&size=375*240&maptype=roadmap&key=5NHBZ-AKRW5-2WLIP-QDEKP-53C42-JFBMY&format=png" width="100%"></image>
+
+      <!--设置地图标点居中显示-->
+      <div class="coordinate" style="top:50%; left:50%;transform:translate(-50%, -42.5px);">
+        <div class="txtBox">
+          <div class="txtInfor2">
+            <a class="arr-rt" catchtap="openPosition">{{pageInfo.projname}}</a> 
+          </div>
+        </div>
+      </div>
+    </div>
+    <ul class="map-xq">
+      <li wx:if="{{item.subwayaddress}}">
+        <a href="#" class="arr-a">地铁:
+          <block wx:key="" wx:for-index="idx" wx:for-item="item" wx:for="{{zb.zbsubway}}">{{item.subwayaddress+' '}}</block>
+        </a> 
+      </li>
+      <li wx:if="{{item.schoolname}}">学校:
+        <block wx:key="" wx:for-index="idx" wx:for-item="item" wx:for="{{zb.zbschool}}">{{item.schoolname+' '}}</block>
+      </li>
+    </ul>
+  </div>
+
+  <!-- 置业顾问 -->
+  <div class="xfbox bb7" wx:if="{{(guwen.sfbzygwlist.length || guwen.zygwList.length) && !guwen.noTel}}">
+    <div class="hTitle">置业顾问</div>
+    <div class="xqZygw">
+
+      <!-- 搜房帮的置业顾问列表（此列表有数据，只展示这个） -->
+      <ul wx:if="{{guwen.sfbzygwlist && guwen.sfbzygwlist.length}}" class="list">
+        <li wx:key="" wx:for-index="idx" wx:for-item="item" wx:for="{{guwen.sfbzygwlist}}">
+          <div class="img">
+            <a href="#">
+              <image style="width:36px;height:36px;" src="{{item.photoUrl}}"></image>
+
+              <!-- 角色（值为4的时候，展示f标识） -->
+              <span class="{{item.agentRole==4?'icon-f':''}}"></span> 
+            </a> 
+          </div>
+          <div class="txt">
+            <div class="h3">{{item.agentName}}</div>
+            <p>{{item.comName}}</p>
+            <p class="mrt3"><span wx:if="{{item.commentGoodPer}}" class="flol red">好评率{{item.commentGoodPer}}</span> <span data-d="{{item.daiKanNum}}" wx:if="{{item.daiKanNum}}">  近30天带看：{{item.daiKanNum}}次</span> </p>
+          </div>
+          <div catchtap="callHer" data-tel="{{item.telephone}}" class="kf-call flor">
+            <a class="{{item.telephone?'call':'discall'}}">
+              <i></i>
+            </a> 
+          </div>
+        </li>
+      </ul>
+
+      <!-- 普通的置业顾问列表（没有搜房帮置业顾问列表，展示这个 -->
+      <ul wx:if="{{!guwen.sfbzygwlist || !guwen.sfbzygwlist.length}}" class="list">
+        <li wx:key="" wx:for-index="idx" wx:for-item="item" wx:for="{{guwen.zygwList}}">
+          <div class="img">
+            <a>
+              <image style="width:36px;height:36px;" src="{{item.licenseUrl}}"></image>
+              <span class="icon-f1"></span> 
+            </a> 
+          </div>
+          <div class="txt">
+            <div class="h3">{{item.realname}}</div>
+            <p>{{item.comName}}</p>
+            <p class="mrt3"><span wx:if="{{item.commentGoodPer}}" class="flol red">好评率{{item.commentGoodPer}}</span> <span data-d="{{item.daiKanNum}}" wx:if="{{item.daiKanNum}}">  近30天带看：{{item.daiKanNum}}次</span> </p>
+          </div>
+          <div class="kf-call flor" catchtap="callHer" data-tel="{{item.tel400}}">
+            <a class="{{item.tel400?'call':'discall'}}">
+              <i></i>
+            </a> 
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 对此楼盘感兴趣的人还浏览了 -->
+  <div class="xfbox" wx:if="{{other && other.length}}">
+    <div class="hTitle">对此楼盘感兴趣的人还浏览了</div>
+    <div class="houseList">
+      <ul class="xh-list">
+        <li catchtap="gotoXf" data-id="{{item.id}}" data-title="{{item.title}}" wx:key="" wx:for-index="idx" wx:for-item="item" wx:for="{{other}}">
+          <a>
+            <div class="img">
+              <image src="{{item.image}}"></image>
+            </div>
+            <div class="txt">
+              <div class="h3">{{item.title}}</div>
+              <p><span class="price flor">{{item.priceNum+item.priceUnit}}</span> {{item.zongfen}}分<em></em> {{item.dianpingcount}}条评论</p>
+              <p>{{item.district}}
+                <block wx:key="" wx:for-index="idx" wx:for-item="item_c" wx:for="{{item.character}}"> <em></em>  {{item_c}}</block>
+              </p>
+              <p class="stag">
+                <span wx:key="" wx:for-index="idx" wx:for-item="i" wx:for="{{item.c_tags}}" class="{{i.tag_type}}">{{i.tag_text}}</span> 
+              </p>
+            </div>
+          </a> 
+        </li>
+      </ul>
+    </div>
+  </div>
+   <view class="mzsm">免责声明：本站楼盘信息旨在为用户提供更多信息的无偿服务，最终信息以政府部门登记备案为准，请谨慎核查。如该楼盘信息有误，您可以投诉或拨打举报电话：400-850-8888。</view>
+   <view wx:if="{{pageInfo.telephone || guwen.telephoneFirst}}" style="height: 50px;"></view>
+</scroll-view>
+
+<!--电话-->
+<div catchtap="callHer" wx:if="{{pageInfo.telephone || guwen.telephoneFirst}}" data-tel="{{pageInfo.telephone || guwen.telephoneFirst}}" class="bot-call">
+  <div class="flor">
+    <a>打电话</a> 
+  </div>
+  <div class="call-num">
+    <a class="arr-call">
+      <p>房天下看房咨询热线</p>
+      <span class="tel1">{{pageInfo.telephone || guwen.telephoneFirst}}</span> 
+    </a> 
+  </div>
+</div>

@@ -1,0 +1,36 @@
+<import src="../components/titleSelector.wxml" />
+<import src="../components/loanSelector.wxml" />
+<import src="../components/form.wxml" />
+<import src="../components/repaySelector.wxml" />
+<import src="../components/floatBox.wxml" />
+<scroll-view class="page {{ floatBox.open ? 'bg_efe' : '' }}" scroll-y="true" scroll-into-view="{{ calcScrollTo }}">
+  <!--贷款-->
+  <view class="jsqTab mb6">
+    <template is="tools.titleSelector" data="{{ ...titleSelector }}"></template>
+    <template is="tools.loanSelector" data="{{ ...loanSelector }}" />
+  </view>
+
+  <!--计算表单-->
+  <view class="jsqBox whitebg">
+    <template is="tools.form" data="{{ titleSelector: titleSelector, loanSelector: loanSelector, form: form }}" />
+    <view class="jsq-btn pdT30">
+      <a catchtap="form.calc" style="display: {{ titleSelector.index !== '2' ? '': 'none' }}">开始计算</a>
+      <a catchtap="form.calc2" style="display: {{ titleSelector.index === '2' ? '': 'none'  }}">开始计算</a>
+    </view>
+  </view>
+
+  <!--还款-->
+  <template is="tools.repaySelector" wx:if="{{ result }}" data="{{ selector: repaySelector, result: result }}" />
+
+  <!--浮层选择-->
+  <template is="tools.floatBox" data="{{ box: floatBox, form: form }}"/>
+
+  <view style="display:{{ toastText ? '' : 'none' }}">
+    <view class="pdt1">
+        <view class="prompt w150" style="z-index: 9999; top: {{ floatBox.open === 'lendRate' ? 'auto' : '' }};  bottom: {{ floatBox.open === 'lendRate' ? '30%' : '' }};">
+            <a class="btnClose" catchtap="hideToast"></a>
+            <p>{{toastText}}</p>
+        </view>
+    </view>
+</view>
+</scroll-view>

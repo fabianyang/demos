@@ -1,0 +1,276 @@
+<scroll-view class="page" scroll-y="true">
+    <div class="xqfocus mb7">
+        <swiper indicator-dots="{{true}}" circular="{{true}}" wx:if="{{houseInfo.allpics&&houseInfo.allpics.length}}">
+          <block wx:for="{{houseInfo.allpics}}" wx:key="" wx:for-item="item" wx:for-index="index">
+            <swiper-item wx:if="{{index<5}}">
+              <image mode="aspectFill" src="{{item || 'https://static.soufunimg.com/common_m/m_wechat/public/images/default_logo.jpg'}}" class="slide-image" style="height:100%;width:100%"/>
+            </swiper-item>
+          </block>
+        </swiper>
+        <div class="xfxq">
+          <p>{{houseInfo.housetitle}}</p>
+          <div class="stag" wx:if="{{houseInfo.tags&&houseInfo.tags.length}}">
+                <block wx:for="{{houseInfo.tags}}" wx:key="" wx:for-item="tag">
+                    <span class="pink-2" wx:if="{{tag}}">{{tag}}</span>
+                </block>
+                <span class="pink-2" wx:if="{{houseInfo.ishaskey==='1'}}">钥匙</span>
+                <span class="pink-2" wx:if="{{houseInfo.cityinfo && houseInfo.cityinfo.firstlistds ==='1' && houseInfo.houseassess}}">业主自评</span>
+          </div>
+        </div>
+    </div>
+    
+    <div class="xqInfor bb7 mb7">
+        <div class="partBox clearfix">
+            <div class="part">
+                <p>售价</p>
+                <p class="red_df">{{houseInfo.price}}{{houseInfo.pricetype}}</p>
+            </div>
+            <div class="part">
+                <p>户型</p>
+                <p class="red_df"><block wx:if="{{houseInfo.room}}">{{houseInfo.room}}室</block>
+                <block wx:if="{{houseInfo.hall}}">{{houseInfo.hall}}厅</block>
+                <block wx:if="{{houseInfo.toilet}}">{{houseInfo.toilet}}卫</block></p>
+            </div>
+            <div class="part">
+                <p>面积</p>
+                <p class="red_df">{{houseInfo.area}}㎡</p>
+            </div>
+        </div>
+        <ul class="flextable">
+            <li class="w100">
+                <span>单<em></em>价：</span>
+                <p>{{houseInfo.average?houseInfo.average+'元/㎡':'暂无'}}</p>
+            </li>
+            <li>
+                <span>楼<em></em>层：</span>
+                <p>{{houseInfo.floor?houseInfo.floor+'层':'暂无'}}</p>
+            </li>
+            <li>
+                <span>朝<em></em>向：</span>
+                <p>{{houseInfo.faceto||'暂无'}}</p>
+            </li>
+            <li>
+                <span>装<em></em>修：</span>
+                <p>{{houseInfo.fitment||'暂无'}}</p>
+            </li>
+            <li>
+                <span>梯户比例：</span>
+                <p>{{houseInfo.elevatorandhouseholds||'暂无'}}</p>
+            </li>
+            <li>
+                <span>供暖方式：</span>
+                <p>{{houseInfo.heating||'暂无'}}</p>
+            </li>
+            <li>
+                <span>有无贷款：</span>
+                <p>{{houseInfo.mortgagestatus||'暂无'}}</p>
+            </li>
+            <li>
+                <span>年<em></em>代：</span>
+                <p>{{houseInfo.createtime||'暂无'}}</p>
+            </li>
+            <li>
+                <span>挂牌时间：</span>
+                <p>{{houseInfo.inserttime||'暂无'}}</p>
+            </li>
+            <li>
+                <span>看房时间：</span>
+                <p>{{houseInfo.lookhousetype||'暂无'}}</p>
+            </li>
+        </ul>
+        <div class="con">
+            <dl>
+            <block wx:if="{{houseInfo.projcode&&houseInfo.projcode!=='0'}}">
+                <navigator open-type="redirect" url="/pages/fangjia/xiaoquDetail/xiaoquDetail?cityname={{cityname}}&xqid={{houseInfo.projcode}}&title={{houseInfo.projname}}">
+                    <dt>小<em></em>区：</dt>
+                    <dd class="arr-rt"><a>{{houseInfo.projname}}</a></dd><!--cur选中以后文字颜色-->
+                </navigator>
+            </block>
+            <block wx:else>
+                <dt>小<em></em>区：</dt>
+                <dd><a style="color:#000!important">{{houseInfo.projname}}</a></dd><!--cur选中以后文字颜色-->
+            </block>
+            </dl>
+            <dl wx:if="{{subInfo}}">
+                <dt>地<em></em>铁：</dt>
+                <dd><span class="cur">距离{{subInfo.Name}}{{subInfo.Stations.SubwayStation.Name}}{{subInfo.Stations.SubwayStation.ProjectDistance}}米</span></dd>
+            </dl>
+        </div>
+    </div>
+    <!--业主自评-->
+    <div class="xfbox bb7 mb7 whitebg" wx:if="{{houseInfo.houseassess}}">
+      <div class="hTitle">业主自评</div>
+      <div class="fyms">
+        <!--默认显示三行，去掉max3全部显示-->
+        <p catchtap="toggleMH" data-hide= "{{maxHeight.yzzp.alwaysShow}}" data-type="yzzp" class="{{maxHeight.yzzp.flag?'':'max3'}}">{{houseInfo.houseassess}}</p>
+      </div>
+    </div>
+    <div class="whitebg pdX15 bb7 mb7 " wx:if="{{commentInfo.content&&commentInfo.content.length}}">
+        <div class="title2"><a><p class="h2">经纪人房评</p></a></div>
+        <div class="dpList">
+            <ul class="">
+                <li wx:for="{{commentInfo.content}}" wx:key="" wx:for-item="item" wx:for-index="index">
+                    <dl class="comment-head">
+                        <dt><image src="https:{{item.photourl?item.photourl:'//static.soufunimg.com/common_m/m_wechat/public/images/img-sflogo.gif'}}" alt=""/></dt>
+                        <dd>
+                            <div class="kf-call flor">
+                                <a catchtap="tel" data-tel="{{item.newmobilecode[0]}}{{item.newmobilecode[1]?','+item.newmobilecode[1]:''}}" class="{{item.Phone400?'call':'discall'}}"><i></i></a>
+                            </div>
+                            <p class="h3">{{item.agentname}}</p>
+                            <p class="" wx:if="{{item.Phone400}}">电话：{{item.Phone400}}</p><!--newmobilecode和Phone400数据源头一致,分别用于拔打和显示-->
+                        </dd>
+                    </dl>
+                    <div class="numBox clearfix"><span class="first">近30天带看：<i>{{item.TakeLookCount}}次</i></span><span>好评率：<i>{{item.HightPer}}</i></span><span>总评价：<i>{{item.CommentCount}}次</i></span></div>
+                    <div wx:if="{{index===0}}" class="intro" catchtap="toggleMH" data-hide= "{{maxHeight.discribe0.alwaysShow}}" data-type="discribe0" style="overflow:hidden;{{maxHeight.discribe0.flag?'':'max-height:65px;'}}"><p wx:for="{{item.DescriptionArr}}" wx:key="" wx:for-item="description">{{description}}</p></div>
+                    <div wx:if="{{index===1}}"class="intro" catchtap="toggleMH" data-hide= "{{maxHeight.discribe1.alwaysShow}}" data-type="discribe1" style="overflow:hidden;{{maxHeight.discribe1.flag?'':'max-height:65px;'}}"><p wx:for="{{item.DescriptionArr}}" wx:key="" wx:for-item="description">{{description}}</p></div>
+                    <div wx:if="{{index===2}}"class="intro" catchtap="toggleMH" data-hide= "{{maxHeight.discribe2.alwaysShow}}" data-type="discribe2" style="overflow:hidden;{{maxHeight.discribe2.flag?'':'max-height:65px;'}}"><p wx:for="{{item.DescriptionArr}}" wx:key="" wx:for-item="description">{{description}}</p></div>
+                    <div class="tuzh" wx:if="{{item.IsShiKanRen==='1'}}"></div>
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="whitebg bb7 mb7 " wx:if="{{relatedInfo.allcount&&relatedInfo.allcount!='0'}}">
+        <div class="title2 pdX15"><navigator open-type="redirect" url="/pages/esf/index/index?cityname={{cityname}}&purpose={{houseInfo.purpose}}&xqname={{houseInfo.projname}}&projcode={{houseInfo.projcode}}&src=xiaoqu" class="arr-rt"><p class="h2">在售房源<span>（共<i class="red_df">{{relatedInfo.allcount}}</i>套）</span></p></navigator></div>
+    </div>
+    
+    <div class="whitebg pdX15 bb7 mb7 " wx:if="{{recordInfo.count}}">
+        <div class="title2"><navigator open-type="redirect" url="/pages/fangjia/tradeCaseList/tradeCaseList?cityname={{cityname}}&projcode={{houseInfo.projcode}}" class="arr-rt"><p class="h2">小区成交记录<span>（共<i class="red_df">{{recordInfo.count}}</i>条）</span></p></navigator></div>
+        <div class="txtBox2">
+            <p><span class="price flor">{{recordInfo.hit.dealmoney}}万</span>{{recordInfo.hit.room}}室{{recordInfo.hit.hall}}厅<em></em>{{recordInfo.hit.buildarea}}平<em></em>{{recordInfo.hit.forwardstr}}</p>
+            <p><span class="price flor">{{recordInfo.hit.avgprice}}元/㎡</span><span class="c888">成交时间：{{recordInfo.hit.inserttime}}</span></p>
+        </div>
+    </div>
+    
+    <div class="whitebg bb7 mb7 " wx:if="{{x&&y}}">
+        <div class="title pdX15">
+            <p>位置及周边</p>
+        </div>
+        <div class="map2">
+            <image mode="scaleToFill" src="http://apis.map.qq.com/ws/staticmap/v2/?center={{y}},{{x}}&scale=1&zoom=14&size=375*240&maptype=roadmap&key=5NHBZ-AKRW5-2WLIP-QDEKP-53C42-JFBMY&format=png" style="width:100%"></image>
+            <div class="coordinate" style="top:50%; left:50%;transform:translate(-50%, -42.5px);">
+              <div class="txtBox">
+                <div class="txtInfor2">
+                  <a class="arr-rt" catchtap="openPosition">{{houseInfo.projname}}</a> 
+                </div>
+              </div>
+            </div>
+            <div class="dizhi" wx:if="{{houseInfo.address}}">
+              <a class="arr-rt" catchtap="openPosition">地址：{{houseInfo.address}}</a> 
+            </div>
+        </div>
+    </div>
+    
+    <div class="whitebg bb7 mb7 pdX15" wx:if="{{posInfo.Bank||posInfo.Hospital||posInfo.College||posInfo.Highschool||posInfo.Nurseryschool||posInfo.AroundHouse||posInfo.AroundOffice||posInfo.Hotels||posInfo.Restaurant||posInfo.Market||posInfo.Postoffice||posInfo.Other}}">
+        <div class="title">
+            <p>周边配套</p>
+        </div>
+        <div class="intro" catchtap="toggleMH" data-hide= "{{maxHeight.zbpt.alwaysShow}}" data-type="zbpt" style="overflow:hidden;{{maxHeight.zbpt.flag?'':'max-height:65px;'}}">
+            <p wx:if="{{posInfo.Bank}}">{{posInfo.Bank}}</p>
+            <p wx:if="{{posInfo.Hospital}}">{{posInfo.Hospital}}</p>
+            <p wx:if="{{posInfo.College}}">{{posInfo.College}}</p>
+            <p wx:if="{{posInfo.Highschool}}">{{posInfo.Highschool}}</p>
+            <p wx:if="{{posInfo.Nurseryschool}}">{{posInfo.Nurseryschool}}</p>
+            <p wx:if="{{posInfo.AroundHouse}}">{{posInfo.AroundHouse}}</p>
+            <p wx:if="{{posInfo.AroundOffice}}">{{posInfo.AroundOffice}}</p>
+            <p wx:if="{{posInfo.Hotels}}">{{posInfo.Hotels}}</p>
+            <p wx:if="{{posInfo.Restaurant}}">{{posInfo.Restaurant}}</p>
+            <p wx:if="{{posInfo.Market}}">{{posInfo.Market}}</p>
+            <p wx:if="{{posInfo.Postoffice}}">{{posInfo.Postoffice}}</p>
+            <p wx:if="{{posInfo.Other}}">{{posInfo.Other}}</p>
+        </div>
+    </div>
+    
+    <div class="whitebg bb7 mb7 pdX15" wx:if="{{posInfo.Bustext}}">
+        <div class="title">
+            <p>交通路线</p>
+        </div>
+        <div class="intro" catchtap="toggleMH" data-hide= "{{maxHeight.traffic.alwaysShow}}" data-type="traffic" style="overflow:hidden;{{maxHeight.traffic.flag?'':'max-height:65px;'}}"><p wx:for="{{posInfo.BustextArr}}" wx:key="" wx:item="item">{{item}}</p></div>
+    </div>
+    <!--同小区二手房-->
+    <div class="xfbox bb7 mb7" wx:if="{{relatedInfo.sameXq&&relatedInfo.sameXq.length}}">
+      <div class="hTitle">{{houseInfo.projname}}二手房</div>
+      <div class="houseList">
+        <ul>
+          <li wx:for="{{relatedInfo.sameXq}}" wx:key="" wx:for-item="item">
+            <navigator open-type="redirect" url="/pages/esf/detail/{{item.housetype==='DS'||item.housetype==='YDS'?'dsdetail':'detail'}}?cityname={{cityname}}&x={{x}}&y={{y}}&housetype={{item.housetype}}&houseid={{item.houseid}}">
+              <div class="img"><image src="{{item.titleimage||defaultImg}}"></image></div>
+              <div class="txt f15">
+                <div class="h2">{{item.title}}</div>
+                <p>{{item.room}}室{{item.hall}}厅<em></em>{{item.buildarea}}平</p>
+                <p class="pdt3"><span class="price">{{item.price?item.price+item.pricetype:'暂无均价'}}</span></p>
+              </div>
+            </navigator>
+          </li>
+        </ul>
+      </div>
+    </div>  
+    <!--同价位二手房-->
+    <div class="xfbox" wx:if="{{relatedInfo.samePrice&&relatedInfo.samePrice.length}}">
+      <div class="hTitle">{{houseInfo.comarea}}同价位二手房</div>
+      <div class="houseList">
+        <ul>
+          <li wx:for="{{relatedInfo.samePrice}}" wx:key="" wx:for-item="item">
+            <navigator open-type="redirect" url="/pages/esf/detail/{{item.housetype==='DS'||item.housetype==='YDS'?'dsdetail':'detail'}}?cityname={{cityname}}&x={{x}}&y={{y}}&housetype={{item.housetype}}&houseid={{item.houseid}}">
+              <div class="img"><image src="{{item.titleimage||defaultImg}}"></image></div>
+              <div class="txt f15">
+                <div class="h2">{{item.title}}</div>
+                <p>{{item.room}}室{{item.hall}}厅<em></em>{{item.buildarea}}平</p>
+                <p class="pdt3"><span class="price">{{item.price?item.price+item.pricetype:'暂无均价'}}</span></p>
+              </div>
+            </navigator>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="mzsm">免责声明：房源信息由产权人提供，最终以政府部门登记备案为准。购买该房屋时，请谨慎核查。入学情况仅凭历史经验总结，在此不承诺升学事宜。</div>
+     <view style="height: 49px;"></view>
+</scroll-view>
+    <block wx:if="{{commentInfo.content&&commentInfo.content.length &&commentInfo.content[0]}}">
+        <div style="position: fixed;top: -49px;" class="fixedBtn" catchtap="toggleTel" ><a>咨询经纪人</a></div>
+    </block>
+    <block wx:if="{{isInfoLoad&& houseInfo.owner400 &&houseInfo.ownerphone}}">
+        <div style="position: fixed;top: -49px;" class="fixedBtn"></div>
+        <div class="bot-call">
+            <div class="flor" catchtap="tel" data-tel="{{houseInfo.ownerphone}}"><a href="#">打电话</a></div>
+            <div class="call-num">
+                <a class="arr-call">
+                    <div>
+                        <image src="https://static.soufunimg.com/common_m/m_wechat/public/images/img-sflogo.gif" class="kf flol"/>
+                        <span class="kf-name">{{houseInfo.linkman}}</span>
+                        <span class="tel2">{{houseInfo.owner400}}</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </block>
+<div class="page bg_efe" wx:if="{{showTel}}">
+    <div class="floatBox" style="display:block;" catchtap="toggleTel">
+        <div class="f-jjr" catchtap="stopPropagation">
+          <div class="f-title">
+            推荐经纪人
+            <a href="#" class="a-close" catchtap="toggleTel"></a>
+          </div>
+          <div class="f-cont">
+            <ul class="jjr-txt">
+              <li wx:for="{{commentInfo.content}}" wx:key="" wx:for-item="item" wx:for-index="index">
+                <div class="img">
+                  <a href="#">
+                    <image src="https:{{item.photourl?item.photourl:'//static.soufunimg.com/common_m/m_wechat/public/images/img-sflogo.gif'}}"/>
+                  </a>
+                </div>
+                <div class="txt">
+                   <div class="h3">{{item.agentname}}</div>
+                   <p>近30天带看：{{item.TakeLookCount}}次</p>
+                   <p>好评率：{{item.HightPer}}</p>
+                </div>
+                <div class="f-call flor">
+                  <a class="discall" catchtap="tel" data-tel="{{item.newmobilecode[0]}}{{item.newmobilecode[1]?','+item.newmobilecode[1]:''}}"><i></i></a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+    </div>
+</div> 

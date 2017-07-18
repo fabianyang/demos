@@ -1,0 +1,7 @@
+<template name="tools.titleSelector">
+  <view class="jsqbox">
+    <a catchtap="titleSelector.tap" data-index="0" class="{{ index === '0' ? 'active' : '' }}"><span>商业贷</span>  </a> 
+    <a catchtap="titleSelector.tap" data-index="1" class="{{ index === '1' ? 'active' : '' }}"><span>公积金贷</span>  </a> 
+    <a catchtap="titleSelector.tap" data-index="2" class="{{ index === '2' ? 'active' : '' }}"><span>组合贷</span>  </a> 
+  </view>
+</template>

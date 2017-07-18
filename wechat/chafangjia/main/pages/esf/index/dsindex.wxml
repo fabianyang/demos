@@ -1,0 +1,50 @@
+<import src="../../../template/search.wxml" />
+<import src="../../../template/filter.wxml" />
+<import src="../../../template/fail.wxml" />
+<scroll-view class="page {{listReady?'bg_efe':'whitebg'}}" wx:if="{{!searchInfo.isSearch&&!pageInfo.filterInfo.isFilter}}"  scroll-y="true"  bindscrolltolower="loadmore" lower-threshold="50" scroll-into-view="{{pageInfo.loading?'loading':''}}">
+    <div class="searchBox">
+        <div class="sea-b pdL15">
+            <a catchtap="toggleSearch" class="input" data-type="esf" data-searchtype="esf" data-typename="二手房" data-placeholder="{{'小区/区县/商圈等'}}" data-value="{{keyword}}"><i></i>{{keyword||'小区/区县/商圈等'}}</a>
+        </div>
+    </div>
+    <template is="filterTab" data="{{...pageInfo.filterInfo}}" />
+    <block wx:if="{{listReady}}">
+        <div class="houseList">
+            <ul>
+                <block wx:if="{{pageInfo.dsList.countinfo.allcount > 0}}">
+                    <li wx:for="{{pageInfo.dsList.houseinfo}}" wx:key=""  wx:for-index="idx" wx:for-item="$items" data-houseid="{{$items.houseid}}" catchtap="listNavigator" data-housetype="{{$items.housetype}}" data-x="{{$items.coord_x}}"  data-y="{{$items.coord_y}}">
+                        <div class="img">
+                            <image src="{{$items.titleimage}}"></image>
+                        </div>
+                        <div class="txt f11">
+                            <div class="h3">{{$items.title}}</div>
+                            <p><span class="price flor"><i>{{$items.price}}</i>万</span>{{$items.buildarea}}㎡<em></em>{{$items.room}}室{{$items.hall}}厅<em></em>{{$items.forward}}</p>
+                            <p><span class="flor">{{$items.priceperarea}}元/㎡</span>{{$items.projname}}</p>
+                            <p class="stag" wx:if="{{$items.tags || $items.keyFlag || $items.commentFlag}}">
+                                <span wx:for="{{$items.tags}}" wx:key="" wx:for-item="tags">{{tags}}</span>
+                                <span wx:if="{{$items.keyFlag}}">{{$items.keyFlag}}</span>
+                                <span wx:if="{{$items.commentFlag}}">{{$items.commentFlag}}</span>
+                            </p>
+                        </div>
+                    </li>
+                </block>
+            </ul>
+        </div>
+        <view id="loading" class="moreList" style="height:40px;">
+            <span wx-if="{{pageInfo.loading}}"><i></i>努力加载中...</span>
+            <span wx-if="{{pageInfo.isLast}}">没有更多了...</span>
+        </view>
+        <view class="moreList" style="display:{{loading ? '' : 'none' }}">
+            <span><i></i>努力加载中...</span>
+        </view>
+    </block>
+    <block wx:if="{{!listReady}}">
+        <div class="sear_null">
+            <div class="img"></div>
+            <p>没有找到符合条件的房源，</p>
+            <p>换个搜索条件试试</p>
+        </div>
+    </block>
+</scroll-view>
+<template is="filter" data="{{...pageInfo.filterInfo}}" />
+<template is="search" data="{{...searchInfo}}" />

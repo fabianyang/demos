@@ -1,0 +1,187 @@
+<scroll-view style="bottom: -50px;position: fixed;" class="main pdb50 h100" scroll-y="true">
+    <div class="xqfocus bb7">
+        <swiper indicator-dots="{{true}}" circular="{{true}}" wx:if="{{houseInfo.allpics&&houseInfo.allpics.length}}">
+          <block wx:for="{{houseInfo.allpics}}" wx:key="" wx:for-item="item" wx:for-index="index">
+            <swiper-item wx:if="{{index<5}}">
+              <image mode="aspectFill" src="{{item || 'https://static.soufunimg.com/common_m/m_wechat/public/images/default_logo.jpg'}}" class="slide-image" style="height:100%;width:100%"/>
+            </swiper-item>
+          </block>
+        </swiper>
+            
+        <div class="xfxq">
+          <p>{{houseInfo.title}}</p>
+          <div class="stag" wx:if="{{houseInfo.tags.length}}">
+                <block wx:for="{{houseInfo.tags}}" wx:key="" wx:for-item="tag">
+                    <span class="pink-2" wx:if="{{tag}}">{{tag}}</span>
+                </block> 
+          </div>
+        </div>
+    </div>
+    <!--信息-->
+    <div class="xfbox bb7">
+      <ul class="xqsper">
+        <li>
+          <div class="divc">
+            <a href="javascript:void(0);">售价<span>{{houseInfo.price}}{{houseInfo.pricetype}}</span></a>
+          </div>
+        </li>
+        <li>
+          <div class="divc">
+            <a href="javascript:void(0);">户型
+              <span>
+                <block wx:if="{{houseInfo.roomnum}}">{{houseInfo.roomnum}}室</block>
+                <block wx:if="{{houseInfo.hallnum}}">{{houseInfo.hallnum}}厅</block>
+                <block wx:if="{{houseInfo.toiletnum}}">{{houseInfo.toiletnum}}卫</block>
+              </span>
+            </a>
+          </div>
+        </li>
+        <li class="last">
+          <div class="divc">
+            <a href="javascript:void(0);">面积<span>{{houseInfo.allacreage}}㎡</span></a>
+          </div>
+        </li>
+      </ul>
+      <div class="fj-table">
+        <ul class="flextable">
+          <li class="w100"><span>单<i></i>价：</span><p>{{houseInfo.unitprice?houseInfo.unitprice+'元/㎡':'暂无'}}</p></li>
+          <li><span>楼<i></i>层：</span><p>{{houseInfo.floor?houseInfo.floor+'层':'暂无'}}</p></li>
+          <li><span>朝<i></i>向：</span><p>{{houseInfo.faceto||'暂无'}}</p></li>
+          <li><span>装<i></i>修：</span><p>{{houseInfo.fitment||'暂无'}}</p></li>
+          <li><span>年<i></i>代：</span><p>{{houseInfo.builttime||'暂无'}}</p></li>
+          <li>
+          <span>发布时间：</span>
+          <p>
+            <block wx:if="{{houseInfo.dataymd[0]}}">
+              {{houseInfo.dataymd[0]}}<a>（{{houseInfo.timediff}}）</a>
+            </block>
+            <block wx:else>暂无</block>
+          </p></li>
+        </ul>
+      </div>
+      <ul class="xqTlist">
+        <li>
+        <block wx:if="{{houseInfo.plotid &&houseInfo.plotid!=='0'}}">
+          <navigator open-type="redirect" url="/pages/fangjia/xiaoquDetail/xiaoquDetail?cityname={{cityname}}&xqid={{houseInfo.plotid}}&title={{houseInfo.projname}}" class="arr-rt">小<i></i>区： <span class="blue">{{houseInfo.projname}}</span></navigator>
+        </block>
+        <block wx:else>
+          小<i></i>区： <span >{{houseInfo.projname}}</span>
+        </block>
+        
+        </li>
+        <li wx:if="{{subInfo}}"><a>地<i></i>铁：<span>距离{{subInfo.Name}}{{subInfo.Stations.SubwayStation.Name}}{{subInfo.Stations.SubwayStation.ProjectDistance}}米</span></a></li>
+      </ul>
+    </div>
+    <!--房源描述-->
+    <div class="xfbox bb7" wx:if="{{houseInfo.housedetail}}">
+      <div class="hTitle">房源描述</div>
+      <div class="fyms" catchtap="toggleMH" data-hide= "{{maxHeight.housedetail.alwaysShow}}" data-type="housedetail" style="overflow:hidden;{{maxHeight.housedetail.flag?'':'max-height:62px;'}}">
+        <p wx:for="{{houseInfo.housedetailArr}}" wx:key="" wx:for-item="item">{{item}}</p>
+      </div>
+    </div>
+    <!--在售房源--><!-- todo -->
+    <div class="xfbox bb7" wx:if="{{relatedInfo.allcount}}">
+      <div class="hTitle"><navigator class="arr-rt" open-type="redirect" url="/pages/esf/index/index?cityname={{cityname}}&purpose={{houseInfo.purpose}}&projcode={{houseInfo.plotid}}&xqname={{houseInfo.projname}}&src=xiaoqu" >在售房源<span>（共<i class="red_df">{{relatedInfo.allcount}}</i>套）</span></navigator></div>
+    </div>
+    <!--小区成交记录--><!-- todo -->
+    <div class="xfbox bb7" wx:if="{{recordInfo.count}}">
+      <div class="hTitle"><navigator class="arr-rt" open-type="redirect" url="/pages/fangjia/tradeCaseList/tradeCaseList?cityname={{cityname}}&projcode={{houseInfo.plotid}}" >小区成交记录<span>（共<i class="red_df">{{recordInfo.count}}</i>条）</span></navigator></div>
+      <div class="cjjlBox">
+        <p><span class="flor red"> {{recordInfo.hit.dealmoney}}万 </span>{{recordInfo.hit.room}}室{{recordInfo.hit.hall}}厅 {{recordInfo.hit.buildarea}}㎡ {{recordInfo.hit.forwardstr}} </p>
+        <p><span class="flor red"> {{recordInfo.hit.avgprice}}元/㎡ </span><span class="gray">签约时间：{{recordInfo.hit.inserttime}}</span></p>
+      </div>
+    </div>
+    <!--位置及周边-->
+    <div class="basic bb7" wx:if="{{x&&y}}">
+      <div class="h3">位置及周边</div>
+      <div class="map2">
+        <image  mode="scaleToFill" src="http://apis.map.qq.com/ws/staticmap/v2/?center={{houseInfo.coordy}},{{houseInfo.coordx}}&scale=1&zoom=14&size=375*240&maptype=roadmap&key=5NHBZ-AKRW5-2WLIP-QDEKP-53C42-JFBMY&format=png" style="width:100%"></image>
+        <div class="coordinate" style="top:50%; left:50%;transform:translate(-50%, -42.5px);">
+          <div class="txtBox">
+            <div class="txtInfor2">
+              <a class="arr-rt" catchtap="openPosition">{{houseInfo.projname}}</a> 
+            </div>
+          </div>
+        </div>
+        <div class="dizhi">
+          <a wx:if="{{houseInfo.address}}" class="arr-rt" catchtap="openPosition">地址：{{houseInfo.address}}</a> 
+        </div>
+      </div>
+    </div>
+    <!--周边配套-->
+    <div class="xfbox bb7" wx:if="{{houseInfo.bank||houseInfo.hospital||houseInfo.college||houseInfo.highschool||houseInfo.nurseryschool||houseInfo.AroundHouse||houseInfo.AroundOffice||houseInfo.Hotels||houseInfo.Restaurant||houseInfo.market||houseInfo.postoffice||houseInfo.other}}">
+      <div class="hTitle">周边配套</div>
+      <div class="fyms" catchtap="toggleMH" data-hide= "{{maxHeight.zbpt.alwaysShow}}" data-type="zbpt" style="overflow:hidden;{{maxHeight.zbpt.flag?'':'max-height:62px;'}}">
+            <p wx:if="{{houseInfo.bank}}">{{houseInfo.bank}}</p>
+            <p wx:if="{{houseInfo.hospital}}">{{houseInfo.hospital}}</p>
+            <p wx:if="{{houseInfo.college}}">{{houseInfo.college}}</p>
+            <p wx:if="{{houseInfo.highschool}}">{{houseInfo.highschool}}</p>
+            <p wx:if="{{houseInfo.nurseryschool}}">{{houseInfo.nurseryschool}}</p>
+            <p wx:if="{{houseInfo.AroundHouse}}">{{houseInfo.AroundHouse}}</p>
+            <p wx:if="{{houseInfo.AroundOffice}}">{{houseInfo.AroundOffice}}</p>
+            <p wx:if="{{houseInfo.Hotels}}">{{houseInfo.Hotels}}</p>
+            <p wx:if="{{houseInfo.Restaurant}}">{{houseInfo.Restaurant}}</p>
+            <p wx:if="{{houseInfo.market}}">{{houseInfo.market}}</p>
+            <p wx:if="{{houseInfo.postoffice}}">{{houseInfo.postoffice}}</p>
+            <p wx:if="{{houseInfo.other}}">{{houseInfo.other}}</p>
+      </div>
+    </div>
+    <!--交通路线-->
+    <div class="xfbox bb7" wx:if="{{houseInfo.trafficInfo}}">
+      <div class="hTitle">交通路线</div>
+      <div class="fyms" catchtap="toggleMH" data-hide= "{{maxHeight.traffic.alwaysShow}}" data-type="traffic" style="overflow:hidden;{{maxHeight.traffic.flag?'':'max-height:62px;'}}">
+        <p wx:for="{{houseInfo.trafficInfoArr}}" wx:key="" wx:for-item="item">{{item}}</p>
+      </div>
+    </div>
+    <!--同小区二手房-->
+    <div class="xfbox bb7" wx:if="{{relatedInfo.sameXq&&relatedInfo.sameXq.length}}">
+      <div class="hTitle">{{houseInfo.projname}}二手房</div>
+      <div class="houseList">
+        <ul>
+          <li wx:for="{{relatedInfo.sameXq}}" wx:key="" wx:for-item="item">
+            <navigator open-type="redirect" url="/pages/esf/detail/{{item.housetype==='DS'||item.housetype==='YDS'?'dsdetail':'detail'}}?cityname={{cityname}}&x={{x}}&y={{y}}&housetype={{item.housetype}}&houseid={{item.houseid}}">
+              <div class="img"><image src="{{item.titleimage||defaultImg}}"></image></div>
+              <div class="txt f15">
+                <div class="h2">{{item.title}}</div>
+                <p>{{item.room}}室{{item.hall}}厅<em></em>{{item.buildarea}}平</p>
+                <p class="pdt3"><span class="price">{{item.price?item.price+item.pricetype:'暂无均价'}}</span></p>
+              </div>
+            </navigator>
+          </li>
+        </ul>
+      </div>
+    </div>  
+    <!--同价位二手房-->
+    <div class="xfbox" wx:if="{{relatedInfo.samePrice&&relatedInfo.samePrice.length}}">
+      <div class="hTitle">{{houseInfo.comarea}}同价位二手房</div>
+      <div class="houseList">
+        <ul>
+          <li wx:for="{{relatedInfo.samePrice}}" wx:key="" wx:for-item="item">
+            <navigator open-type="redirect" url="/pages/esf/detail/{{item.housetype==='DS'||item.housetype==='YDS'?'dsdetail':'detail'}}?cityname={{cityname}}&x={{x}}&y={{y}}&housetype={{item.housetype}}&houseid={{item.houseid}}">
+              <div class="img"><image src="{{item.titleimage || defaultImg}}"></image></div>
+              <div class="txt f15">
+                <div class="h2">{{item.title}}</div>
+                <p>{{item.room}}室{{item.hall}}厅<em></em>{{item.buildarea}}平</p>
+                <p class="pdt3"><span class="price">{{item.price?item.price+item.pricetype:'暂无均价'}}</span></p>
+              </div>
+            </navigator>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="mzsm bgcol-f5">免责声明：房源信息由网站用户提供，其真实性、合法性由提供者负责，最终以政府部门登记备案为准。本网站不声明或保证内容之正确性和可靠性，购买该房源时，请谨慎核查。入学情况仅凭历史经验总结，在此不承诺升学事宜。</div>
+    <view style="height: 50px;"></view>
+</scroll-view>
+    <!--电话-->
+    <div class="bot-call" wx:if="{{houseInfo.phone}}">
+      <div class="flor" catchtap="tel" data-tel="{{houseInfo.phone}}"><a href="#">打电话</a></div>
+      <div class="call-num mrl0">
+        <a class="arr-call">
+          <div>
+            <image src="{{houseInfo.photoUrl||'https://static.soufunimg.com/common_m/m_wechat/public/images/img-sflogo.gif'}}" class="kf flol"/>
+            <span class="kf-name">{{houseInfo.managername}}</span>
+            <span class="tel2">{{houseInfo.phone}}</span>
+          </div>
+        </a>
+      </div>
+    </div>

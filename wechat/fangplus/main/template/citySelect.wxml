@@ -1,0 +1,51 @@
+<template name="citySelect">
+    <scroll-view class="page" wx:if="{{isShow}}" scroll-y="{{true}}" scroll-into-view="{{active}}">
+        <div class="searchBox">
+            <div class="sea-b pdL15">
+                <a class="input"  catchtap="toggleSearch" data-type="citySearch" data-placeholder="输入城市名称进行搜索">
+                    <span style="display:block;"><i></i>输入城市名称进行搜索</span><!--输入时，display:none;-->
+                </a>
+            </div>
+        </div>
+        <div class="his_tit">当前定位城市</div>
+        <div class="city" catchtap="cityPick" data-id="{{positionCity === '定位失败' ? '北京' : positionCity}}"><span class="f5" catchtap="reLocate"></span><span>{{positionCity || '北京'}}</span>GPS定位</div>
+        <block wx:if="{{cityHistory.history.length}}">
+            <view class="his_tit" id="cityInfoHistory">最近访问的城市</view>
+            <div class="hisCity clearfix">
+                <a wx:for="{{cityHistory.history}}" wx:key="" wx:for-item="city" catchtap="cityPick" data-id="{{city}}">{{city}}</a>
+            </div>
+        </block>
+        <block wx:for="{{category}}" wx:key="" wx:for-item="item">
+            <block wx:if="{{item.cities.length && item.cities[0]}}">
+                <view class="his_tit" id="{{item.key}}">{{item.name}}</view>
+                <ul class="cities">
+                    <li wx:for="{{item.cities}}" wx:key="" wx:for-item="city" catchtap="cityPick" data-id="{{city}}"><a>{{city}}</a></li>
+                </ul>        
+            </block> 
+        </block>       
+        <div class="hotBox">
+            <ul>
+                <li wx:if="{{cityHistory.history.length}}" bindtap="cityTab" data-id="cityInfoHistory"><a>历史</a></li>
+                <block wx:for="{{category}}" wx:key="" wx:for-item="item">
+                    <li bindtap="cityTab" wx:if="{{item.cities.length && item.cities[0]}}" data-id="{{item.key}}"><a>{{item.name}}</a></li>
+                </block>
+            </ul>
+        </div>
+        <div class="page alertbg" wx:if="{{showCurrentLocation}}"> 
+            <div class="pdt1">
+                <div class="prompt w150">
+                    <p>当前位置</p>
+                    <p>{{location}}</p>
+                </div>
+            </div>
+        </div>
+        <div wx:if="{{showFailLocation}}">
+            <div class="pdt1">
+                <div class="prompt w200 alertTip">
+                    <p>检测到无网络或未开启定位服务</p>
+                    <p>请打开网络和定位服务</p>
+                </div>
+            </div>
+        </div>
+    </scroll-view>
+</template>

@@ -1,0 +1,12 @@
+<template name="tools.loanSelector">
+    <view class="radioBox">
+        <view class="label" catchtap="loanSelector.tap" data-index="0">
+            <i class="{{ index === '0' ? 'ipt' : '' }}"></i>
+            <span>按贷款总额计算</span>
+        </view>
+        <view class="label last-label" catchtap="loanSelector.tap" data-index="1">
+            <i class="{{ index === '1' ? 'ipt' : '' }}"></i>
+            <span>按房价总额计算</span>
+        </view>
+    </view>
+</template>

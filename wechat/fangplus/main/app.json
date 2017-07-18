@@ -1,0 +1,26 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/city/index",
+    "pages/fangjia/index/index",
+    "pages/fangjia/tradeCaseList/tradeCaseList",
+    "pages/fangjia/xiaoquDetail/xiaoquDetail",
+    "pages/fangjia/xiaoquEvaResults/xiaoquEvaResults",
+    "pages/xf/index/index",
+    "pages/xf/detail/detail",
+    "pages/esf/index/index",
+    "pages/esf/index/dsindex",
+    "pages/esf/detail/detail",
+    "pages/esf/detail/dsdetail",
+    "pages/tools/index/index",
+    "pages/tools/detail/detail",
+    "pages/tools/zhd/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#d03a3c",
+    "navigationBarTitleText": "房天下+",
+    "navigationBarTextStyle": "white"
+  },
+  "debug": false
+}

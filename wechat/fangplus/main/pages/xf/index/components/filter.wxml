@@ -1,0 +1,68 @@
+<template name="xf.index.filter">
+  <view catchtap="boxTap" class="page bg_efe" style="{{ open ? '' : 'display:none;' }}" data-txt="" data-name="" data-next="{{ !!data['comarea'][text[key]] }}">
+    <view class="scTab">
+      <ul>
+        <li catchtap="tabTap" class="{{ key === 'district' ? 'active' : '' }}" data-txt="{{ text['district'] }}" data-key="district">
+          <a><span>{{ text.comarea || text.district || '区域' }}</span></a>
+        </li>
+        <li catchtap="tabTap" class="{{ key === 'price' ? 'active' : '' }}" data-txt="{{ text['price'] }}" data-key="price">
+          <a><span>{{ text.price || '均价'}}</span></a> 
+        </li>
+        <li catchtap="tabTap" class="{{ key === 'bedroom' ? 'active' : '' }}" data-txt="{{ text['bedroom'] }}" data-key="bedroom">
+          <a><span>{{ text.bedroom || '户型'}}</span></a> 
+        </li>
+      </ul>
+      <view class="contBox" style="{{ open ? '' : 'display:none;' }}">
+        <view class="con" style="height:80%">
+
+          <!-- district, price, bedroom -->
+          <view class="{{ !!data['comarea'][text[key]] ? 'one' : 'onlyone' }}">
+            <dl>
+              <scroll-view scroll-y="true" style="height:100%; display:{{ key === 'district' ? '' : 'none' }}">
+                <dd catchtap="optionTap" class="{{ text['district'] === item ? 'active':'' }}" wx:for="{{ data['district'] }}" wx:key="*this" wx:for-index="idx" wx:for-item="item" data-idx="{{ idx }}" data-txt="{{ item }}" data-name="{{ item }}"
+                data-next="{{ !!data['comarea'][item] }}">
+                  <a>{{ !idx ? '不限' : item }}</a> 
+                </dd>
+              </scroll-view>
+              <scroll-view scroll-y="true" style="height:100%; display:{{ key === 'price' ? '' : 'none' }}">
+                <dd catchtap="optionTap" class="{{ text['price'] === item ? 'active':'' }}" wx:for="{{ data['price'] }}" wx:key="*this" wx:for-index="idx" wx:for-item="item" data-idx="{{ idx }}" data-txt="{{ item }}" data-name="{{ data['priceNew'][idx] }}">
+                  <a>{{ !idx ? '不限' : item }}</a> 
+                </dd>
+                <view class="custom" catchtap="stopPropagation">
+                  <view class="box">
+                    <span>自定义</span> 
+                    <input type="number" placeholder="最小" bindinput="customInput" data-name="min" value="{{ priceCustom.min }}" data-max="{{ priceCustom.max }}"></input>
+                    <i></i>
+                    <input type="number" placeholder="最大"  bindinput="customInput" data-name="max" value="{{ priceCustom.max }}" data-min="{{ priceCustom.min }}"></input>
+                    <a class="submit" catchtap="customSubmit" data-min="{{ priceCustom.min }}" data-max="{{ priceCustom.max }}">确定</a> 
+                    <view class="clear"></view>
+                  </view>
+                </view>
+              </scroll-view>
+              <scroll-view scroll-y="true" style="height:100%; display:{{ key === 'bedroom' ? '' : 'none' }}">
+                <dd catchtap="optionTap" class="{{ text['bedroom'] === item ? 'active':'' }}" wx:for="{{ data['bedroom'] }}" wx:key="*this" wx:for-index="idx" wx:for-item="item" data-idx="{{ idx }}" data-txt="{{ item }}" data-name="{{ item }}">
+                  <a>{{ !idx ? '不限' : item }}</a> 
+                </dd>
+              </scroll-view>
+            </dl>
+          </view>
+          <!-- district, price, bedroom -->
+
+          <!-- comarea -->
+          <view class="two" wx:for="{{ data['district'] }}" wx:key="*this" wx:for-index="idx1" wx:for-item="item1" style="{{ item1 === text['district'] ? '' : 'display:none' }}" wx:if="{{ data['comarea'][item1] }}">
+            <dl data-idx="{{ idx1 }}" data-name="{{ item1 }}">
+              <scroll-view scroll-y="true" style="height:100%;">
+                <dd catchtap="nextTap" wx:for="{{ data['comarea'][item1] }}" wx:key="id" wx:for-index="idx2" wx:for-item="item2" class="{{ text['comarea'] === item2.name ? 'active' : '' }}" data-id="{{ item2.id }}" data-idx="{{ idx2 }}" data-txt="{{ item2.name }}"
+                data-name="{{ item2.name }}">
+                  <a>{{ !idx2 ? item1 + '全部' : item2.name }}</a> 
+                </dd>
+              </scroll-view>
+            </dl>
+          </view>
+          <!-- comarea -->
+
+        </view>
+      </view>
+    </view>
+  </view>
+</template>

@@ -1,0 +1,196 @@
+<import src="../../../template/select.wxml" />
+<import src="../../../template/search.wxml" />
+<import src="../../../template/fail.wxml" />
+
+        <!--无论结果怎样，先亮骨骼-->
+<block wx:if="{{dataLoad || !dataLoad}}">
+<block wx:if="{{!searchInfo.isSearch}}">
+  <scroll-view class="page" scroll-y="true"  bindscroll="scroll" scroll-top="{{scrolltop}}">
+    <div class="xqfocus bb7">
+      <swiper wx:if="{{pageInfo.img.all_picArr.length}}" indicator-dots="{{swiper.indicatorDots}}" autoplay="{{swiper.autoplay}}" interval="{{swiper.interval}}" duration="{{swiper.duration}}" circular="{{swiper.circular}}">
+
+        <!--pageInfo.img.all_picArr item.imgUrl  imgUrls-->
+        <block wx:key="" wx:for="{{pageInfo.img.all_picArr}}">
+          <swiper-item>
+
+            <!--mode="aspectFit"-->
+            <image mode="aspectFill" src="https:{{item.imgUrl || '//static.soufunimg.com/common_m/m_wechat/public/images/default_logo.jpg'}}" class="slide-image" style="height:100%;width:100%"></image>
+          </swiper-item>
+        </block>
+      </swiper>
+
+      <!--<image src="../../public/images/640x512.jpg" width="100%" alt=""></image>-->
+      <div class="xqTitle">
+        <p>{{pageInfo.ProjInfo.projname}}</p>
+      </div>
+    </div>
+    <div class="average">
+      <div class="boxes">
+        <div class="h3"><span class="price">{{pageInfo.ProjInfo.swatchprice || '暂无'}}</span>  小区参考均价</div>
+        <p><span class="{{pageInfo.ProjInfo.arrowFlag}} flor">{{pageInfo.ProjInfo.monthadd}}</span>  环比上月</p>
+      </div>
+      <div wx:if="{{pageInfo.esfSallingNum && pageInfo.esfSallingNum !=0}}" class="hTitle">
+        <navigator open-type="redirect" url="/pages/esf/index/index?cityname={{cityname}}&purpose={{pageInfo.ProjInfo.projtype}}&projcode={{pageInfo.ProjInfo.newcode}}&src=xiaoqu&xqname={{pageInfo.ProjInfo.projname}}"><a sytle="display:block;" class="num arr-rt">在售房源（共<span>{{pageInfo.esfSallingNum}}</span>套）</a>
+        </navigator>
+      </div>
+
+      <!--没有成交记录不显示尖括号-->
+      <a wx:if="{{pageInfo.esfSalNum}}"  catchtap="gotoTradeList" class="num {{pageInfo.esfSalNum?'arr-rt':''}}">小区成交记录<span> {{pageInfo.esfSalNum || 0}}</span>  套</a>
+    </div>
+    <div wx:if="{{canCheck}}" class="pinggu bb7">
+      <div class="h3">评估房源</div>
+      <div class="con">
+        <dl class="mtD1">
+          <dt>小区</dt>
+          <dd class="arr-rt" catchtap="toggleSearch" data-scrolltop="{{scrolltop}}" data-type="cfj" data-searchtype="cfj"><span style="{{hasSelected?'color: #000;':''}}">{{evaform.xqname}}</span>  </dd>
+
+          <!--cur选中以后文字颜色-->
+        </dl>
+        <dl>
+          <dt>朝向</dt>
+          <dd class="arr-rt" bindtap="selToward"><span id="towardSel" class="cur">{{selectInfo.currentSel}}</span>  </dd>
+        </dl>
+        <dl>
+          <dt>建筑面积</dt>
+          <dd>
+            <i>平米</i>
+            <input type="digit" value="{{evaform.builtArea}}" bindinput="bindBuildInput" class="ipt" placeholder="请填写建筑面积"></input>
+          </dd>
+        </dl>
+        <dl>
+          <dt>楼层</dt>
+          <dd class="flol"><span class="flol">第</span>   <input value="{{evaform.floor}}" bindchange="bindFloorInput" type="number" class="ipt2"></input><span class="flol">层</span>  </dd>
+          <dd class="flor"><span class="flol">共</span>   <input value="{{evaform.zfloor}}" bindchange="bindZfloorInput" type="number" class="ipt2"></input><span class="flol">层</span>  </dd>
+        </dl>
+      </div>
+      <div catchtap="beginEva" class="btnBox">
+        <a>开始评估</a>
+      </div>
+    </div>
+    <div class="basic bb7">
+      <div class="h3">基本信息</div>
+      <div class="pdX15">
+        <ul class="flextable" style="{{isShowMore?'':'height:82px;'}}">
+
+          <!--去掉 style="height:82px;" 展开全部内容-->
+          <li>
+            <span>物<i></i>业<i></i>费：</span>
+            <p>{{pageInfo.ProjInfo.property?(pageInfo.ProjInfo.property+pageInfo.ProjInfo.propfeetype) : '暂无'}} </p>
+          </li>
+          <li>
+            <span>物业类型：</span>
+            <p>{{pageInfo.ProjInfo.projtype || '暂无'}}</p>
+          </li>
+          <li>
+            <span>建筑类型：</span>
+            <p>{{pageInfo.ProjInfo.buildcategory || '暂无'}}</p>
+          </li>
+          <li>
+            <span>绿<i></i>化<i></i>率：</span>
+            <p>{{pageInfo.ProjInfo.virescencerate || '暂无'}}</p>
+          </li>
+          <li>
+            <span>建筑年代：</span>
+            <p>{{pageInfo.ProjInfo.createtime || '暂无'}}</p>
+          </li>
+          <li>
+            <span>容<i></i>积<i></i>率：</span>
+            <p>{{pageInfo.ProjInfo.dimension || '暂无'}}</p>
+          </li>
+          <li>
+            <span>产权描述：</span>
+            <p>{{pageInfo.ProjInfo.rightdescription || '暂无'}}</p>
+          </li>
+          <li>
+            <span>区<em></em>域：</span>
+            <p>{{(pageInfo.ProjInfo.district+pageInfo.ProjInfo.comarea) || '暂无'}}</p>
+          </li>
+          <li>
+            <span>物业公司：</span>
+            <p>{{pageInfo.ProjInfo.propertymanage || '暂无'}}</p>
+          </li>
+          <li>
+            <span>停<i></i>车<i></i>位：</span>
+            <p>{{pageInfo.ProjInfo.carinfo || '暂无'}}</p>
+          </li>
+          <li>
+            <span>开<i></i>发<i></i>商：</span>
+            <p>{{pageInfo.ProjInfo.developer || '暂无'}}</p>
+          </li>
+          <li>
+            <span>小区介绍： </span>
+            <p class="{{pageInfo.ProjInfo.projdesc?'intro':''}}">{{pageInfo.ProjInfo.projdesc || '暂无'}}</p>
+          </li>
+        </ul>
+        <a bindtap="showMore" class="more_xq {{isShowMore?'':'up'}}"></a>
+
+        <!--去掉up展开-->
+      </div>
+      <div wx:if="{{pageInfo.ProjInfo.coord_x_t && pageInfo.ProjInfo.coord_y_t}}" class="map2">
+
+        <!--scale为2表示高清-->
+        <image mode="scaleToFill" style="width:100%" src="http://apis.map.qq.com/ws/staticmap/v2/?center={{pageInfo.ProjInfo.coord_y_t}},{{pageInfo.ProjInfo.coord_x_t}}&scale=1&zoom=14&size=375*240&maptype=roadmap&key=5NHBZ-AKRW5-2WLIP-QDEKP-53C42-JFBMY&format=png"
+               width="100%"></image>
+
+        <!--设置地图标点居中显示-->
+        <div class="coordinate" style="top:50%; left:50%;transform:translate(-50%, -42.5px);">
+          <div class="txtBox">
+            <div class="txtInfor2">
+
+              <!--<navigator url="../xiaoquMap/xiaoquMap?address={{pageInfo.ProjInfo.address}}&lat={{pageInfo.ProjInfo.coord_y}}&lon={{pageInfo.ProjInfo.coord_x}}" hover-class="navigator-hover">
+                <a class="arr-rt">{{pageInfo.ProjInfo.projname}}</a>
+              </navigator>-->
+              <a class="arr-rt" catchtap="openPosition">{{pageInfo.ProjInfo.projname}}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="dizhi">
+
+        <!--<navigator url="../xiaoquMap/xiaoquMap?address={{pageInfo.ProjInfo.address}}&lat={{pageInfo.ProjInfo.coord_y}}&lon={{pageInfo.ProjInfo.coord_x}}" hover-class="navigator-hover">
+       <a class="arr-rt">地址：{{pageInfo.ProjInfo.address}}</a>
+        </navigator>-->
+        <a class="{{pageInfo.ProjInfo.coord_x_t?'arr-rt':''}}" catchtap="openPosition">地址：{{pageInfo.ProjInfo.address}}</a>
+      </div>
+    </div>
+    <div class="houseList">
+      <div wx:if="{{pageInfo.nearXiaoQuList.length}}" class="title">
+        <p>附近小区</p>
+      </div>
+      <ul>
+        <li wx:for="{{pageInfo.nearXiaoQuList}}" wx:key="" wx:for-index="idx" wx:for-item="ele" class="{{ele.isShow?'active':''}}" data-idx="{{idx}}">
+          <navigator open-type="redirect" url="../xiaoquDetail/xiaoquDetail?xqid={{ele.projcode}}&title={{ele.projname}}&cityname={{cityname}}">
+            <div class="img">
+              <image src="{{ele.coverimg || 'https://static.soufunimg.com/common_m/m_wechat/public/images/default_logo.jpg'}}"></image>
+            </div>
+            <div class="txt">
+              <div class="h3">{{ele.projname}}</div>
+              <p>在售二手房{{ele.esfnum || 0}}套</p>
+              <p style="height:1rem"></p>
+              <p wx:if="{{ele.price}}"><span class="price">{{ele.price}}元/㎡</span>  </p>
+              <p wx:else><span class="price">暂无均价</span>  </p>
+            </div>
+          </navigator>
+        </li>
+      </ul>
+      <div class="disclaimer">*免责声明：本网站不保证所有小区信息完全真实可靠，最终以政府部门登记备案为准，请谨慎核查。</div>
+    </div>
+  </scroll-view>
+  <template is="select" data="{{selectInfo}}" />
+      <block>
+        <div wx:if="{{noSupport}}">
+            <div class="pdt1">
+                <div class="prompt w150 alertTip">
+                    <p>抱歉,该小区暂不支持查房价</p>
+                </div>
+            </div>
+        </div>
+    </block>
+</block>
+<template is="search" data="{{...searchInfo}}" />
+</block>
+
+        <!--先亮骨骼就没有了失败-->
+<block wx:if="{{!dataLoad && failInfo.showFail && false}}">
+<template is="fail" data="{{...failInfo}}" />
+</block>

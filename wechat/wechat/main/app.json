@@ -1,0 +1,20 @@
+{
+    "pages": [
+        "pages/index/index",
+        "pages/tradeCaseList/tradeCaseList",
+        "pages/xiaoquDetail/xiaoquDetail",
+        "pages/xiaoquEvaResults/xiaoquEvaResults",
+
+        "pages/xf/detail/detail",
+        "pages/esf/index/index",
+        "pages/esf/detail/detail",
+        "pages/esf/detail/dsdetail"
+    ],
+    "window": {
+        "backgroundTextStyle": "light",
+        "navigationBarBackgroundColor": "#d03a3c",
+        "navigationBarTitleText": "房天下+",
+        "navigationBarTextStyle": "white"
+    },
+    "debug": false
+}

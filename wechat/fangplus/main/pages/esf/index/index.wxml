@@ -1,0 +1,66 @@
+<import src="../../../template/search.wxml" />
+<import src="../../../template/filter.wxml" />
+<import src="../../../template/fail.wxml" />
+<scroll-view class="page {{listReady?'bg_efe':'whitebg'}}" wx:if="{{!searchInfo.isSearch&&!pageInfo.filterInfo.isFilter}}"  scroll-y="true"  bindscrolltolower="loadmore" lower-threshold="50" scroll-into-view="{{pageInfo.loading?'loading':''}}">
+    <div class="searchBox">
+        <div class="sea-b pdL15">
+            <a catchtap="toggleSearch" class="input" data-type="esf" data-searchtype="esf" data-typename="二手房" data-placeholder="{{'小区/区县/商圈等'}}" data-value="{{keyword}}"><i></i>{{keyword||'小区/区县/商圈等'}}</a>
+        </div>
+    </div>
+    <template is="filterTab" data="{{...pageInfo.filterInfo}}" />
+    <block wx:if="{{listReady}}">
+        <div class="houseList">
+            <ul>
+                <block wx:if="{{pageInfo.dsList.countinfo.allcount > 0}}">
+                    <li class="arr-rt txt_row3" catchtap="listNavigator" data-type="1">
+                        <div class="img">
+                            <image src="{{pageInfo.dsList.houseinfo[0].titleimage}}"></image>
+                        </div>
+                        <div class="txt f11">
+                            <div class="h3">{{pageInfo.dsList.houseinfo[0].title}}</div>
+                            <p><span class="price flor"><i>{{pageInfo.dsList.houseinfo[0].price}}</i>万</span>
+                                {{pageInfo.dsList.houseinfo[0].projname}}</p>
+                            <p>
+                                <div class="yelbag">
+                                    <span class="rb">{{pageInfo.dsList.houseinfo[0].fzyyj}}</span>
+                                    <span class="surp">共有<span class="yel_fd">{{pageInfo.dsList.countinfo.allcount}}</span>条房源</span>
+                                </div>
+                            </p>
+                        </div>
+                    </li>
+                </block>
+                <block wx:if="{{pageInfo.fdsList.houseinfo}}">
+                    <li wx:for="{{pageInfo.fdsList.houseinfo}}" wx:for-index="idx" wx:key="" wx:for-item="$item" catchtap="listNavigator" data-housetype="{{$item.housetype}}" data-houseid="{{$item.houseid}}" data-x="{{$item.coord_x}}"  data-y="{{$item.coord_y}}">
+                        <div class="img">
+                            <image src="{{$item.titleimage}}"></image>
+                        </div>
+                        <div class="txt f11">
+                            <div class="h3">{{$item.title}}</div>
+                            <p><span class="price flor"><i>{{$item.price}}</i>万</span>{{$item.buildarea}}㎡<em></em>{{$item.room}}室{{$item.hall}}厅<em></em>{{$item.forward}}</p>
+                            <p><span class="flor">{{$item.priceperarea}}元/㎡</span>{{$item.projname}}</p>
+                            <p class="stag" wx:if="{{$item.tags}}">
+                                <span wx:for="{{$item.tags}}" wx:key="" wx:for-item="tag">{{tag}}</span>
+                            </p>
+                        </div>
+                    </li>
+                </block>
+            </ul>
+        </div>
+        <view id="loading" class="moreList" style="height:40px;">
+            <span wx-if="{{pageInfo.loading}}"><i></i>努力加载中...</span>
+            <span wx-if="{{pageInfo.isLast}}">没有更多了...</span>
+        </view>
+        <view class="moreList" style="display:{{loading ? '' : 'none' }}">
+            <span><i></i>努力加载中...</span>
+        </view>
+    </block>
+    <block wx:if="{{!listReady}}">
+        <div class="sear_null">
+            <div class="img"></div>
+            <p>没有找到符合条件的房源，</p>
+            <p>换个搜索条件试试</p>
+        </div>
+    </block>
+</scroll-view>
+<template is="filter" data="{{...pageInfo.filterInfo}}" />
+<template is="search" data="{{...searchInfo}}" />

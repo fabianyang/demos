@@ -1,0 +1,252 @@
+<import src="../../template/search.wxml"/>
+<import src="../../template/citySelect.wxml"/>
+<template is="search" data="{{...searchInfo}}"/>
+<template is="citySelect" wx:if="{{cityInfoReady}}" data="{{...cityInfo}}"/>
+<block wx:if="{{!searchInfo.isSearch}}">
+    <scroll-view class="searchBox" scroll-y="false" style="position:fixed;top:0;z-index:10;">
+        <navigator class="cityChoo" url="/pages/city/index"><span>{{cityname}}</span></navigator>
+        <div class="sea-b">
+            <a catchtap="toggleSearch" data-type="index" data-searchtype="{{searchtype}}" data-typename="二手房" data-placeholder="楼盘名/地名/开发商等"
+               class="input"><i></i>楼盘名/地名/开发商等</a>
+        </div>
+    </scroll-view>
+    <scroll-view class="page" scroll-y="true" scroll-top="{{scrollTop}}">
+        <view style="height: 44px;"></view>
+        <view class="navbox clearfix">
+            <a catchtap="pdNavigator" data-name="xf">
+                <i class="xf"></i>
+                <p>买新房</p>
+            </a>
+            <a catchtap="pdNavigator" data-name="esf">
+                <i class="esf"></i>
+                <p>买二手房</p>
+            </a>
+            <a catchtap="pdNavigator" data-name="fangjia">
+                <i class="cfj"></i>
+                <p>查房价</p>
+            </a>
+
+            <a catchtap="pdNavigator" data-name="tools">
+                <i class="jsq"></i>
+                <p>房贷计算器</p>
+            </a>
+        </view>
+        <block>
+            <div class="whitebg pdX15 mb7">
+                <div class="title" wx:if="{{cjInfo.xf.xf_show_flag || cjInfo.esf.esf_show_flag}}">
+                    <p>成交行情</p>
+                </div>
+                <div class="trend" wx:if="{{cjInfo.xf.xf_show_flag}}">
+                    <div class="trend-tm one">
+                        <p>{{cjInfo.xf.l_time}}新房成交
+                            <a catchtap="showInfo" data-id="1" class="infor"></a>
+                        </p>
+                        <div class="h3"><span class="num">{{cjInfo.xf.l_num}}</span> 套
+                            <span class="{{cjInfo.xf.l_scale_flag === 'up' ? 'jt-up':(cjInfo.xf.l_scale_flag === 'down' ?'jt-dn':'')}}">{{cjInfo.xf.l_scale}}</span>
+                        </div>
+                    </div>
+                    <div class="trend-tm two">
+                        <p>{{cjInfo.xf.r_time}}{{cjInfo.xf.r_desc}}
+                            <a catchtap="showInfo" data-id="2" class="infor"></a>
+                        </p>
+                        <div class="h3"><span class="num">{{cjInfo.xf.r_num}}</span> 元/㎡
+                            <span class="{{cjInfo.xf.r_scale_flag === 'up' ? 'jt-up':(cjInfo.xf.r_scale_flag === 'down'? 'jt-dn':'')}}">{{cjInfo.xf.r_scale}}</span>
+
+                        </div>
+                    </div>
+                    <div class="trend-txt" wx:if="{{cjInfo.xf.d_time}}">{{cjInfo.xf.d_time}}成交{{cjInfo.xf.d_num}}套
+                        比上月<span class="{{cjInfo.xf.d_scale_flag === 'up'?'jt-up':(cjInfo.xf.d_scale_flag === 'down' ?'jt-dn':'')}}">{{cjInfo.xf.d_scale}}</span></div>
+                </div>
+
+                <div class="trend" wx:if="{{cjInfo.esf.esf_show_flag}}">
+                    <div class="trend-tm one">
+                        <p>{{cjInfo.esf.l_time}}二手房成交
+                            <a catchtap="showInfo" data-id="3" class="infor"></a>
+                        </p>
+                        <div class="h3"><span class="num">{{cjInfo.esf.l_num}}</span> 套 <span class="{{cjInfo.esf.l_scale_flag === 'up' ? 'jt-up':(cjInfo.esf.l_scale_flag === 'down'?'jt-dn':'')}}">{{cjInfo.esf.l_scale}}</span>
+
+                            <!--上升jt-up-->
+                        </div>
+                    </div>
+                    <div class="trend-tm two">
+                        <p>{{cjInfo.esf.r_time}}二手房参考均价
+                            <a catchtap="showInfo" data-id="4" class="infor"></a>
+                        </p>
+                        <div class="h3"><span class="num">{{cjInfo.esf.r_num}}</span> 元/㎡
+                            <span class="{{cjInfo.esf.r_scale_flag === 'up' ? 'jt-up':(cjInfo.esf.r_scale_flag === 'down'?'jt-dn':'')}}">{{cjInfo.esf.r_scale}}</span>
+
+                            <!--上升jt-up-->
+                        </div>
+                    </div>
+                    <div class="trend-txt" wx:if="{{cjInfo.esf.d_time}}">
+                        {{cjInfo.esf.d_time}}成交{{cjInfo.esf.d_num}}套 比上月<span class="{{cjInfo.esf.d_scale_flag === 'up' ? 'jt-up' : (cjInfo.esf.d_scale_flag === 'down' ?'jt-dn':'')}}">{{cjInfo.esf.d_scale}}</span>
+                    </div>
+                </div>
+            </div>
+        </block>
+        <block>
+            <div class="houseList pdX15 mb7">
+                <div class="title" wx:if="{{xfList.length}}">
+                    <p>为您推荐新房</p>
+                </div>
+                <ul>
+                    <li wx:for="{{xfList}}" wx:for-index="idx" wx:key="" wx:for-item="item" class="{{idx === data.length-1 ?  'txt_row3' : ''}}"
+                        catchtap="listNavigator" data-name="xf" data-dsflag="{{item.dsflag}}" data-id="{{item.id}}" data-x="{{item.mapx}}" data-y="{{item.mapy}}"
+                        data-title="{{item.title}}" data-housetype="{{item.housetype}}">
+                            <div class="img">
+                                <image src="{{item.image || vars.defaultImg}}"></image>
+                            </div>
+                            <div class="txt f11">
+                                <div class="h3">{{item.title}}</div>
+                                <p><span class="price flor"><i>{{item.priceNum}}</i>{{item.priceUnit}}</span>{{item.zongfen}}分<em></em>{{item.dianpingcount}}条评论
+                                </p>
+                                <p>
+                                    <block wx:if="{{item.district}}">{{item.district}}{{item.comarea ? '-' + item.comarea:''}}<em></em></block>
+                                    <block wx:for="{{item.character}}" wx:for-index="num" wx:key="" wx:for-item="ite">{{ite}}<em
+                                            wx:if="num !== item.character.length - 1"></em></block>
+                                </p>
+                                <p class="stag" wx:if="{{item.c_tags.length}}"><span wx:for="{{item.c_tags}}" wx:for-index="num2" wx:key="" wx:for-item="ite2"
+                                                                                     class="{{ite2.tag_type}}">{{ite2.tag_text}}</span></p>
+                            </div>
+                    </li>
+                </ul>
+            </div>
+        </block>
+        <block>
+            <div class="houseList pdX15 mb7">
+                <div class="title" wx:if="{{esfList.length}}">
+                    <p>为您推荐二手房</p>
+                </div>
+                <ul>
+                    <li wx:for="{{esfList}}" wx:for-index="idx" wx:key="" wx:for-item="item" catchtap="listNavigator" data-name="esf" data-dsflag="{{item.dsflag}}"
+                        data-id="{{item.id}}" data-x="{{item.mapx}}" data-y="{{item.mapy}}" data-title="" data-housetype="{{item.housetype}}">
+                            <div class="img">
+                                <image src="{{item.image || vars.defaultImg}}"></image>
+                            </div>
+                            <div class="txt f11">
+                                <div class="h3">{{item.title}}</div>
+                                <p><span
+                                        class="price flor"><i>{{item.priceNum}}</i>{{item.priceUnit}}</span>{{item.buildarea}}㎡<em></em>{{item.room}}室{{item.hall}}厅<em></em>{{item.forward}}
+                                </p>
+                                <p><span class="flor">{{item.priceperarea}}元/㎡</span>{{item.projname}}</p>
+                                <p class="stag" wx:if="{{item.tags.length}}"><span wx:for="{{item.tags}}" wx:for-index="num" wx:key=""
+                                                                                   wx:for-item="ite">{{ite}}</span>
+                                </p>
+                            </div>
+                    </li>
+                </ul>
+            </div>
+        </block>
+    </scroll-view>
+    <block>
+        <div wx:if="{{!fakeLocationSuc && showCurrentLocation}}">
+            <div class="pdt1">
+                <div class="prompt w150 alertTip">
+                    <a class="btnClose" catchtap="hideFloat"></a>
+                    <p>当前位置</p>
+                    <p>{{location}}</p>
+                </div>
+            </div>
+        </div>
+        <div wx:if="{{fakeLocationSuc && showFailLocation}}">
+            <div class="pdt1">
+                <div class="prompt w150 alertTip">
+                    <a class="btnClose" catchtap="hideFloat"></a>
+                    <p>定位失败</p>
+                    <p>请稍后重试</p>
+                </div>
+            </div>
+        </div>
+        <div class="page alertbg" wx:if="{{!fakeLocationSuc && showChangeLocation}}">
+            <div class="floatBox" style="display:block;">
+                <div class="tkCon" style="display:block;">
+                    <div class="tkTxt center">
+                        <p>当前定位城市是:<span>{{locationCity}}</span></p>
+                        <p class="txt2">是否切换</p>
+                    </div>
+                    <div class="tkBtn">
+                        <div class="butt" catchtap="changeCity" data-change="{{false}}"><span>取消</span></div>
+                        <div class="butt bl" catchtap="changeCity" data-change="{{true}}"><span class="two">确定</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div wx:if="{{showFloat}}">
+            <div class="pdt1">
+                <div class="prompt w150 alertTip">
+                    <a class="btnClose" catchtap="hideFloat"></a>
+                    <p>{{cityname}}</p>
+                    <p>暂未开通查房价功能</p>
+                </div>
+            </div>
+        </div>
+        <div wx:if="{{showNetwork}}">
+            <div class="pdt1">
+                <div class="prompt w150 alertTip">
+                    <a class="btnClose" catchtap="hideFloat"></a>
+                    <p>网络异常</p>
+                    <p>请稍后重试</p>
+                </div>
+            </div>
+        </div>
+    </block>
+    <block>
+        <div class="page alertbg" wx:if="{{showCfjInfo ==='1'}}">
+            <div class="floatBox" style="display:block;">
+                <div class="tkCon" style="display:block;">
+                    <div class="tkTxt center">
+                        <p>数据说明</p>
+                        <p class="txt1">{{cjInfo.xf.xf_tag}}</p>
+                        <p class="txt2 tleft">{{cjInfo.xf.l_float_time}}</p>
+                    </div>
+                    <div class="tkBtn">
+                        <div class="butt only" catchtap="showInfo" data-id="0"><span>我已了解</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page alertbg" wx:elif="{{showCfjInfo ==='2'}}">
+            <div class="floatBox" style="display:block;">
+                <div class="tkCon" style="display:block;">
+                    <div class="tkTxt center">
+                        <p>数据说明</p>
+                        <p class="txt1">{{cjInfo.xf.xf_tag}}</p>
+                        <p class="txt2 tleft">{{cjInfo.xf.r_float_time}}</p>
+                    </div>
+                    <div class="tkBtn">
+                        <div class="butt only" catchtap="showInfo" data-id="0"><span>我已了解</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page alertbg" wx:elif="{{showCfjInfo ==='3'}}">
+            <div class="floatBox" style="display:block;">
+                <div class="tkCon" style="display:block;">
+                    <div class="tkTxt center">
+                        <p>数据说明</p>
+                        <p class="txt1">{{cjInfo.esf.esf_tag}}</p>
+                        <p class="txt2 tleft">{{cjInfo.esf.l_float_time}}</p>
+                    </div>
+                    <div class="tkBtn">
+                        <div class="butt only" catchtap="showInfo" data-id="0"><span>我已了解</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page alertbg" wx:elif="{{showCfjInfo ==='4'}}">
+            <div class="floatBox" style="display:block;">
+                <div class="tkCon" style="display:block;">
+                    <div class="tkTxt center">
+                        <p>数据说明</p>
+                        <p class="txt1">{{cjInfo.esf.esf_tag}}</p>
+                        <p class="txt2 tleft">二手房参考均价由房天下大数据根据网站发布房源价格计算得来</p>
+                    </div>
+                    <div class="tkBtn">
+                        <div class="butt only" catchtap="showInfo" data-id="0"><span>我已了解</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </block>
+</block>
+

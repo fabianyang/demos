@@ -1,0 +1,11 @@
+<template name="line102">
+    <block>
+        <view>
+            <div class="xqFJ">
+                <canvas  style="height: 200px; width: {{canvasWidth}}px;" canvas-id="line102"></canvas>
+                <!--<div class="zstName"><span><i></i><a href="//m.test.fang.com/xiaoqu/bj/1010384903.html?type=esf"> 富贵园四区 </a></span><span><i></i><a href="//m.test.fang.com/xiaoqu/bj/1010384903.html?type=esf"> 东城 </a></span><span><i></i><a href="//m.test.fang.com/xiaoqu/bj/1010384903.html?type=esf"> 北京 </a></span></div>-->
+
+            </div>
+        </view>
+    </block>
+</template>

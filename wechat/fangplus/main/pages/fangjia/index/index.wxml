@@ -1,0 +1,48 @@
+<import src="../../../template/filter.wxml" />
+<import src="../../../template/search.wxml" />
+<block wx:if="{{dataLoad &&positionReady}}">
+  <scroll-view class="page {{listReady&&!pageInfo.list?'bg_efe':''}}" wx:if="{{!pageInfo.filterInfo.isFilter&&!searchInfo.isSearch}}" scroll-y="true" bindscrolltolower="loadmore" lower-threshold="0" scroll-into-view="{{pageInfo.loading?'loading':''}}">
+    <div class="searchBox">
+      <div class="sea-b pdL15" style="{{!keyword && !(listReady&&!pageInfo.list)?'':'padding-left:15px;'}}">
+        <a catchtap="toggleSearch" class="input" data-type="cfj" data-searchtype="cfj" data-typename="查房价" data-placeholder="{{keyword||'请输入区县、商圈、小区查房价'}}">
+          <i></i>{{keyword||'请输入区县、商圈、小区查房价'}}</a>
+      </div>
+    </div>
+    <template is="filterTab" data="{{...pageInfo.filterInfo}}" />
+    <block wx:if="{{listReady}}">   
+      <div class="houseList" wx:if="{{pageInfo.list}}">
+        <ul>
+          <li catchtap="listNavigator" wx:for="{{pageInfo.list}}" wx:key="" wx:for-index="idx" wx:for-item="project" data-projcode="{{project.projcode}}" data-type="{{project.houseTypeFlag}}"  data-name="{{project.projname}}">
+            <div class="img">
+              <i wx:if="{{project.houseTypeFlag==='xf'}}"></i>
+              <image src="https:{{project.coverimg || '//static.soufunimg.com/common_m/m_wechat/public/images/default_logo.jpg'}}"></image>
+            </div>
+            <div class="txt">
+              <div class="h3">{{project.projname}}</div>
+              <p><span class="price flor {{project.priceflag||''}}">{{project.price || '价格待定'}}</span>  {{project.district}}{{project.comarea?('-'+project.comarea):''}}</p>
+              <p><span class="{{project.arrowFlag}} flor">{{project.monthadd}}</span>  {{project.purpose}}<em></em>  {{project.finishdate}}</p>
+              <p>{{project.houseTypeFlag=='esf'?('二手房'+(project.esfnum ||0)+'套'):(project.address || '')}}</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <block wx:else>
+        <div class="sear_null">
+          <div class="img"></div>
+          <p>没有找到符合条件的小区，</p>
+          <p>换个条件试试</p>
+        </div>
+      </block>
+      <view id="loading" class="moreList" wx-if="{{pageInfo.loading}}"><span><i></i>努力加载中...</span>  </view>
+    </block>
+  </scroll-view>
+  <template is="filter" wx:if="{{listReady}}" data="{{...pageInfo.filterInfo}}" />
+  <template is="search" data="{{...searchInfo}}" />
+  <div wx:if="{{errorInput}}">
+    <div class="pdt1">
+        <div class="prompt w200 alertTip" style="z-index:1000">
+            <p>您输入的价格区间有误</p>
+        </div>
+    </div>
+  </div>
+</block>

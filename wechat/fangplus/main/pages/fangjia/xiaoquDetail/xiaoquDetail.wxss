@@ -1,0 +1,4 @@
+/* pages/xiaoquDetail/xiaoquDetail.wxss */
+.xqTitle{ padding:0 15px; line-height:54px;}/*20170116*/
+.average .num{ display:block; padding:16px 0; color:#000; border-top:1px solid #f8f8f8;}/*2017.1.16*/
+.dizhi{ padding:0 15px; line-height:50px;}/*20160116*/
