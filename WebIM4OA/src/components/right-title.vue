@@ -31,7 +31,7 @@ export default {
     }),
     methods: {
         closeSearch() {
-            clearTimeout(timer);
+            // clearTimeout(timer);
             getElInput().value = '';
             if (lastRightState) {
                 this.stateChange(['right', lastRightState]);
@@ -52,14 +52,14 @@ export default {
             }
             clearTimeout(timer);
             let that = this;
-            timer = setTimeout(() => {
+            // timer = setTimeout(() => {
                 that.stateSearchChage({
                     keyword: keyword
                 });
                 events.trigger('view:search:user', {
                     keyword: keyword
                 });
-            }, 1000);
+            // }, 1000);
         },
         onFucus() {
             if (this.rightState !== 'search') {

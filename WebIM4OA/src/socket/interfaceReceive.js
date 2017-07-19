@@ -50,6 +50,20 @@ let formatReceiveJSON = (json) => {
 class InterfaceReceive {
     constructor() {
         this.init();
+
+        let imei = util.getCookie('fang_oaim_imei');
+        console.log('imei', imei);
+        // 暂时添加
+        if (imei.indexOf('function') > -1) {
+            util.delCookie('fang_oaim_imei');
+        }
+
+        imei = util.getCookie('fang_oaim_imei');
+        if (!imei) {
+            imei = util.imei_guid();
+            console.log(imei);
+            util.setCookie('fang_oaim_imei', imei, 30);
+        }
     }
 
     init() {
@@ -309,15 +323,6 @@ class InterfaceReceive {
 
     socket_connecting() {
         events.trigger('socket:state:change', 'connecting');
-    }
-
-    imei() {
-        let imei = util.getCookie('fang_oaim_imei');
-        if (!imei) {
-            imei = util.imei_guid();
-            util.setCookie('fang_oaim_imei', this.imei, 30);
-        }
-        return imei;
     }
 }
 

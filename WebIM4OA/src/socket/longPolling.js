@@ -25,7 +25,7 @@ let closeGroupInfo = (count, resolve) => {
 
 class LongPolling {
     constructor() {
-        this.imei = receiveApi.imei();
+        this.imei = util.getCookie('fang_oaim_imei');
     }
 
     // loginout

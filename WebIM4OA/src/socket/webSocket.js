@@ -28,7 +28,7 @@ let PromiseResolve = {},
 
 class WS {
     constructor() {
-        this.imei = receiveApi.imei();
+        this.imei = util.getCookie('fang_oaim_imei');
     }
 
     // 这里应该可以传参重新初始化
