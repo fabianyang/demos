@@ -1,6 +1,7 @@
 import events from '../events';
 import socket from '../socket';
 import store from '../store';
+import util from '../util';
 
 import {
     SOCKET_STATE_CHANGE,
@@ -19,6 +20,11 @@ import {
     SOCKET_RECENT_CHANGE
 } from '../store/mutation-types';
 
+let imClosedCookie = util.getCookie('fang_oaim_closed');
+if (imClosedCookie) {
+    store.commit(VIEW_STATE_CHANGE, ['app', 'closed']);
+}
+
 // 请求超时。信号不好，或者网络临时性关闭，不会执行 onclose
 events.on('socket:state:change', function (data) {
     // setTimeout 防止连接过快，没有过度
@@ -29,7 +35,9 @@ events.on('socket:state:change', function (data) {
         }, 1000);
     }
     if (data === 'close' || data === 'error') {
-        store.commit(VIEW_STATE_CHANGE, ['app', 'min']);
+        if (!util.getCookie('fang_oaim_closed')) {
+            store.commit(VIEW_STATE_CHANGE, ['app', 'min']);
+        }
     }
 });
 
@@ -141,3 +149,8 @@ events.on('socket:receive:notice', (data) => {
 events.on('socket:receive:recent', (data) => {
     store.commit(SOCKET_RECENT_CHANGE, data);
 });
+
+events.on('store:record:point', () => {
+    socket.pointRecord();
+});
+

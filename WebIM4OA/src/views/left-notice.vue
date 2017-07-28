@@ -1,8 +1,8 @@
 <template>
-    <div class="fbconl notice">
+    <div class="fbconl notice" :style="{ height: changeHeight ? '412px' : '550px' }">
         <!-- 标题组件 -->
         <left-title></left-title>
-        <div class="fbconlcon">
+        <div class="fbconlcon" :style="{ height: changeHeight ? '360px' : '498px' }">
             <!-- 内容组件 -->
             <left-notice-content></left-notice-content>
         </div>
@@ -21,8 +21,15 @@
         },
         data() {
             return {
-                msg: 'Welcome to Your Vue.js App'
+                changeHeight: false
             }
+        },
+        created() {
+            this.$nextTick(() => {
+                if (window.screen.height < 700) {
+                    this.changeHeight = true;
+                }
+            });
         }
     }
 </script>
@@ -48,14 +55,10 @@
         float: left;
     }
 
-    .fbconl .fbconlcon {
-        width: 510px;
-        height: 318px;
-        background: #fff;
-    }
-
     /* 左侧通知 */
     .fbconl.notice .fbconlcon {
+        width: 510px;
         height: 498px;
+        background: #fff;
     }
 </style>

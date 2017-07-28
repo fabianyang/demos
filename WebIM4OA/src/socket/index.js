@@ -434,6 +434,20 @@ class IndexSocket {
             console.log('http.fuzzyQuery error', data);
         });
     }
+
+
+    pointRecord() {
+        http.insertOrUpdateIsLimit().then((response) => {
+            let data = response.data;
+            if (data.code === 0) {
+                console.log('记录布点:' + data.message);
+            } else {
+                console.log('记录布点:' + data.message);
+            }
+        }).catch((data) => {
+            console.log('http.insertOrUpdateIsLimit error', data);
+        });
+    }
 }
 
 let is = new IndexSocket();

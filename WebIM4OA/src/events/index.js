@@ -82,7 +82,8 @@ let eventRegister = {
     'socket:search:user:back': 1,
     'store:request:user': 1,
     'store:request:group': 1,
-    'store:request:history': 1
+    'store:request:history': 1,
+    'store:record:point': 1
 };
 export default {
     on: function (type, callback) {

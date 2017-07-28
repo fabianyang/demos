@@ -1,11 +1,11 @@
 <template>
-    <div id="im_app">
+    <div id="im_app" v-show="appState !== 'closed'">
         <!-- 窗口最大化 -->
         <max-view v-show="appState === 'max'"></max-view>
         <!-- 窗口最小化 -->
         <min-view v-show="!socket_state && appState === 'min'"></min-view>
         <!-- 消息通知 -->
-        <info-view v-show="socket_state"></info-view>
+        <info-view v-show="appState !== 'closed' && socket_state"></info-view>
     </div>
 </template>
 

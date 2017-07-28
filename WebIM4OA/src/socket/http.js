@@ -148,5 +148,20 @@ export default {
                 command: 'fuzzyQuery'
             })
         });
+    },
+
+    insertOrUpdateIsLimit() {
+        return axios({
+            url: setting.LONGPOLLING_CI,
+            method: 'post',
+            data: util.queryStringify({
+                clienttype: config.clienttype,
+                type: config.usertype,
+                username: config.username,
+                nickname: config.nickname,
+                token: config.token,
+                command: 'insertOrUpdateIsLimit'
+            })
+        });
     }
 };

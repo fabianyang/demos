@@ -2,11 +2,11 @@
         <!-- yangfan: 正常结果，什么都不加 -->
         <!-- 无结果时添加 result2 -->
         <!-- 加载失败时添加 result3 -->
-        <div class="search-result" @scroll="onScroll($event)">
+        <div class="search-result" @scroll="onScroll($event)" :style="{ height: changeHeight ? '360px' : '498px' }">
             <p class="none" v-show="!result.length && info === 'none'">无搜索结果</p>
             <a class="fail" v-show="!result.length && info === 'fail'">加载失败 重试</a>
             <p class="loading" v-show="!result.length && info === 'loading'">加载中…</p>
-            <ul v-if="result.length">
+            <ul v-if="result.length" :style="{ 'min-height': changeHeight ? '360px' : '498px' }">
                 <li v-for="item in result" @click="openWindow(item)">{{ item.nickname + '-' + item.department }}</li>
                 <li class="nomore2" v-show="info === 'nomore'">没有更多了</li>
             </ul>
@@ -71,6 +71,18 @@
                 'stateRightOpen': VIEW_RIGHT_SWITCH,
                 'stateSearchChage': VIEW_SEARCH_USER_CHANGE
             })
+        },
+        data() {
+            return {
+                changeHeight: false
+            }
+        },
+        created() {
+            this.$nextTick(() => {
+                if (window.screen.height < 700) {
+                    this.changeHeight = true;
+                }
+            });
         }
     }
 </script>

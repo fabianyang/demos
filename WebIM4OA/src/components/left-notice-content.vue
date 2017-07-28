@@ -1,5 +1,5 @@
 <template>
-    <ul>
+    <ul :style="{ height: changeHeight ? '360px' : '498px' }">
         <template v-for="item in list">
             <li class="time" v-text="item.messagetime">2017-03-10 10:30</li>
             <!-- 文字图片通知 -->
@@ -119,6 +119,9 @@
 
 <script>
 import { mapState, mapGetters } from 'vuex';
+
+let config = window.FangChat.config;
+
 export default {
     name: 'left-notice-content',
     computed: {
@@ -128,6 +131,19 @@ export default {
         ...mapState({
             leftWindow: state => state.leftWindow
         })
+    },
+    data() {
+        return {
+            changeHeight: false,
+            username: config.username
+        }
+    },
+    created() {
+        this.$nextTick(() => {
+            if (window.screen.height < 700) {
+                this.changeHeight = true;
+            }
+        });
     }
 }
 </script>

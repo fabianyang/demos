@@ -38,11 +38,6 @@ export default {
         ...mapMutations({
             'stateChange': VIEW_STATE_CHANGE // 映射 this.add() 为 this.$store.commit('increment')
         })
-    },
-    data() {
-        return {
-            msg: 'Welcome to Your Vue.js App'
-        }
     }
 }
 </script>

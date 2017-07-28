@@ -4,7 +4,7 @@ class Util {
         if (iDay) {
             let oDate = new Date();
             oDate.setDate(oDate.getDate() + iDay);
-            document.cookie = name + '=' + value + ';path=/;domain=fang.com;expires=' + oDate.toGMTString();
+            document.cookie = name + '=' + value + ';path=/; domain=fang.com; expires=' + oDate.toGMTString();
         } else {
             document.cookie = name + '=' + value + ';path=/; domain=fang.com';
         }

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <title>房天下视频播放 Demo</title>
+    <style type="text/css">
+    body {
+        font-family: "-apple-system", "Open Sans", HelveticaNeue-Light, "Helvetica Neue Light", "Helvetica Neue", "Hiragino Sans GB", "Microsoft YaHei", Helvetica, Arial, sans-serif, sans-serif;
+        -webkit-font-smoothing: antialiased
+    }
+
+    a {
+        text-decoration: none;
+        color: #08c;
+    }
+
+    .top-text {
+        text-align: center;
+        font-weight: normal;
+    }
+
+    .v-box {
+        width: 600px;
+        /* max-width: 80%; */
+        height: 450px;
+        margin: 0 auto;
+    }
+
+    video {
+        max-width: 100%;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="top-text">
+        <h2>房天下 HTML5 播放器</h2>
+        <h4><a href="http://dev.brofen.cn/Fang/fangPlayer/docs/#/">使用文档</a></h4>
+        <h4><a href="./fangjs.html">模块化调用</a></h4>
+    </div>
+    <div id="v-box" class="v-box"></div>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="fangplayer/js/fangPlayer.js"></script>
+    <script>
+    var fangPlayer = window.fangPlayer;
+    new fangPlayer({
+        // debug 模式，可选
+        debug: true,
+        // 插入播放器的DOM，必填
+        holder: '#v-box',
+        // flash视频id，必填
+        // Vinfoid: '2b70d4415e7a411885eb342ad91d3a3a',
+        Vinfoid: 'cac0805de1644da5977be4c996c0629e',
+        // html5视频封面图，可选
+        poster: 'http://7xih9g.com1.z0.glb.clouddn.com/countdown-clock.png',
+        // html5视频播放地址，必填
+        // src: 'http://video.agent.soufun.com/2017/05/23/houset/flv/2a9c8915ba0b4733ae03b2e7904c00c6.flv',
+        src: 'http://video.agent.soufun.com/2017/07/17/xiaoqu/video/497B1C3E2EFD8674C71584CD49389CF1.mp4',
+        // 优先级，可选，有flash、html5、Vinfoid
+        // 但仍然取决于浏览器支持情况
+        type: 'flash'
+    });
+    </script>
+</body>
+
+</html>

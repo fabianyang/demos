@@ -53,7 +53,7 @@ class InterfaceReceive {
 
         let imei = util.getCookie('fang_oaim_imei');
         console.log('imei', imei);
-        // 暂时添加
+        // 暂时添加，删除之前的错误 imei 号，影响了单点登录。
         if (imei.indexOf('function') > -1) {
             util.delCookie('fang_oaim_imei');
         }

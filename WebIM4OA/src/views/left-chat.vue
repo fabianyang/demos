@@ -1,8 +1,8 @@
 <template>
-    <div class="fbconl">
+    <div class="fbconl" :style="{ height: changeHeight ? '412px' : '550px' }">
         <!-- 标题组件 -->
         <left-title></left-title>
-        <div class="fbconlcon">
+        <div class="fbconlcon" :style="{ height: changeHeight ? '210px' : '318px' }">
             <!-- 内容组件 -->
             <left-chat-content></left-chat-content>
         </div>
@@ -35,23 +35,19 @@ let config = window.FangChat.config;
             leftTitle,
             leftChatContent,
             leftChatTextarea
+        },
+        data() {
+            return {
+                changeHeight: false
+            }
+        },
+        created() {
+            this.$nextTick(() => {
+                if (window.screen.height < 700) {
+                    this.changeHeight = true;
+                }
+            });
         }
-        // data() {
-        //     return {
-        //         show_download: false,
-        //         mac_url: config.macUrl || 'javascript:;',
-        //         win_url: config.winUrl || 'javascript:;'
-        //     }
-        // },
-        // created() {
-        //     this.$nextTick(() => {
-        //         document.getElementById('im_app').addEventListener('click', (e) => {
-        //             if (!document.getElementById('im_downloadbox').contains(e.target)) {
-        //                 this.show_download = false;
-        //             }
-        //         });
-        //     });
-        // }
     }
 </script>
 

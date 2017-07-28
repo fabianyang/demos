@@ -1,6 +1,6 @@
 <template>
     <!-- 所有聊天内容都放在 replybox 中，发送中添加active，失败添加fail -->
-    <ul @scroll="onScroll">
+    <ul @scroll="onScroll" :style="{ height: changeHeight ? '210px' : '318px' }">
         <li class="load" v-show="historyContainerState === 'loading'"></li>
         <li class="nomore" v-show="historyContainerOpen && historyContainerState !== 'loading'">{{  historyContainerNomore ? '没有更多了' :  '以下为历史记录' }}</li>
         <li class="nomore" v-show="list.length && !historyContainerOpen && historyContainerState !== 'loading'">更多请查看历史记录</li>
@@ -161,7 +161,7 @@ export default {
     },
     methods: {
         location_href(item) {
-            return 'http://m.test.fang.com/chat/location.jsp?pos_x=' + item.message.split(',')[0] + '&pos_y=' + item.message.split(',')[1] + '&message=' + item.title1 + '&title=' + item.title0;
+            return 'http://m.fang.com/chat/location.jsp?pos_x=' + item.message.split(',')[0] + '&pos_y=' + item.message.split(',')[1] + '&message=' + item.title1 + '&title=' + item.title0;
         },
         showTimeStamp(index) {
             let prev = this.list[index - 1];
@@ -304,8 +304,16 @@ export default {
     },
     data() {
         return {
+            changeHeight: false,
             username: config.username
         }
+    },
+    created() {
+        this.$nextTick(() => {
+            if (window.screen.height < 700) {
+                this.changeHeight = true;
+            }
+        });
     }
 }
 </script>

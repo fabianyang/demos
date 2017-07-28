@@ -1,14 +1,14 @@
 <template>
-    <div class="fbconr">
+    <div class="fbconr" :style="{ height: changeHeight ? '412px' : '550px' }">
         <!-- 搜索框组件 -->
         <right-title></right-title>
-        <div class="listcon" v-if="rightState === 'notice'">
+        <div class="listcon" v-if="rightState === 'notice'" :style="{ height: changeHeight ? '320px' : '458px' }">
             <!-- 消息列表组件，会有多个 -->
             <right-list signame="im_notice" title="通知" :list="notice" :info="info_user"></right-list>
             <right-list signame="im_notice_single" title="单聊" :list="single" :info="info_user">></right-list>
             <right-list signame="im_notice_group" title="群聊" :list="group" :info="info_group">></right-list>
         </div>
-        <div class="listcon" v-if="rightState === 'book'">
+        <div class="listcon" v-if="rightState === 'book'" :style="{ height: changeHeight ? '320px' : '458px' }">
             <!-- 消息列表组件，会有多个 -->
             <right-list signame="im_book_buddy" title="好友" :list="self_buddy" :info="info_user"></right-list>
             <right-list signame="im_book_group" title="群聊" :list="list_group" :info="info_group"></right-list>
@@ -60,6 +60,18 @@
                 info_user: state => state.info_user,
                 info_group: state => state.info_group
             })
+        },
+        data() {
+            return {
+                changeHeight: false
+            }
+        },
+        created() {
+            this.$nextTick(() => {
+                if (window.screen.height < 700) {
+                    this.changeHeight = true;
+                }
+            });
         }
     }
 </script>

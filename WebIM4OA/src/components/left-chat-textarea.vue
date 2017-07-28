@@ -18,10 +18,10 @@
             </div>
         </div>
         <!-- 输入内容组件 -->
-        <div class="textarea">
+        <div class="textarea" :style="{ height: changeHeight ? '85px' : '115px' }">
             <!--<textarea v-show="!upload_state" name="" cols="" rows="" placeholder="点击这里开始交流，按 Ctrl+Enter 发送信息" @paste="upload_image" @keyup="send('chat', $event)" v-model="message"></textarea>-->
             <!-- yangfan:实验结果，不能只使用 blur save_caret_position 会位置为 0，需要 click 或 keyup 时都记录一下光标位置。插入表情 -->
-            <div id="im_chatarea" class='im_chatarea' contenteditable='true' v-show="!upload_state" @paste="upload_image" @keydown.enter="send('chat', $event)" @click="save_caret_position" @keyup="save_caret_position" @focus="togglePrompt" @blur="togglePrompt"></div>
+            <div id="im_chatarea" :style="{ height: changeHeight ? '60px' : '90px' }" class='im_chatarea' contenteditable='true' v-show="!upload_state" @paste="upload_image" @keydown.enter="send('chat', $event)" @click="save_caret_position" @keyup="save_caret_position" @focus="togglePrompt" @blur="togglePrompt"></div>
             <div class='im_prompt' v-show="prompt_state && !upload_state" @click="togglePrompt">点击开始交流...</div>
             <!-- 上传状态 默认隐藏 显示添加 show -->
             <p class="upload" v-show="upload_state === 'loading'">图片上传中，请稍后...</p>
@@ -327,6 +327,7 @@ export default {
     },
     data() {
         return {
+            changeHeight: false,
             // can_paste_upload: false,
             prompt_state: true,
             caret_position: 0,
@@ -343,6 +344,10 @@ export default {
     },
     created() {
         this.$nextTick(() => {
+            if (window.screen.height < 700) {
+                this.changeHeight = true;
+            }
+
             document.getElementById('im_app').addEventListener('click', this.emoji_close);
         });
 

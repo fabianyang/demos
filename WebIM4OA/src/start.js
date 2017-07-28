@@ -16,10 +16,7 @@ body.appendChild(div);
 // 关闭生产环境提示
 Vue.config.productionTip = false;
 
-let vab = '你好';
-
 new Vue({
-    name: vab,
     el: '#fang-oa-im',
     template: '<app/>',
     store,

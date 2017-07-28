@@ -404,11 +404,21 @@ export default {
         if (key === 'left' && value === 'close') {
             state.leftWindow = {};
         }
-        if (key === 'app' && value === 'max' && state.leftWindow.id) {
-            if (state.leftWindow.signame === 'im_notice') {
-                diffNoticeRecentNew(state);
-            } else {
-                diffRecentNew(state);
+
+        // 删除未读消息条数标记，使用记录布点
+        if (key === 'app') {
+            if (value === 'max') {
+                events.trigger('store:record:point');
+                if (state.leftWindow.id) {
+                    if (state.leftWindow.signame === 'im_notice') {
+                        diffNoticeRecentNew(state);
+                    } else {
+                        diffRecentNew(state);
+                    }
+                }
+            }
+            if (value === 'closed') {
+                util.setCookie('fang_oaim_closed', 'closed');
             }
         }
     },
