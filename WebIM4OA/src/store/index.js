@@ -66,7 +66,10 @@ export default new Vuex.Store({
                 notice: {}
             }
         },
-        welcome: {}
+        // 是否提示欢迎语 -100 不再提示， -1 提示在头部，正数提示在回复中
+        welcome: {},
+        // 草稿
+        draft: {}
     },
     // modules: {
     //     view,

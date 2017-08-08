@@ -28,7 +28,7 @@
                 <a class="user-head">
                     <img :src="info[id].avatar || defaultAvatar" alt="id">
                 </a>
-                <a class="user-name">{{ info[id].nickname }}</a>
+                <a class="user-name">{{ info[id].nickname }}<span v-if="id !== leftWindow.id && draft[id]">[草 稿]</span></a>
                 <span class="new" v-if="recent_list[id]">{{ recent_list[id] }}</span>
             </li>
         </ul>
@@ -56,6 +56,16 @@
 import setting from '../setting';
 import { mapState, mapMutations } from 'vuex';
 import { VIEW_STATE_CHANGE, VIEW_LEFT_OPEN, VIEW_RIGHT_SWITCH, VIEW_TOGGLE_HISTORY } from '../store/mutation-types';
+
+let el_textarea = (function() {
+    let element = null;
+    return () => {
+        if (!element) {
+            element = document.getElementById('im_chatarea');
+        }
+        return element;
+    }
+})();
 
 export default {
     name: 'right-list',
@@ -86,7 +96,8 @@ export default {
             leftWindow: state => state.leftWindow,
             rightPanelOpen: state => state.rightPanel.open,
             recent_list_common: state => state.recent.list,
-            recent_list_notice: state => state.recent.list.notice
+            recent_list_notice: state => state.recent.list.notice,
+            draft: state => state.draft
         })
     },
     methods: {
@@ -103,6 +114,11 @@ export default {
                 title: this.title,
                 recent_new: this.recent_list[id]
             });
+
+            if (el_textarea()) {
+                info.draft = el_textarea().innerText;
+            }
+
             if (this.signame === 'im_notice') {
                 this.stateChange(['left', 'notice']);
             } else {
@@ -247,6 +263,12 @@ a:hover {
     margin-left: 10px;
 }
 
+.conts .rlist li .user-name span {
+    color: #e01818;
+    margin-left: 5px;
+    font-size: 12px;
+}
+
 .conts.open .rlisttit {
     background-image: url(../assets/images/arr-down.png);
 }
@@ -254,8 +276,6 @@ a:hover {
 .conts.open .rlist {
     display: block;
 }
-
-
 
 /* 新消息数字 */
 

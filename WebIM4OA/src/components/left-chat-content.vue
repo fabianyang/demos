@@ -113,7 +113,12 @@ let config = window.FangChat.config;
 
 export default {
     name: 'left-chat-content',
-    watch: {
+    // watch: {
+    //     list() {
+
+    //     }
+    // },
+    computed: {
         list() {
             this.$nextTick(() => {
                 // 请求返回数据，渲染后解锁
@@ -122,12 +127,12 @@ export default {
                     let el = this.$el;
                     // var container = this.$el.querySelector("#im_content");
                     el.scrollTop = el.scrollHeight;
+                    // 聊天记录有图片时候，先滚动一次，然后等加载完成再滚动一次
+                    setTimeout(() => {
+                        el.scrollTop = el.scrollHeight;
+                    }, 100);
                 }
-            })
-        }
-    },
-    computed: {
-        list() {
+            });
             if (this.historyContainerOpen) {
                 return this.history_list;
             } else {
@@ -186,8 +191,11 @@ export default {
             // PPT—— .ppt，.pptx
             // PDF—— .pdf
             // TXT—— .txt
+            if (!extension) {
+                return setting.filePicture['i'];
+            }
             let key = extension.substr(0, 3);
-            return setting.filePicture[key] || this.filePicture['i'];
+            return setting.filePicture[key] || setting.filePicture['i'];
         },
         getAvatar(item) {
             let info = this.info_user[item.from];

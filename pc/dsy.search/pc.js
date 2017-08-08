@@ -15,8 +15,12 @@
         alias: {
             jquery: 'http://js.soufunimg.com/homepage/js/source/js/jquery-1.8.3.min'
         },
+        paths: {
+            searchpath:"http://js.soufunimg.com/homepage/js/search"
+        },
         vars: vars,
-        comboExcludes: /.*/
+        comboExcludes: /.*/,
+        charset: 'gbk'
     };
     var seajs = win.seajs;
     seajs.config(config);
@@ -27,7 +31,8 @@
     var vars = win._vars || (win._vars = {});
     var seajs = win.seajs;
     // 加载js 入口主文件
-    seajs.use([vars.entrance], function (main, back) {
-        console.log(main);
+    seajs.use(["searchpath/ssk39V02.js", "searchpath/test7"], function (main, back) {
+        SFSF.init();
+        seajs.use(vars.entrance);
     });
 })(window);

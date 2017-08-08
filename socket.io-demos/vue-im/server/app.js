@@ -79,7 +79,6 @@ app.use(function (err, req, res, next) {
         error: {}
     });
 });
-console.log(6);
 
 
 module.exports = app;

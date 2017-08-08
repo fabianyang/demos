@@ -3,12 +3,12 @@
  * @author: yangfan
  * @Create Time: 2016-07-01 09:50:39
  */
-define('dsy/search/1.1.2/fangjiaSearch', [
-    'dsy/search/1.1.2/interfaceSearch'
+define('dsy/search/1.2.2/fangjia', [
+    'dsy/search/1.2.2/interface'
 ], function (require, exports, module) {
     'use strict';
     var vars = seajs.data.vars;
-    var Search = require('dsy/search/1.1.2/interfaceSearch');
+    var Search = require('dsy/search/1.2.2/interface');
 
     function FangJiaSearch() {
         Search.call(this);
@@ -35,6 +35,7 @@ define('dsy/search/1.1.2/fangjiaSearch', [
         var that = this;
         return {
             key: opts.key || '',
+            hrefUrl: opts.hrefUrl || '',
             district: opts.district || '',
             comerce: opts.comerce || '',
             tag: that.tag,
@@ -47,15 +48,19 @@ define('dsy/search/1.1.2/fangjiaSearch', [
         var that = this;
         var rows = data.split(','),
             html = '';
-        if (rows.length) {
-            for (var i = 0; i < rows.length; i++) {
-                var row = rows[i].split('^'),
-                    tpl = that.tpl;
+        var length = rows.length;
+        that.hrefCode = '';
+        that.hrefKey = '';
+        if (length) {
+            var row = [];
+            for (var i = 0; i < length; i++) {
+                row = rows[i].split('^');
                 var obj = that.formatSearch({
                     key: row[0],
                     district: row[1],
                     comerce: row[2]
-                });
+                }),
+                tpl = that.tpl;
 
                 tpl = tpl.replace('{{search_key}}', obj.key);
                 tpl = tpl.replace('{{search_object}}', JSON.stringify(obj));
@@ -71,33 +76,57 @@ define('dsy/search/1.1.2/fangjiaSearch', [
                 tpl = tpl.replace('{{suggest_count}}', suggestCount);
                 html += tpl;
             }
+
+            if (length === 1) {
+                that.hrefCode = row[4];
+                that.hrefKey = row[0];
+            }
         }
         that.suggestHtml = html;
     };
 
-    // window.PingGus(e)
-    FangJiaSearch.prototype.searchByKey = function (key) {
+    // 新需求：当搜索结果只有一个小区时，直接跳转小区房价详情页面；地址规则：fangjia.fang.com/process/city/ID.htm
+    FangJiaSearch.prototype.searchByKey = function (key, data) {
         var that = this;
         var url = 'http://fangjia.fang.com/pinggu/ajax/searchtransfer.aspx';
 
         var cityName = vars.cityName;
-        if (!cityName && '全国' === cityName) {
+        if (!cityName || '全国' === cityName) {
             cityName = '北京';
         }
 
-        if (key && key !== that.defaultText) {
+        var cityCode = vars.cityCode;
+        if (!cityCode || cityCode === 'quanguo') {
+            cityCode = 'bj';
+        }
+
+        if (data && data.hrefUrl) {
+            url = data.hrefUrl;
+        } else if (key && key !== that.defaultText) {
             url = url + '?strcity=' + escape(cityName) + '&projname=' + escape(key);
+            if (that.hrefCode && that.hrefKey && that.hrefKey === key) {
+                url = 'http://fangjia.fang.com/process/' + cityCode + '/' + that.hrefCode + '.htm';
+            }
         } else {
             url = url + '?strcity=' + escape(cityName);
         }
 
-        var so = that.formatSearch({
-            key: key,
-            hrefUrl: url
-        });
-
         vars.aHref.href = url;
         vars.aHref.click();
+
+        var so = data;
+
+        // 搜索只剩唯一一个小区
+        if (that.hrefCode) {
+            so = that.formatSearch({
+                key: key,
+                hrefUrl: url
+            });
+        } else if (!data) {
+            so = that.formatSearch({
+                key: key
+            });
+        }
 
         that.setHistory(key, so);
     };

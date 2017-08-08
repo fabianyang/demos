@@ -13,6 +13,16 @@ div.id = 'fang-oa-im';
 // div.innerHTML = "新元素";
 body.appendChild(div);
 
+window.FangChat.textarea = (function () {
+    let element = null;
+    return () => {
+        if (!element) {
+            element = document.getElementById('im_chatarea');
+        }
+        return element;
+    };
+})();
+
 // 关闭生产环境提示
 Vue.config.productionTip = false;
 

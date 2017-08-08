@@ -3,13 +3,13 @@
  * @author: yangfan
  * @Create Time: 2016-07-01 09:50:39
  */
-define('dsy/search/1.1.2/esfSearch', [
-    'dsy/search/1.1.2/interfaceSearch'
+define('dsy/search/1.2.0/esfSearch', [
+    'dsy/search/1.2.0/interfaceSearch'
 ], function (require, exports, module) {
     'use strict';
 
     var vars = seajs.data.vars;
-    var Search = require('dsy/search/1.1.2/interfaceSearch');
+    var Search = require('dsy/search/1.2.0/interfaceSearch');
 
     function ESFSearch() {
         Search.call(this);
@@ -99,7 +99,7 @@ define('dsy/search/1.1.2/esfSearch', [
     };
 
     // window.clickZhaozufang(e);
-    ESFSearch.prototype.searchByKey = function (key) {
+    ESFSearch.prototype.searchByKey = function (key, data) {
         var that = this;
         var url = that.defaultHref,
             cityCode = vars.cityCode;
@@ -111,15 +111,18 @@ define('dsy/search/1.1.2/esfSearch', [
             }
         }
 
-        var so = that.formatSearch({
-            key: key,
-            hrefUrl: url
-        });
-
         vars.aHref.href = url;
         vars.aHref.click();
 
-        that.setHistory(key, so);
+        // 特价房搜索过来的不添加历史记录
+        if (+data.store) {
+            var so = that.formatSearch({
+                key: key,
+                hrefUrl: url
+            });
+
+            that.setHistory(key, so);
+        }
     };
 
     module.exports = new ESFSearch();

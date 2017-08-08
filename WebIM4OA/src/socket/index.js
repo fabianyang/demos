@@ -15,7 +15,6 @@ let config = window.FangChat.config;
 class IndexSocket {
     constructor() {
         this.core = new Socket();
-        this.tempSend = [];
         this.retryCount = 0;
         this.hasRestore = false;
         this.syncError = {
@@ -60,7 +59,8 @@ class IndexSocket {
                 view_notice_single: storage.coreGet('view_notice_single') || [],
                 view_notice_group: storage.coreGet('view_notice_group') || [],
                 notice_lists: storage.coreGet('notice_lists') || [],
-                message_lists: storage.coreGet('message_lists') || {}
+                message_lists: storage.coreGet('message_lists') || {},
+                draft: storage.coreGet('draft') || {}
             };
 
             // 有一个发生错误都会断掉
@@ -126,9 +126,7 @@ class IndexSocket {
             return;
         }
         // 消息重发机制
-        // this.tempSend.push(msg);
         this.core.socketSendMessage(msg).then((data) => {
-            // this.removeTempSend();
             events.trigger('socket:messagekey:back', {
                 messagekey: data,
                 sendto: msg.sendto,

@@ -3,12 +3,12 @@
  * @author: yangfan
  * @Create Time: 2016-07-01 09:50:39
  */
-define('dsy/search/1.1.2/kuaixunSearch', [
-    'dsy/search/1.1.2/interfaceSearch'
+define('dsy/search/1.2.2/kuaixun', [
+    'dsy/search/1.2.2/interface'
 ], function (require, exports, module) {
     'use strict';
     var vars = seajs.data.vars;
-    var Search = require('dsy/search/1.1.2/interfaceSearch');
+    var Search = require('dsy/search/1.2.2/interface');
 
     function KuaiXunSearch() {
         Search.call(this);

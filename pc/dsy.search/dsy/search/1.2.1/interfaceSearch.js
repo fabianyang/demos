@@ -3,16 +3,16 @@
  * @author: yangfan
  * @Create Time: 2016-07-13 15:49:03
  */
-define('dsy/search/1.1.2/interfaceSearch', [
+define('dsy/search/1.2.1/interfaceSearch', [
     'jquery',
     'dsy/util/1.1.0/util',
-    'dsy/util/1.1.1/historyUtil'
+    'dsy/util/1.1.2/historyUtil'
 ], function (require, exports, module) {
     'use strict';
 
     var $ = require('jquery'),
         util = require('dsy/util/1.1.0/util'),
-        HistoryUtil = require('dsy/util/1.1.1/historyUtil');
+        HistoryUtil = require('dsy/util/1.1.2/historyUtil');
     var vars = seajs.data.vars;
 
     function InterfaceSearch() {
@@ -20,11 +20,16 @@ define('dsy/search/1.1.2/interfaceSearch', [
         this.historyKeySuffix = 'His';
         this.hisTpl = [
             '<tr data-key="{{history_key}}" data-history=\'{{history_object}}\'>',
-            '<th><p>{{history_key}}</p></th>',
+            '<th><p>{{history_key}}&nbsp;<span class="gray9">{{history_type}}</span></p></th>',
             '<td class="remove_history"> X </td>',
             '</tr>'
         ].join('');
         this.advertImage = '<img src="http://imgd3.soufunimg.com/2016/07/19/25k/5c7d1e9a085b40e783e5818af3af8b20.png" style="width:28px;height:15px;float:right;">';
+        this.typeString = {
+            xf: '新房',
+            esf: '二手房',
+            zf: '租房'
+        };
         this.advertHtml = '';
         this.suggestHtml = '';
         this.backup = {};
@@ -65,10 +70,18 @@ define('dsy/search/1.1.2/interfaceSearch', [
         }
     };
 
+    InterfaceSearch.prototype.getSessionAdvert = function() {
+        return HistoryUtil.getSession(this.sessionKey);
+    }
+
+    InterfaceSearch.prototype.setSessionAdvert = function(obj) {
+        HistoryUtil.setSession(this.sessionKey, obj);
+    }
+
     // 设置默认值时出现问题，需要个 search 对象中的 input 设置值，输入框得焦，自动填写文字会消失
     InterfaceSearch.prototype.setInputValue = function () {
         var that = this,
-            input = vars.searchInput,
+            input = vars.searchInput.css('color', '#888'),
             lastHistory = that.getLastHistory();
         if (lastHistory) {
             input.val(lastHistory.key);
@@ -84,6 +97,10 @@ define('dsy/search/1.1.2/interfaceSearch', [
 
     InterfaceSearch.prototype.getHistoryKey = function (tag) {
         return vars.cityCode + tag + 'His';
+    };
+
+    InterfaceSearch.prototype.getSessionKey = function (tag) {
+        return vars.cityCode + tag + 'Session';
     };
 
     InterfaceSearch.prototype.searchByKey = function () {
@@ -137,15 +154,21 @@ define('dsy/search/1.1.2/interfaceSearch', [
         return HistoryUtil.getLastHistory(this.historyKey);
     };
 
+    InterfaceSearch.prototype.inputIsHistory = function (key) {
+        var history = HistoryUtil.queryHistory(this.historyKey, key)
+        if (history) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
     /**
      * 清除历史记录，设置搜索 input 默认值
      * @param  {int} index 删除索引位置
      */
     InterfaceSearch.prototype.clearHistory = function () {
-        var that = this,
-            input = vars.searchInput;
-        HistoryUtil.clearHistory(that.historyKey);
-        input.val(that.defaultText);
+        HistoryUtil.clearHistory(this.historyKey);
     };
 
     /**
@@ -167,7 +190,15 @@ define('dsy/search/1.1.2/interfaceSearch', [
                     tpl = that.hisTpl;
 
                 tpl = tpl.replace(/{{history_key}}/g, item.key);
-                tpl = tpl.replace(/{{history_object}}/, JSON.stringify(item));
+
+                if (item.tag === 'tejia') {
+                    tpl = tpl.replace(/{{history_type}}/, that.typeString[item.type]);
+                } else {
+                    tpl = tpl.replace(/{{history_type}}/, '');
+                }
+
+                var json = JSON.stringify(item);
+                tpl = tpl.replace(/{{history_object}}/, json);
 
                 html += tpl;
             }

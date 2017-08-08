@@ -4,10 +4,14 @@
         <div class="fbtools clearfix">
             <!-- 工具选中时添加类名 cur -->
             <div id="im_facebutton" class="bq" :class="{ cur: emoji_show }" @click="emoji_show = !emoji_show"></div>
-            <div class="tp" :class="{ cur: upload_state }">
-                <input type="file" title="发送图片" v-if="upload_state !== 'success' && upload_state !== 'fail'" @change="upload_image" />
+            <div class="tp" :class="{ cur: upload.state && upload.type === 'img' }">
+                <input type="file" title="发送图片" v-if="upload.state !== 'success' && upload.state !== 'fail'" @change="uploadImage" />
             </div>
+
             <div class="jl" :class="{ cur: historyContainerOpen }" @click="toggleHistoryContainer"></div>
+            <div class="wj" :class="{ cur: upload.state && upload.type === 'file' }">
+                <input type="file" title="发送文件" v-if="upload.state !== 'success' && upload.state !== 'fail'" @change="uploadFile" />
+            </div>
             <!-- 表情 默认隐藏 显示添加 show , yangfan: img 添加个 a 标签-->
             <div class="bqbox" v-show="emoji_show">
                 <div class="bqcon">
@@ -19,23 +23,36 @@
         </div>
         <!-- 输入内容组件 -->
         <div class="textarea" :style="{ height: changeHeight ? '85px' : '115px' }">
-            <!--<textarea v-show="!upload_state" name="" cols="" rows="" placeholder="点击这里开始交流，按 Ctrl+Enter 发送信息" @paste="upload_image" @keyup="send('chat', $event)" v-model="message"></textarea>-->
+            <!--<textarea v-show="!upload.state" name="" cols="" rows="" placeholder="点击这里开始交流，按 Ctrl+Enter 发送信息" @paste="uploadImage" @keyup="send('chat', $event)" v-model="message"></textarea>-->
             <!-- yangfan:实验结果，不能只使用 blur save_caret_position 会位置为 0，需要 click 或 keyup 时都记录一下光标位置。插入表情 -->
-            <div id="im_chatarea" :style="{ height: changeHeight ? '60px' : '90px' }" class='im_chatarea' contenteditable='true' v-show="!upload_state" @paste="upload_image" @keydown.enter="send('chat', $event)" @click="save_caret_position" @keyup="save_caret_position" @focus="togglePrompt" @blur="togglePrompt"></div>
-            <div class='im_prompt' v-show="prompt_state && !upload_state" @click="togglePrompt">点击开始交流...</div>
+            <div id="im_chatarea" :style="{ height: changeHeight ? '60px' : '90px' }" class='im_chatarea' contenteditable='true' v-show="!upload.state" @paste="uploadImage" @keydown.enter="sendChat" @click="save_caret_position" @keyup="save_caret_position" @focus="togglePrompt" @blur="togglePrompt" v-text="draft_text"></div>
+            <p class='im_prompt' v-show="prompt_show && !upload.state" @click="togglePrompt">点击开始交流...</p>
             <!-- 上传状态 默认隐藏 显示添加 show -->
-            <p class="upload" v-show="upload_state === 'loading'">图片上传中，请稍后...</p>
-            <p class="upload success" v-show="upload_state === 'success'">图片上传成功
-                <a :href="picture" target="_blank">查看</a>
-                <a @click="send('img')">发送</a>
-                <a @click="clear('img')">删除</a>
+            <p class="upload loading" v-show="upload.state === 'loading'">上传中，请稍后...</p>
+            <p class="upload success" v-show="upload.state === 'success'">
+                <a :href="upload.response" class="image_box" v-if="upload.response && /jpeg|jpg|gif|png|bmp/.test(upload.type)" target="_blank">
+                    <img :src="upload.response">
+                </a>
+                <a :href="upload.response" class="file_box"  v-if="upload.response && /docx?|xlsx?|pptx?|pdf|txt/.test(upload.type)" target="_blank">
+                    <div class="info">
+                        <h6>{{ upload.name }}</h6>
+                        <p>
+                            <span>{{ upload.size }}</span>
+                        </p>
+                    </div>
+                    <div class="type">
+                        <img :src="extension" :alt="upload.name" width="50" height="50">
+                    </div>
+                </a>
+                <a @click="sendUpload">发送</a>
+                <a @click="clear">删除</a>
             </p>
-            <p class="upload fail" v-show="upload_state === 'fail'">图片上传失败，请稍后上传
-                <a @click="clear('img')">删除</a>
+            <p class="upload fail" v-show="upload.state === 'fail'">图片上传失败，请稍后上传
+                <a @click="clear">删除</a>
             </p>
         </div>
         <transition name="fade">
-            <div class="im_error_box" v-if="error_show">{{ error_text }}</div>
+            <div class="im_error" v-if="error.show">{{ error.text }}</div>
         </transition>
     </div>
 </template>
@@ -46,122 +63,232 @@ import setting from '../setting';
 import events from '../events';
 import util from '../util';
 import { mapState, mapMutations } from 'vuex';
-import { VIEW_CHAT_CHANGE,VIEW_LEFT_OPEN, VIEW_TOGGLE_HISTORY } from '../store/mutation-types';
+import { VIEW_CHAT_CHANGE, VIEW_LEFT_OPEN, VIEW_TOGGLE_HISTORY } from '../store/mutation-types';
 
 let config = window.FangChat.config;
-let el_textarea = null;
-
-let getElTextarea = () => {
-    if (!el_textarea) {
-        el_textarea = document.getElementById('im_chatarea');
+let el_textarea = (function() {
+    let element = null;
+    return () => {
+        if (!element) {
+            element = document.getElementById('im_chatarea');
+        }
+        return element;
     }
-    return el_textarea;
+})();
+
+let scope_send = function (cmd, message, content) {
+    let date = new Date();
+    let signame = this.leftWindow.signame.split('_');
+    let data = {
+        // 进行 msgList 信息列表区分。 VIEW_CHAT_CHANGE 使用
+        id: this.leftWindow.id,
+        from: config.username,
+        // 发送消息 id oa:125460 群没有 oa 前缀
+        sendto: this.leftWindow.id,
+        message: message,
+        // 消息类型，是否为群聊，目前 group: 群聊天, 其他: 单聊
+        command: signame[2] === 'group' ? 'group_' + cmd : cmd,
+        // 消息是否发送完成
+        messagestate: 0,
+        messagekey: util.guid(),
+        messagetime: util.dateFormat(date),
+        time: date.getTime(),
+        source: 'send'
+    }
+
+    if (cmd === 'file') {
+        data.content = this.fileContent;
+        data.extension = this.upload.type,
+        data.filename = this.upload.name,
+        data.size = this.upload.size
+    }
+
+    this.viewChatMsg(data);
+    events.trigger('view:send:message', data);
+
+    if (!this.historyContainerOpen) {
+        this.toggleHistory({
+            open: 0
+        });
+    }
+}
+
+let scope_errorShow = function (text) {
+    if (!this.error.show) {
+        this.error.show = true;
+        this.error.text = text;
+        setTimeout(() => {
+            this.error.show = false;
+        }, 500);
+    }
+}
+
+let scope_uploadComplete = function(data, type) {
+    let that = this;
+    if (!data) {
+        that.upload.state = 'fail';
+        setTimeout(() => {
+            that.clear();
+        }, 2000);
+    } else {
+        if (type === 'img') {
+            let image = new Image();
+            image.src = data;
+            image.onload = function (a) {
+                that.upload.state = 'success';
+                that.upload.response = data;
+            }
+        }
+        if (type === 'file') {
+            that.upload.state = 'success';
+            that.upload.response = data;
+        }
+        // that.showTip('图片上传成功，请发送。 <a href="' + data + '" target="_blank" data-id="look">\u67e5\u770b</a> <a href="javascript:;" data-id="del">\u5220\u9664</a>');// \u56fe\u7247\u4e0a\u4f20\u6210\u529f\uff0c\u8bf7\u53d1\u9001\u3002
+    }
+}
+
+// https://stackoverflow.com/questions/35559097/how-to-add-emoji-in-between-the-letters-in-contenteditable-div
+function getCaretCharacterOffsetWithin(element) {
+    var caretOffset = 0;
+    var doc = element.ownerDocument || element.document;
+    var win = doc.defaultView || doc.parentWindow;
+    var sel;
+    if (typeof win.getSelection != "undefined") {
+        sel = win.getSelection();
+        if (sel.rangeCount > 0) {
+            var range = win.getSelection().getRangeAt(0);
+            var preCaretRange = range.cloneRange();
+            preCaretRange.selectNodeContents(element);
+            preCaretRange.setEnd(range.endContainer, range.endOffset);
+            caretOffset = preCaretRange.toString().length;
+        }
+    } else if ((sel = doc.selection) && sel.type != "Control") {
+        var textRange = sel.createRange();
+        var preCaretTextRange = doc.body.createTextRange();
+        preCaretTextRange.moveToElementText(element);
+        preCaretTextRange.setEndPoint("EndToEnd", textRange);
+        caretOffset = preCaretTextRange.text.length;
+    }
+    return caretOffset;
+}
+
+function moveEnd(element) {
+    var sel = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(element);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+
+function sizeCompute(b) {
+    let kb = b / 1024
+    if (kb < 1024) {
+        return parseFloat(kb.toFixed(2)) + 'kb';
+    }
+    let mb = kb / 1024;
+    return parseFloat(mb.toFixed(2)) + 'mb';
 }
 
 export default {
     name: 'left-chat-textarea',
-    computed: mapState({
-        historyContainerOpen: state => state.historyContainer.open,
-        leftWindow: state => state.leftWindow
-    }),
+    computed: {
+        draft_text() {
+            let id = this.leftWindow.id;
+            if (!id) {
+                return '';
+            }
+            let draft = this.draft[id];
+            if (draft) {
+                // this.prompt_show = false;
+                el_textarea().innerText = draft;
+                el_textarea().focus();
+                moveEnd(el_textarea());
+            } else {
+                this.prompt_show = true;
+                this.clear('chat');
+            }
+            this.clear();
+            return draft || '';
+        },
+        extension() {
+            return setting.filePicture[this.upload.type.substr(0, 3)] || setting.filePicture['i'];
+        },
+        ...mapState({
+            historyContainerOpen: state => state.historyContainer.open,
+            leftWindow: state => state.leftWindow,
+            draft: state => state.draft
+        })
+    },
     methods: {
         togglePrompt(e) {
+            // console.log(e.type);
+            // 提示被点击
             if (e.type === 'click') {
-                this.prompt_state = false;
-                getElTextarea().focus();
+                this.prompt_show = false;
+                el_textarea().focus();
                 return;
             }
+            // 输入框获得焦点
             if (e.type === 'focus') {
-                this.prompt_state = false;
+                this.prompt_show = false;
                 return;
             }
+            // 输入框失去焦点
             if (e.type === 'blur') {
-                if (getElTextarea().innerText.trim()) {
-                    this.prompt_state = false;
+                let text = el_textarea().innerText.trim();
+                if (text) {
+                    this.prompt_show = false;
                     return;
                 }
             }
-            this.prompt_state = true;
+            this.prompt_show = true;
             this.clear('chat');
         },
-        send(cmd, event = { ctrlKey: true, preventDefault() { } }) {
+        sendChat(event) {
             event.preventDefault();
-            if (cmd === 'img' && !this.picture) {
+            let message = el_textarea().innerText.trim();
+            if (!message) {
+                this.clear('chat');
+                this.prompt_show = false;
+                scope_errorShow.call(this, '请输入发送消息');
+                return;
+            }
+            if (message.length > 1000) {
+                scope_errorShow.call(this, '最多输入1000字');
                 return;
             }
 
-            let message = getElTextarea().innerText.trim();
-            if (cmd === 'chat') {
-                if (!message) {
-                    this.clear('chat');
-                    this.prompt_state = false;
-                    if (!this.show) {
-                        this.error_show = true;
-                        this.error_text = '请输入发送消息';
-                        setTimeout(() => {
-                            this.error_show = false;
-                        }, 500);
-                    }
-                    return;
-                }
-                if (message.length > 1000) {
-                    if (!this.error_show) {
-                        this.error_show = true;
-                        this.error_text = '最多输入1000字';
-                        setTimeout(() => {
-                            this.error_show = false;
-                        }, 1000);
-                    }
-                    return;
-                }
+            scope_send.call(this, 'chat', message);
+            this.clear('chat');
+        },
+        sendUpload() {
+            let message = this.upload.response;
+            if (!message) {
+                return;
             }
-
-            if (cmd === 'img') {
-                message = this.picture;
-            }
-            let date = new Date();
-            let signame = this.leftWindow.signame.split('_');
-            let msg = {
-                // 进行 msgList 信息列表区分。 VIEW_CHAT_CHANGE 使用
-                id: this.leftWindow.id,
-                from: config.username,
-                // 发送消息 id oa:125460 群没有 oa 前缀
-                sendto: this.leftWindow.id,
-                message: message,
-                // 消息类型，是否为群聊，目前 group: 群聊天, 其他: 单聊
-                command: signame[2] === 'group' ? 'group_' + cmd : cmd,
-                // 消息是否发送完成
-                messagestate: 0,
-                messagekey: util.guid(),
-                messagetime: util.dateFormat(date),
-                time: date.getTime(),
-                source: 'send'
-            }
-
-            if (!this.historyContainerOpen) {
-                this.toggleHistory({
-                    open: 0
-                });
-            }
-
-            this.viewChatMsg(msg);
-            events.trigger('view:send:message', msg);
-
-            // console.log('send', msg);
-            this.clear(cmd);
+            scope_send.call(this, this.fileContent ? 'file' : 'img', message);
+            this.clear();
         },
         clear(type) {
-            if (type === 'img') {
-                this.upload_state = '';
-                this.picture = '';
-            }
             if (type === 'chat') {
-                getElTextarea().innerText = '';
+                el_textarea().innerText = '';
+            } else {
+                this.upload = {
+                    type: '',
+                    size: '',
+                    name: '',
+                    response: '',
+                    state: ''
+                };
+                this.fileContent = '';
             }
         },
-        upload_image: function (ev) {
+        uploadImage: function (ev) {
             let that = this;
             if (ev.type === 'paste') {
+                this.upload.state = 'loading';
+                this.upload.type = 'png';
                 // this.can_paste_upload = true;
                 let _ua = navigator.userAgent.toLowerCase();
                 let WEBKIT = _ua.indexOf('applewebkit') > -1;
@@ -177,7 +304,11 @@ export default {
                             // var arr = result.split(",");
                             // var data = arr[1]; // raw base64
                             // var contentType = arr[0].split(";")[0].split(":")[1];
-                            api.pasteUploadImage(result);
+                            api.pasteUploadImage(result).then((data) => {
+                                scope_uploadComplete.call(that, data, 'img');
+                            }).catch(() => {
+                                scope_uploadComplete.call(that);
+                            });
                             // window.FangChat.picUploadComplete(result);
                         };
                         reader.readAsDataURL(file);
@@ -191,14 +322,18 @@ export default {
                 /* Paste in firfox and other firfox.*/
                 else {
                     setTimeout(() => {
-                        let el = getElTextarea();
+                        let el = el_textarea();
                         let html = el.innerHTML;
                         console.log(el.innerHTML);
                         if (html.search(/<img src="data:.+;base64,/) > -1) {
                             let img = html.match(/src=[\'\"]?([^\'\"]*)[\'\"]?/i)[1];
                             // let text = html.replace(/<img(.*)src=\"([^\"]+)\"[^>]+>/g, '');
                             el.innerText = html.replace(/<img [^>]*src=['"]([^'"]+)[^>]*>/gi, '');;
-                            api.pasteUploadImage(img);
+                            api.pasteUploadImage(img).then((data) => {
+                                scope_uploadComplete.call(that, data, 'img');
+                            }).catch(() => {
+                                scope_uploadComplete.call(that);
+                            });
 
                         } else {
                             // textarea.text(textarea.text());
@@ -215,11 +350,12 @@ export default {
                 }
                 let fileType = files[0].type.split('/')[1];
                 if (!/jpeg|jpg|gif|png|bmp/.test(fileType)) {
-                    alert("不支持文件类型" + fileType + "，支持 jpeg,jpg,gif,png,bmp 图片类型文件！");
-                    return
+                    alert('不支持文件类型' + fileType + '，支持 jpeg,jpg,gif,png,bmp 图片类型文件！');
+                    return;
                 }
+                this.upload.state = 'loading';
+                this.upload.type = fileType;
                 let file = files[0];
-                this.upload_state = 'loading';
                 let reader = new FileReader();
                 reader.onload = function (evt) {
                     // let img = new Image();
@@ -242,14 +378,52 @@ export default {
                     //     api.pasteUploadImage(base64);
                     // }
                     console.log(evt.target.result.length);
-                    api.pasteUploadImage(evt.target.result);
+                    api.pasteUploadImage(evt.target.result).then((data) => {
+                        scope_uploadComplete.call(that, data, 'img');
+                    }).catch(() => {
+                        scope_uploadComplete.call(that);
+                    });
                 };
                 reader.readAsDataURL(file);
                 // this.$el.querySelector('form').submit();
             }
         },
+        uploadFile(ev) {
+            let files = ev.target.files || ev.dataTransfer.files;
+            if (!files.length) {
+                return;
+            }
+            let file = files[0];
+            let fileName = file.name;
+            let fileType = fileName.substr(fileName.lastIndexOf('.') + 1);
+
+            if (!/docx?|xlsx?|pptx?|pdf|txt/.test(fileType)) {
+                alert('不支持文件类型' + fileType + '，支持 doc, xls, ppt, pdf, txt 类型文件！');
+                return;
+            }
+
+            let fileSize = file.size;
+            this.upload.state = 'loading';
+            this.upload.type = fileType;
+            this.upload.name = fileName;
+            this.upload.size = sizeCompute(fileSize);
+
+            this.fileContent = JSON.stringify({
+                filename: fileName,
+                mimetype: file.type,
+                size: fileSize
+            });
+
+            api.uploadFile(file).then((response) => {
+                let data = response.data;
+                scope_uploadComplete.call(this, data.data, 'file');
+            }).catch(function (error) {
+                scope_uploadComplete.call(this)
+            });
+            return;
+        },
         emoji_insert(key) {
-            let el = getElTextarea();
+            let el = el_textarea();
             // let emoji = '<img class="im_emoji" data-key="' + key + '" src="' + setting.EMOJI.path + setting.EMOJI.map[key] + '" width="24" border="0" style="vertical-align: bottom;" />';
             // 插入图片的话仍会发生光标定位问题
             // this.message = this.contenteditable_insert('[' + key + ']');
@@ -259,7 +433,7 @@ export default {
             console.log(text);
             el.innerText = text.slice(0, position) + '[' + key + ']' + text.slice(position, text.length);
             this.emoji_show = false;
-            this.prompt_state = false;
+            this.prompt_show = false;
             el.focus();
             // https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=2&cad=rja&uact=8&ved=0ahUKEwiI7NqX9vbUAhVKFJQKHfKWAIYQFggvMAE&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F24115860%2Fset-caret-position-at-a-specific-position-in-contenteditable-div&usg=AFQjCNFcDFEz45PuDlQCGVqYsYt1S8EZUQ
             // https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=0ahUKEwiI7NqX9vbUAhVKFJQKHfKWAIYQFggnMAA&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F6249095%2Fhow-to-set-caretcursor-position-in-contenteditable-element-div&usg=AFQjCNEWqQvJnN7lDdXPZldY5nuiKlIa2Q
@@ -272,31 +446,7 @@ export default {
             sel.addRange(range);
         },
         save_caret_position() {
-            // https://stackoverflow.com/questions/35559097/how-to-add-emoji-in-between-the-letters-in-contenteditable-div
-            function getCaretCharacterOffsetWithin(element) {
-                var caretOffset = 0;
-                var doc = element.ownerDocument || element.document;
-                var win = doc.defaultView || doc.parentWindow;
-                var sel;
-                if (typeof win.getSelection != "undefined") {
-                    sel = win.getSelection();
-                    if (sel.rangeCount > 0) {
-                        var range = win.getSelection().getRangeAt(0);
-                        var preCaretRange = range.cloneRange();
-                        preCaretRange.selectNodeContents(element);
-                        preCaretRange.setEnd(range.endContainer, range.endOffset);
-                        caretOffset = preCaretRange.toString().length;
-                    }
-                } else if ((sel = doc.selection) && sel.type != "Control") {
-                    var textRange = sel.createRange();
-                    var preCaretTextRange = doc.body.createTextRange();
-                    preCaretTextRange.moveToElementText(element);
-                    preCaretTextRange.setEndPoint("EndToEnd", textRange);
-                    caretOffset = preCaretTextRange.text.length;
-                }
-                return caretOffset;
-            }
-            this.caret_position = getCaretCharacterOffsetWithin(getElTextarea());
+            this.caret_position = getCaretCharacterOffsetWithin(el_textarea());
             // console.log('caret position', this.caret_position);
         },
         emoji_close(e) {
@@ -329,17 +479,25 @@ export default {
         return {
             changeHeight: false,
             // can_paste_upload: false,
-            prompt_state: true,
+            prompt_show: true,
             caret_position: 0,
             emoji_show: false,
             // emoji_path: setting.EMOJI.path,
             emoji_map: setting.EMOJI,
             // 用原生获取，不进行双向绑定，插入表情或普通输入有影响
             // message: '',
-            picture: '',
-            upload_state: '',
-            error_text: '',
-            error_show: false
+            upload: {
+                type: '',
+                size: '',
+                name: '',
+                response: '',
+                state: ''
+            },
+            error: {
+                text: '',
+                show: false
+            },
+            fileContent: ''
         }
     },
     created() {
@@ -349,31 +507,24 @@ export default {
             }
 
             document.getElementById('im_app').addEventListener('click', this.emoji_close);
+
+            // 第一次打开的时候也要判断是否有草稿
+            // this.prompt_show = !el_textarea().innerText;
+
         });
 
-        let that = this,
-            timer = null;
-        // oa 无法使用 form 提交上传图片。跨域。郁闷
-        // document.domain = 'fang.com';
-        window.FangChat.picUploadComplete = (data) => {
-            clearTimeout(timer);
-            if (!data) {
-                that.upload_state = 'fail';
-                timer = setTimeout(() => {
-                    that.clear('image');
-                }, 2000);
-            } else {
-                that.upload_state = 'success';
-                that.picture = data;
-                // that.showTip('图片上传成功，请发送。 <a href="' + data + '" target="_blank" data-id="look">\u67e5\u770b</a> <a href="javascript:;" data-id="del">\u5220\u9664</a>');// \u56fe\u7247\u4e0a\u4f20\u6210\u529f\uff0c\u8bf7\u53d1\u9001\u3002
-            }
-        };
-
-        events.on('view:clear:chatarea', ()=> {
-            this.prompt_state = true;
-            that.clear('chat');
-            that.clear('img');
-        });
+        // events.on('view:clear:chatarea', (draft) => {
+        //     if (draft) {
+        //         // this.prompt_show = false;
+        //         el_textarea().innerText = draft;
+        //         el_textarea().focus();
+        //         moveEnd(el_textarea());
+        //     } else {
+        //         this.prompt_show = true;
+        //         this.clear('chat');
+        //     }
+        //     this.clear();
+        // });
 
         // 干掉IE http之类地址自动加链接
         try {
@@ -386,17 +537,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-div,
-textarea,
-form,
-input,
-img,
-a {
+* {
     box-sizing: border-box;
 }
 
 div,
-form {
+form,
+span,
+p {
     margin: 0;
     padding: 0;
     border: 0;
@@ -407,6 +555,12 @@ a img {
     border: 0;
     margin: 0;
     padding: 0;
+}
+
+h6 {
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
 }
 
 textarea,
@@ -430,9 +584,11 @@ a:hover {
     cursor: pointer;
 }
 
+p {
+    white-space: normal;
+}
 
 /* 工具栏 */
-
 .fbtools {
     width: 510px;
     height: 40px;
@@ -445,7 +601,8 @@ a:hover {
 
 .fbtools .bq,
 .fbtools .tp,
-.fbtools .jl {
+.fbtools .jl,
+.fbtools .wj {
     float: left;
     width: 18px;
     height: 18px;
@@ -454,7 +611,7 @@ a:hover {
     cursor: pointer;
 }
 
-.fbtools .tp input {
+.fbtools .tp input, .fbtools .wj input {
     // width: 18px;
     // height: 15px;
     margin-left: -145px; // yangfan: 正好选择按钮在图片位置
@@ -505,6 +662,19 @@ a:hover {
     background: url(../assets/images/icon-jl2.png);
 }
 
+.fbtools .wj {
+    background: url(../assets/images/icon-wj.png);
+}
+
+.fbtools .wj.cur {
+    background: url(../assets/images/icon-wj3.png);
+}
+
+.fbtools .wj:hover,
+.fbtools .wj:active {
+    background: url(../assets/images/icon-wj2.png);
+}
+
 .fbtools .bqbox {
     width: 370px;
     height: 210px;
@@ -543,7 +713,10 @@ a:hover {
 .fbtools .bqbox .bqcon a:hover img {
     transform: scale(1.1);
 }
+
+
 /* 输入内容 */
+
 .textarea {
     width: 510px;
     height: 115px;
@@ -567,6 +740,7 @@ a:hover {
 }
 
 
+
 /* 图片上传状态 */
 
 .textarea .upload {
@@ -576,30 +750,91 @@ a:hover {
     line-height: 20px;
     color: #4d90fe;
     font-size: 14px;
-    background: url(../assets/images/icon-upload.png) no-repeat left center;
     background-color: #fff;
     position: absolute;
     top: 10px;
     left: 15px;
 }
 
+.textarea .upload.loading {
+    background: url(../assets/images/icon-upload.png) no-repeat left center;
+}
+
 .textarea .upload.success {
-    background-image: url(../assets/images/icon-upload-success.png);
+    // background-image: url(../assets/images/icon-upload-success.png);
+    // yangfan add
+    height: auto;
+    top: 0;
+    left: 0;
+    padding: 10px 15px;
 }
 
 .textarea .upload.success a {
     color: #4d90fe;
-    text-decoration: underline;
+    // yangfan add
+    display: inline-block;
 }
 
-.textarea .upload.fail {
-    background-image: url(../assets/images/icon-upload-fail.png);
+.upload.success .image_box img {
+    max-width: 121px;
+    max-height: 89px;
+    border-radius: 5px;
+}
+
+.upload.success .file_box {
+    color: #4d90fe;
+    display: inline-block;
+    width: 220px;
+    height: 70px;
+    background: #f7f7f7;
+    padding: 10px;
+}
+
+.upload.success .file_box .info {
+    width: 140px;
+    height: 50px;
+    float: left;
+    margin-right: 10px;
+}
+
+.upload.success .file_box .info h6 {
+    height: 34px;
+    line-height: 17px;
+    color: #333;
+    font-size: 12px;
+    font-weight: normal;
+    overflow: hidden;
+}
+
+.upload.success .file_box .info p {
+    color: #999;
+    font-size: 12px;
+}
+
+.upload.success .file_box .type {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.upload.fail {
+    background-image: url(../assets/images/icon-upload-fail.png) no-repeat left center;
     color: #e01818;
 }
 
-.textarea .upload.fail a {
-    color: #4d90fe;
-    text-decoration: underline;
+.upload.fail .info {
+    width: 140px;
+    height: 50px;
+    float: left;
+    margin-right: 10px;
+}
+
+.upload.fail .type {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    overflow: hidden;
 }
 
 .im_prompt {
@@ -610,8 +845,10 @@ a:hover {
     position: absolute;
     top: 0;
     left: 0;
+    cursor: text;
 }
-.im_error_box {
+
+.im_error {
     position: absolute;
     left: 20%;
     top: 30%;
@@ -624,10 +861,17 @@ a:hover {
     color: #fff;
     font-size: 14px;
 }
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity .5s
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
-  opacity: 0
+
+.fade-enter,
+.fade-leave-to
+/* .fade-leave-active in <2.1.8 */
+
+{
+    opacity: 0
 }
 </style>

@@ -3,46 +3,31 @@
  * @author: yangfan
  * @Create Time: 2016-05-19 09:45:38
  */
-define('dsy/search/1.1.2/homeSearch', [
+define('dsy/search/1.2.2/controller', [
     'jquery',
-    'dsy/search/1.1.2/xfSearch',
-    'dsy/search/1.1.2/esfSearch',
-    'dsy/search/1.1.2/zfSearch',
-    'dsy/search/1.1.2/jiajuSearch',
-    'dsy/search/1.1.2/kuaixunSearch',
-    'dsy/search/1.1.2/fangjiaSearch',
-    'dsy/search/1.1.2/haiwaiSearch'
+    'dsy/search/1.2.2/xf',
+    'dsy/search/1.2.2/esf',
+    'dsy/search/1.2.2/zf',
+    'dsy/search/1.2.2/jiaju',
+    'dsy/search/1.2.2/kuaixun',
+    'dsy/search/1.2.2/fangjia',
+    'dsy/search/1.2.2/haiwai',
+    'dsy/search/1.2.2/ditu'
 ], function (require, exports, module) {
     'use strict';
 
     var $ = require('jquery');
     var vars = seajs.data.vars;
 
-    vars.searchDefaultText = {
-        fangjia: '请输入小区名称或地址，给自己的房子估个价',
-        xf: '请输入关键字（楼盘名/地名/开发商等）',
-        esf: '请输入关键字（楼盘名或地名）',
-        zf: '请输入关键字（楼盘名或地名）',
-        jiaju: '请输入户型/功能间/风格等关键词',
-        kuaixun: '请输入关键字',
-        haiwai: '请输入关键字(国家/城市/地区)'
-    };
-
-    // vars.searchInput = $('#projnames');
-    // vars.searchWrapper = $('#SFmenu');
-    // vars.searchButton = $('.sbuttonstyle');
-    // vars.searchNavigate = $('#dsy_D02_19, #dsy_D02_02, #dsy_D02_03, #dsy_D02_04, #dsy_D02_05, #dsy_D02_06, #dsy_D02_20');
-    // // 20160708 新需求：添加广告标签
-    // vars.searchInputAdvertImage = $('#projad');
-
-    var tagMap = {
-        '|dsy_D02_19|': 'fangjia',
-        '|dsy_D02_02|': 'xf',
-        '|dsy_D02_03|': 'esf',
-        '|dsy_D02_04|': 'zf',
-        '|dsy_D02_05|': 'jiaju',
-        '|dsy_D02_06|': 'kuaixun',
-        '|dsy_D02_20|': 'haiwai'
+    var tag4id = {
+        dsy_D02_02: 'xf',
+        dsy_D02_03: 'esf',
+        dsy_D02_04: 'zf',
+        dsy_D02_05: 'jiaju',
+        dsy_D02_06: 'kuaixun',
+        dsy_D02_20: 'haiwai',
+        dsy_D02_19: 'fangjia',
+        dsy_D02_21: 'ditu'
     };
 
     /**
@@ -51,22 +36,37 @@ define('dsy/search/1.1.2/homeSearch', [
     (function () {
         var defaultHref = {};
         vars.searchNavigate.each(function (idx, elem) {
-            var tag = tagMap['|' + elem.id + '|'];
-            if (tag === 'xf' || tag === 'esf' || tag === 'zf' || tag === 'kuaixun') {
+            var tag = tag4id[elem.id];
+            if (tag) {
                 defaultHref[tag] = elem.href.replace(/\/$/, '');
+            } else {
+                console.log('not find tag for id: ' + elem.id);
             }
         });
         vars.searchDefaultHref = defaultHref;
     })();
 
+    vars.searchDefaultText = {
+        tejia: '请输入关键字（楼盘名）',
+        fangjia: '请输入小区名称或地址，给自己的房子估个价',
+        xf: '请输入关键字（楼盘名/地名/开发商等）',
+        esf: '请输入关键字（楼盘名或地名）',
+        zf: '请输入关键字（楼盘名或地名）',
+        jiaju: '请输入户型/功能间/风格等关键词',
+        kuaixun: '请输入关键字',
+        haiwai: '请输入关键字(国家/城市/地区)',
+        ditu: '请输入区县/商圈/小区名'
+    };
+
     var allSearch = {
-        fangjia: require('dsy/search/1.1.2/fangjiaSearch'),
-        xf: require('dsy/search/1.1.2/xfSearch'),
-        esf: require('dsy/search/1.1.2/esfSearch'),
-        zf: require('dsy/search/1.1.2/zfSearch'),
-        jiaju: require('dsy/search/1.1.2/jiajuSearch'),
-        kuaixun: require('dsy/search/1.1.2/kuaixunSearch'),
-        haiwai: require('dsy/search/1.1.2/haiwaiSearch')
+        fangjia: require('dsy/search/1.2.2/fangjia'),
+        xf: require('dsy/search/1.2.2/xf'),
+        esf: require('dsy/search/1.2.2/esf'),
+        zf: require('dsy/search/1.2.2/zf'),
+        jiaju: require('dsy/search/1.2.2/jiaju'),
+        kuaixun: require('dsy/search/1.2.2/kuaixun'),
+        haiwai: require('dsy/search/1.2.2/haiwai'),
+        ditu: require('dsy/search/1.2.2/ditu')
     };
 
     /**
@@ -121,8 +121,7 @@ define('dsy/search/1.1.2/homeSearch', [
 
     Prototype.setNavigateTag = function () {
         var id = this.navigate.filter('.' + this.navigateActiveClass).attr('id');
-        var tag = tagMap['|' + id + '|'];
-        this.navigateTag = tag;
+        this.navigateTag = tag4id[id];
     };
 
     Prototype.setInputCache = function () {
@@ -130,11 +129,11 @@ define('dsy/search/1.1.2/homeSearch', [
         var cache = that.inputCache,
             tag = that.navigateTag,
             key = that.input.val();
-        var lastHistory = allSearch[tag].getLastHistory(),
+        var inputIsHistory = allSearch[tag].inputIsHistory(key),
             inputIsAdvert = allSearch[tag].inputIsAdvert(key);
-        var defaultText = that.defaultText[tag],
-            lastHistoryKey = lastHistory ? lastHistory.key : '';
-        if (key && key !== defaultText && !inputIsAdvert && key !== lastHistoryKey) {
+
+        var defaultText = that.defaultText[tag];
+        if (key && key !== defaultText && !inputIsAdvert && !inputIsHistory) {
             if (cache.tag === tag && cache.key !== key || !cache.key) {
                 that.inputCache = {
                     tag: tag,
@@ -160,7 +159,7 @@ define('dsy/search/1.1.2/homeSearch', [
         var that = this;
         that.adImg.hide();
         var vwg = pvwg ? pvwg : vars.vwg;
-        var index = that.navigate.index($('#' + vwg));
+        var index = $('#' + vwg).index();
         that.clearClass();
         that.changeClass(index);
         that.setNavigateTag();
@@ -185,7 +184,6 @@ define('dsy/search/1.1.2/homeSearch', [
             if (cache.tag === tag && cache.key) {
                 that.input.css('color', '#333').val(cache.key);
             } else {
-                that.input.css('color', '#888');
                 allSearch[tag].setInputValue();
                 that.hoverCallAdvert();
             }
@@ -229,7 +227,7 @@ define('dsy/search/1.1.2/homeSearch', [
             key = $.trim(key.replace(/\ +/g, ' '));
 
             // 跳转，进行历史记录
-            allSearch[tag].searchByKey(key);
+            allSearch[tag].searchByKey(key, 'button');
             return false;
         });
     };
@@ -254,7 +252,7 @@ define('dsy/search/1.1.2/homeSearch', [
             that.adImg.hide();
             // 新需求：判断是否有没点击搜索以缓存的输入内容
             var cache = that.inputCache,
-                input = that.input.css('color', '#333');
+                input = $(this).css('color', '#333');
             if (cache.tag === tag && cache.key) {
                 input.val(cache.key);
                 input.setCursorPosition();
@@ -271,6 +269,13 @@ define('dsy/search/1.1.2/homeSearch', [
                 that.createSuggestList('');
             } else {
                 that.createHistoryList();
+            }
+
+            // 目前只有新房添加了，空跳转屏蔽广告显示
+            if (!key && tag === 'xf') {
+                allSearch[tag].setSessionAdvert({
+                    hasVoidSearch: 1
+                });
             }
 
             // bind input Keyup
@@ -343,7 +348,13 @@ define('dsy/search/1.1.2/homeSearch', [
             }
             // 回车等同点击查询按钮，判断 ajax 防止过快点击
             if (keyCode === 13) {
-                that.button.trigger('click');
+                var trSelected = wrapper.find('tr.selected');
+                var tdClearHistory = trSelected.find('td.clear_history')
+                if (tdClearHistory.length) {
+                    tdClearHistory.trigger('click');
+                } else {
+                    that.button.trigger('click');
+                }
             }
         });
     };
@@ -362,9 +373,9 @@ define('dsy/search/1.1.2/homeSearch', [
         that.wrapper.on('click', 'tr', function () {
             clearInterval(that.timer);
             var key = $(this).attr('data-key'),
-                so = $(this).attr('data-search') || $(this).attr('data-history');
+                so = $(this).attr('data-') || $(this).attr('data-history');
             var json = JSON.parse(so);
-            allSearch[that.navigateTag].searchByKey(key, json);
+            allSearch[that.navigateTag].searchByKey(key, json, 'list');
             that.input.val(key);
             that.clearInputCache();
             if (json.adUrl) {
@@ -385,7 +396,9 @@ define('dsy/search/1.1.2/homeSearch', [
 
         that.wrapper.on('click', '.clear_history', function () {
             clearInterval(that.timer);
-            allSearch[that.navigateTag].clearHistory();
+            var tag = that.navigateTag;
+            allSearch[tag].clearHistory();
+            that.input.css('color', '#888').val(that.defaultText[tag]).blur();
             that.wrapper.hide();
             that.createSuggestList('');
             return false;
@@ -485,12 +498,14 @@ define('dsy/search/1.1.2/homeSearch', [
         var tag = this.navigateTag;
         if (tag !== 'kuaixun') {
             var vv = {
+                tejia: 'tejiafang',
                 fangjia: 'chafangjia',
-                xf: 'maixinfang',
+                xf: 'maixinfangtest',
                 esf: 'maiershoufang',
                 zf: 'zhaozufang',
                 jiaju: 'zhuangxiujiaju',
-                haiwai: 'haiwaifangchan'
+                haiwai: 'haiwaifangchan',
+                ditu: 'mapfind'
             }[tag];
 
             var param = {
@@ -521,6 +536,7 @@ define('dsy/search/1.1.2/homeSearch', [
             that.ajax = 0;
         }
         that.requestTag = that.navigateTag;
+
         // 请求之前增加一次请求标记。
         vars.setRequestNumber();
         var url = vars.sfsf.url + '&timeFlag=' + vars.getRequestNumber();
@@ -600,6 +616,13 @@ define('dsy/search/1.1.2/homeSearch', [
             return false;
         }
 
+        // 目前只有新房添加了，空跳转屏蔽广告显示
+        var sa = allSearch[tag].getSessionAdvert();
+        var hasVoidSearch = sa && sa.hasVoidSearch;
+        if (hasVoidSearch) {
+            return false;
+        }
+
         var param = {
             q: '',
             init: 'true'
@@ -611,6 +634,7 @@ define('dsy/search/1.1.2/homeSearch', [
             // 设置家居广告
             param.vv = 'zhuangxiujiaju';
         }
+
         that.requestAdvert(param);
         return true;
     };

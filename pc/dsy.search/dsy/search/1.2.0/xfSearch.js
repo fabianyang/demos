@@ -3,12 +3,12 @@
  * @author: yangfan
  * @Create Time: 2016-07-01 09:50:39
  */
-define('dsy/search/1.1.2/xfSearch', [
-    'dsy/search/1.1.2/interfaceSearch'
+define('dsy/search/1.2.0/xfSearch', [
+    'dsy/search/1.2.0/interfaceSearch'
 ], function (require, exports, module) {
     'use strict';
     var vars = seajs.data.vars;
-    var Search = require('dsy/search/1.1.2/interfaceSearch');
+    var Search = require('dsy/search/1.2.0/interfaceSearch');
 
     function XFSearch() {
         Search.call(this);
@@ -97,7 +97,7 @@ define('dsy/search/1.1.2/xfSearch', [
                     suggestCount = '';
                 }
 
-                if (obj.adUrl) {
+                if (adUrl) {
                     suggestCount = that.advertImage;
                 }
 

@@ -6,6 +6,19 @@ import setting from '../setting';
 let config = window.FangChat.config;
 
 export default {
+    uploadFile(file) {
+        var formData = new FormData()
+        formData.append('file', file)
+        return axios({
+            url: setting.UPLOAD_FILE_PATH,
+            method: 'post',
+            data: formData,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            }
+        });
+    },
+
     pasteUploadImage(base64) {
         return axios({
             url: setting.PASTE_IMG_PATH,
@@ -23,10 +36,10 @@ export default {
             if (data.code !== '100') {
                 url = '';
             }
-            window.FangChat.picUploadComplete(url);
+            return Promise.resolve(url);
         }).catch(function (error) {
             console.log('pasteUploadImage', error);
-            window.FangChat.picUploadComplete();
+            return Promise.reject();
         });
     },
 

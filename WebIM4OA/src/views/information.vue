@@ -55,11 +55,6 @@
             reconnect() {
                 events.trigger('view:reconnect:socket');
             }
-        },
-        data() {
-            return {
-                msg: 'Welcome to Your Vue.js App'
-            }
         }
     }
 </script>

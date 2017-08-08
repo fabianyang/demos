@@ -12,7 +12,6 @@ import {
     SOCKET_CHAT_CHANGE,
     SOCKET_NOTICE_CHANGE,
     SOCKET_SEARCH_USER_CHANGE,
-    SOCKET_RECONNECT,
     SOCKET_RESTORE_INFO,
     VIEW_STATE_CHANGE,
     VIEW_CHAT_MSGKEY,
@@ -57,7 +56,6 @@ events.on('socket:state:change', function (data) {
 events.on('view:reconnect:socket', () => {
     // 需要清空所有的存储信息，目前是联系人列表
     store.commit(SOCKET_STATE_CHANGE, 'connecting');
-    // store.commit(SOCKET_RECONNECT);
     // 重新初始化
     socket.init();
 });
@@ -67,7 +65,16 @@ events.on('socket:restore:info', (data) => {
 });
 
 events.on('view:send:message', (data) => {
-    socket.sendMessage(data);
+    let format = {
+        messagekey: data.messagekey,
+        message: data.message,
+        command: data.command,
+        sendto: data.sendto
+    };
+    if (data.content) {
+        format.content = data.content;
+    }
+    socket.sendMessage(format);
 });
 
 events.on('view:search:user', (data) => {

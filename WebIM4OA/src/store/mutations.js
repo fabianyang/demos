@@ -7,11 +7,11 @@ import {
     SOCKET_GROUP_CHANGE,
     SOCKET_CHAT_CHANGE,
     SOCKET_NOTICE_CHANGE,
-    SOCKET_RECENT_CHANGE,
     SOCKET_SEARCH_USER_CHANGE,
     VIEW_SEARCH_USER_CHANGE,
     VIEW_STATE_CHANGE,
     SOCKET_STATE_CHANGE,
+    VIEW_DRAFT_CHAGE,
     VIEW_LEFT_OPEN,
     VIEW_RIGHT_SWITCH,
     VIEW_CHAT_CHANGE,
@@ -25,10 +25,10 @@ import events from '../events';
 let messageMaxCount = 30;
 let config = window.FangChat.config;
 
-let formatNotSyncInfo = (data, view_name) => {
+let formatNotSyncInfo = (id, view_name) => {
     let ret = {
-        id: data.id,
-        nickname: data.id
+        id: id,
+        nickname: id
     };
     if (view_name) {
         ret.view_name = view_name;
@@ -36,24 +36,27 @@ let formatNotSyncInfo = (data, view_name) => {
     return ret;
 };
 
-let requestUserInfo = (state, data, view_name) => {
-    let info = formatNotSyncInfo(data, view_name);
-    // 要先添加基本信息，因为 im 已经渲染， 否则找不到信息报错
-    // buddy = formatNotSyncInfo(v);
-    state.info_user = Object.assign({}, state.info_user, {
-        [data.id]: info
-    });
-    // 这里要是一个新对象，否则 vuex 报错
-    // 最好是一个 promise 执行完成后进行回调，就不需要更新两遍对象，刷新两遍视图。
-    events.trigger('store:request:user', info);
-};
-
-let requestGroupInfo = (state, data, view_name) => {
-    let info = formatNotSyncInfo(data, view_name);
-    state.info_group = Object.assign({}, state.info_group, {
-        [data.id]: info
-    });
-    events.trigger('store:request:group', info);
+/**
+ * @param {*} state : vuex state
+ * @param {*} id ：用户 id
+ * @param {*} view_name : 请求完成后返回的信息，添加到对应 view_name 列表中。
+ */
+let infoRequest = (state, id, view_name) => {
+    let info = formatNotSyncInfo(id, view_name);
+    if (view_name.split('_')[2] === 'group') {
+        state.info_group = Object.assign({}, state.info_group, {
+            [id]: info
+        });
+        events.trigger('store:request:group', info);
+    } else {
+        // 要先添加基本信息，因为 im 已经渲染， 否则找不到信息报错
+        state.info_user = Object.assign({}, state.info_user, {
+            [id]: info
+        });
+        // 这里要是一个新对象，否则 vuex 报错
+        // 最好是一个 promise 执行完成后进行回调，就不需要更新两遍对象，刷新两遍视图。
+        events.trigger('store:request:user', info);
+    }
 };
 
 let addViewList = (state, view_name, id) => {
@@ -177,6 +180,7 @@ export default {
     [SOCKET_RECONNECT](state) {
         state.notice_lists = storage.coreGet('notice_lists') || [];
         state.message_lists = storage.coreGet('message_lists') || {};
+        state.draft = storage.coreGet('draft') || {};
     },
     [SOCKET_RESTORE_INFO](state, data) {
         state.info_group = data.info_group ;
@@ -192,6 +196,7 @@ export default {
         // state.view_book_follow = data.view_book_follow ;
         state.notice_lists = data.notice_lists ;
         state.message_lists = data.message_lists;
+        state.draft = data.draft;
         data.resolve();
     },
     // 同步组信息
@@ -310,7 +315,7 @@ export default {
         let info = state.info_user[id];
         if (!info) {
             // 通知发送人 基本信息添加
-            requestUserInfo(state, data, 'view_notice');
+            infoRequest(state, id, 'view_notice');
             // 通知发送人 id 列表更新
             // state.view_notice = state.view_notice.concat([id]);
         } else {
@@ -333,44 +338,6 @@ export default {
         });
         storage.coreSet('notice_lists', state.notice_lists);
     },
-    // 同步未读消息不要了，所以只有打开窗口时有 sync_recent 类型了
-    // [SOCKET_RECENT_CHANGE](state, data) {
-    //     data.group.forEach((v) => {
-    //         let synctime = storage.getSynctime(v.id);
-    //         if (synctime) {
-    //             events.trigger('store:request:history', {
-    //                 id: v.id,
-    //                 exec: 'sync_recent'
-    //             });
-    //             return;
-    //         }
-
-    //         addViewList(state, 'view_notice_group', v.id);
-    //         addRecentNew(state, v.id, v.recent_new);
-    //     });
-
-    //     data.buddy.forEach((v) => {
-    //         let synctime = storage.getSynctime(v.id);
-    //         // 如果有的话得请求历史记录进行比对，才知道哪些是未读消息，才能添加未读条数
-    //         if (synctime) {
-    //             events.trigger('store:request:history', {
-    //                 id: v.id,
-    //                 exec: 'sync_recent'
-    //             });
-    //             return;
-    //         }
-
-    //         addRecentNew(state, v.id, v.recent_new);
-
-    //         // 判断有无好友信息，无信息要请求，主要是头像地址。。。。
-    //         let buddy = state.info_user[v.id];
-    //         if (!buddy) {
-    //             requestUserInfo(state, v, 'view_notice_single');
-    //         } else {
-    //             addViewList(state, 'view_notice_single', v.id);
-    //         }
-    //     });
-    // },
     [SOCKET_SEARCH_USER_CHANGE](state, data) {
         if (util.isArray(data)) {
             let result = state.search.result;
@@ -465,6 +432,7 @@ export default {
             state.historyContainer.nomore = false;
         }
     },
+    // 目前用于搜索结果点击进行聊天，跳转到单聊列表
     [VIEW_RIGHT_SWITCH](state, opts) {
         let open = state.rightPanel.open;
         state.rightPanel.open = Object.assign({}, open, {
@@ -472,17 +440,27 @@ export default {
         });
     },
     [VIEW_LEFT_OPEN](state, opts) {
-        events.trigger('view:clear:chatarea');
-        let id = opts.id;
+        // 先进行草稿保存
+        let draft = state.draft,
+            id_old = state.leftWindow.id;
+        if (opts.draft && opts.draft !== draft[id_old]) {
+            state.draft = Object.assign({}, draft, {
+                [id_old]: opts.draft
+            });
+        }
+
+        storage.coreSet('draft', state.draft);
+
+        let id_new = opts.id;
         // 获得点击的 signame
-        let isGroup = id.split(':')[0] !== 'oa';
+        let isGroup = id_new.split(':')[0] !== 'oa';
         let leftWindow = {
             // 聊天对象唯一标识，http 查询信息标识, 接口 resourceid 。
-            id: id,
+            id: id_new,
             // 添加 oa 前缀 id, socket 查询 id, oa:12345
             // username: opts.username,
             // 昵称、姓名 聊天窗口显示文字
-            nickname: opts.nickname || id,
+            nickname: opts.nickname || id_new,
             // 窗口类型：好友、群聊、关注。用于判断当前打开窗口。
             // signame: signame[2] === 'group' ? 'im_notice_group' : 'im_notice_single',
             signame: opts.signame,
@@ -509,6 +487,9 @@ export default {
 
         state.leftWindow = leftWindow;
 
+        // 先打开窗口，再触发清除文字
+        // events.trigger('view:clear:chatarea', draft[id_new] || '');
+
         // 打开窗口有同步时间，更新同步时间
         // 只有新的条数才拉取历史记录，就是为了得到未读消息。
         if (opts.recent_new) {
@@ -518,7 +499,7 @@ export default {
                 diffRecentNew(state);
                 // 非通知时，有新消息，且没有发送或接收过消息，拉取信息！！！没有限制条数
                 events.trigger('store:request:history', {
-                    id: id,
+                    id: id_new,
                     exec: 'sync_recent'
                 });
             }
@@ -528,15 +509,15 @@ export default {
 
         // 添加提示信息
         let welcome = state.welcome,
-            message_list = state.message_lists[id];
-        if (!welcome.hasOwnProperty(id)) {
+            message_list = state.message_lists[id_new];
+        if (!welcome.hasOwnProperty(id_new)) {
             if (message_list) {
-                state.welcome[id] = message_list.length - 1;
+                state.welcome[id_new] = message_list.length - 1;
             } else {
-                state.welcome[id] = -1;
+                state.welcome[id_new] = -1;
             }
         } else {
-            state.welcome[id] = -100;
+            state.welcome[id_new] = -100;
         }
     },
     [SOCKET_CHAT_CHANGE](state, data) {
@@ -566,10 +547,7 @@ export default {
 
                 if (isGroup) {
                     if (!state.info_user[chat.from]) {
-                        requestUserInfo(state, {
-                            id: chat.from,
-                            nickname: chat.nickname
-                        });
+                        infoRequest(state, chat.from);
                     }
                 }
 
@@ -649,23 +627,27 @@ export default {
             }
         }
 
+        if (state.draft[id]) {
+            delete state.draft[id];
+            storage.coreSet('draft', state.draft);
+        }
+
         // 这里只添加信息，不添加具体信息 在 view messageList 中添加具体消息
         if (isGroup) {
-            if (!state.info_group[data.id]) {
-                requestGroupInfo(state, data, 'view_notice_group');
+            // 收到消息的 group 信息不存在
+            if (!state.info_group[id]) {
+                infoRequest(state, id, 'view_notice_group');
             } else {
                 addViewList(state, 'view_notice_group', id);
             }
             // 如果收到消息的群成员没有信息，请求一次
             if (!state.info_user[data.from]) {
-                requestUserInfo(state, {
-                    id: data.from,
-                    nickname: data.nickname
-                });
+                infoRequest(state, data.from);
             }
         } else {
-            if (!state.info_user[data.id]) {
-                requestUserInfo(state, data, 'view_notice_single');
+            // 收到消息的 user 信息不存在
+            if (!state.info_user[id]) {
+                infoRequest(state, id, 'view_notice_single');
             } else {
                 addViewList(state, 'view_notice_single', id);
             }

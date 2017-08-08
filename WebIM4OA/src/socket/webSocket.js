@@ -237,11 +237,17 @@ class WS {
                 messagekey: data.messagekey,
                 agentname: config.nickname
             };
+
+            if (data.content) {
+                msg.msgContent = data.content;
+            }
+
             if (data.command.split('_')[0] === 'group') {
                 msg.houseid = data.sendto;
             } else {
                 msg.sendto = data.sendto;
             }
+
             this.send(msg);
             // messagekey 在发送时已生成
             let key = msg.messagekey;

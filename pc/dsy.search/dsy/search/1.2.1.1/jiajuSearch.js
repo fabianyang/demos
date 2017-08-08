@@ -3,12 +3,12 @@
  * @author: yangfan
  * @Create Time: 2016-07-01 09:50:39
  */
-define('dsy/search/1.1.2/jiajuSearch', [
-    'dsy/search/1.1.2/interfaceSearch'
+define('dsy/search/1.2.1.1/jiajuSearch', [
+    'dsy/search/1.2.1.1/interfaceSearch'
 ], function (require, exports, module) {
     'use strict';
     var vars = seajs.data.vars;
-    var Search = require('dsy/search/1.1.2/interfaceSearch');
+    var Search = require('dsy/search/1.2.1.1/interfaceSearch');
 
     function JiaJuSearch() {
         Search.call(this);
@@ -78,7 +78,7 @@ define('dsy/search/1.1.2/jiajuSearch', [
                 tpl = tpl.replace('{{search_key}}', obj.key);
                 tpl = tpl.replace('{{search_object}}', searchObject);
                 tpl = tpl.replace('{{suggest_word}}', obj.key);
-                tpl = tpl.replace('{{adImg}}', obj.adUrl ? that.advertImage : '');
+                tpl = tpl.replace('{{adImg}}', adUrl ? that.advertImage : '');
 
                 if (adUrl) {
                     advertHtml += tpl;
