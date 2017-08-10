@@ -173,8 +173,7 @@ define('dsy/search/1.2.2/xf', [
             url = that.defaultHref + '/';
         }
 
-        vars.aHref.href = url;
-        vars.aHref.click();
+        this.openUrl(key, url);
 
         if (!json) {
             json = that.formatSearch({

@@ -4,7 +4,7 @@ var gulp = require('gulp'),
     sourcemaps = require('gulp-sourcemaps');
 
 var path = {
-    src: ['./dsy/search/1.2.2/*.js', './dsy/util/1.1.0/util.js', './dsy/util/1.1.2/historyUtil.js'],
+    src: ['./dsy/search/1.2.2/*.js', './dsy/util/1.1.2/historyUtil.js'],
     dest: './build',
     maps: './maps'
 }
@@ -14,17 +14,22 @@ gulp.task('clean', function(cb) {
 });
 
 gulp.task('uglify', ['clean'], function() {
-    console.log(path.src);
     return gulp.src(path.src, {
         base: '.'
     })
         // .pipe(sourcemaps.init())
         .pipe(uglify({
-            // mangle: true,
+            mangle: false,
             output: { ascii_only: true }
         }))
         // .pipe(sourcemaps.write())
         .pipe(gulp.dest(path.dest));
 });
 
-gulp.task('default', ['uglify'], function() {});
+gulp.task('copy', ['clean'], function() {
+    return gulp.src('./dsy/main122.js', {
+        base: '.'
+    }).pipe(gulp.dest(path.dest));
+});
+
+gulp.task('default', ['uglify', 'copy'], function() {});

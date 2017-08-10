@@ -23,7 +23,7 @@ define('dsy/search/1.2.2/interface', [
             '</tr>'
         ].join('');
         this.advertImage = '<img src="http://imgd3.soufunimg.com/2016/07/19/25k/5c7d1e9a085b40e783e5818af3af8b20.png" style="width:28px;height:15px;float:right;">';
-        this.typeString = {
+        this.typeNick = {
             xf: '新房',
             esf: '二手房',
             zf: '租房'
@@ -70,11 +70,11 @@ define('dsy/search/1.2.2/interface', [
 
     InterfaceSearch.prototype.getSessionAdvert = function () {
         return HistoryUtil.getSession(this.sessionKey);
-    }
+    };
 
     InterfaceSearch.prototype.setSessionAdvert = function (obj) {
         HistoryUtil.setSession(this.sessionKey, obj);
-    }
+    };
 
     // 设置默认值时出现问题，需要个 search 对象中的 input 设置值，输入框得焦，自动填写文字会消失
     InterfaceSearch.prototype.setInputValue = function () {
@@ -126,7 +126,7 @@ define('dsy/search/1.2.2/interface', [
      */
     InterfaceSearch.prototype.setHistory = function (key, object) {
         var that = this;
-        // 一般不会传入 void key, 以防万一
+        // 一般不会传入 void key, 以防万一，海外会传入
         if (key && key !== that.defaultText) {
             HistoryUtil.setHistory(that.historyKey, object);
         }
@@ -141,7 +141,7 @@ define('dsy/search/1.2.2/interface', [
             input = vars.searchInput;
         var isClear = HistoryUtil.removeHistoryItem(that.historyKey, index);
         if (isClear) {
-            input.val(that.defaultText);
+            input.css('color', '#888').val(that.defaultText);
         } else {
             that.setInputValue();
         }
@@ -190,7 +190,7 @@ define('dsy/search/1.2.2/interface', [
                 tpl = tpl.replace(/{{history_key}}/g, item.key);
 
                 if (item.tag === 'tejia') {
-                    tpl = tpl.replace(/{{history_type}}/, that.typeString[item.type]);
+                    tpl = tpl.replace(/{{history_type}}/, that.typeNick[item.type]);
                 } else {
                     tpl = tpl.replace(/{{history_type}}/, '');
                 }
@@ -231,5 +231,14 @@ define('dsy/search/1.2.2/interface', [
         return false;
     };
 
+    InterfaceSearch.prototype.openUrl = function (key, url) {
+        vars.aHref.href = url;
+        vars.aHref.click();
+        var input = vars.searchInput;
+        if (!key) {
+            input.val(this.defaultText);
+        }
+        input.css('color', '#888');
+    };
     module.exports = InterfaceSearch;
 });

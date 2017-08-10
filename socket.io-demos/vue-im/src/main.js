@@ -20,9 +20,9 @@ Vue.use(VueRouter);
 var routes = [{
     path: '/',
     component: LoginForm
-// }, {
-//     path: '/confirm',
-//     component: Confirm
+}, {
+    path: '/confirm',
+    component: Confirm
 // }, {
 //     path: '/user',
 //     component: User

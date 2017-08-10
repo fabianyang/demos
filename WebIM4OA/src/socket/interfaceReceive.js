@@ -37,6 +37,9 @@ let formatReceiveJSON = (json) => {
         result.sendto = json.houseid;
     } else if (result.from === config.username) {
         result.id = json.sendto;
+        if (result.from !== result.sendto) {
+            result.source = 'send';
+        }
         // 历史记录会进行判断是否为自己发送的。
         if (json.clienttype === config.clienttype) {
             result.source = 'send';

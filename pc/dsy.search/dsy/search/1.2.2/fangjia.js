@@ -111,8 +111,7 @@ define('dsy/search/1.2.2/fangjia', [
             url = url + '?strcity=' + escape(cityName);
         }
 
-        vars.aHref.href = url;
-        vars.aHref.click();
+        this.openUrl(key, url);
 
         var so = data;
 

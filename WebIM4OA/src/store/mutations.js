@@ -177,11 +177,11 @@ let diffNoticeRecentNew = (state) => {
 };
 
 export default {
-    [SOCKET_RECONNECT](state) {
-        state.notice_lists = storage.coreGet('notice_lists') || [];
-        state.message_lists = storage.coreGet('message_lists') || {};
-        state.draft = storage.coreGet('draft') || {};
-    },
+    // [SOCKET_RECONNECT](state) {
+    //     state.notice_lists = storage.coreGet('notice_lists') || [];
+    //     state.message_lists = storage.coreGet('message_lists') || {};
+    //     state.draft = storage.coreGet('draft') || {};
+    // },
     [SOCKET_RESTORE_INFO](state, data) {
         state.info_group = data.info_group ;
         state.info_user = data.info_user ;
@@ -443,12 +443,15 @@ export default {
         // 先进行草稿保存
         let draft = state.draft,
             id_old = state.leftWindow.id;
-        if (opts.draft && opts.draft !== draft[id_old]) {
-            state.draft = Object.assign({}, draft, {
-                [id_old]: opts.draft
-            });
+        if (opts.draft !== draft[id_old]) {
+            if (!opts.draft) {
+                delete state.draft[id_old];
+            } else {
+                state.draft = Object.assign({}, draft, {
+                    [id_old]: opts.draft
+                });
+            }
         }
-
         storage.coreSet('draft', state.draft);
 
         let id_new = opts.id;
@@ -615,6 +618,10 @@ export default {
             }
         }
     },
+    [VIEW_DRAFT_CHAGE](state, id) {
+        delete state.draft[id];
+        storage.coreSet('draft', state.draft);
+    },
     [VIEW_CHAT_CHANGE](state, data) {
         let id = data.id;
         let isGroup = id.split(':')[0] !== 'oa';
@@ -659,10 +666,18 @@ export default {
             list = lists[id] = [];
         }
 
-        if (list.length > messageMaxCount) {
+        if (list.length >= messageMaxCount) {
             list.pop();
+            list.unshift(data);
+            let welcome = state.welcome;
+            if (welcome.hasOwnProperty(id)) {
+                state.welcome = Object.assign({}, welcome, {
+                    [id]: welcome[id] - 1
+                });
+            }
+        } else {
+            list.unshift(data);
         }
-        list.unshift(data);
         state.message_lists = Object.assign({}, lists, {
             [id]: list
         });

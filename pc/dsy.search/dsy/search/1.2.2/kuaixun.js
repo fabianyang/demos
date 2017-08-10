@@ -44,8 +44,7 @@ define('dsy/search/1.2.2/kuaixun', [
             url = 'http://news.fang.com/s/zx_' + encodeURI(encodeURI(key)) + '_' + type + '_' + fld + '_' + time + '_' + sort + '_' + encodeURI(encodeURI(cityName)) + '_1.html';
         }
 
-        vars.aHref.href = url;
-        vars.aHref.click();
+        this.openUrl(key, url);
 
         that.setHistory(key, {
             key: key,

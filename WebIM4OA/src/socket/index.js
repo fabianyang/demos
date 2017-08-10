@@ -16,7 +16,6 @@ class IndexSocket {
     constructor() {
         this.core = new Socket();
         this.retryCount = 0;
-        this.hasRestore = false;
         this.syncError = {
             buddy: true,
             group: true,
@@ -75,17 +74,16 @@ class IndexSocket {
 
             // 有存储备份信息。
 
-            if (!this.hasRestore) {
-                let promise = new Promise((resolve, reject) => {
-                    data.resolve = resolve;
-                    events.trigger('socket:restore:info', data);
-                });
-                promise.then(() => {
-                    console.log('sync from localstorage finish!');
-                    this.hasRestore = true;
-                    resolve();
-                });
-            }
+            let promise = new Promise((resolve, reject) => {
+                data.resolve = resolve;
+                events.trigger('socket:restore:info', data);
+            });
+            promise.then(() => {
+                console.log('sync from localstorage finish!');
+                this.hasRestore = true;
+                resolve();
+            });
+
             if (this.syncError.buddy) {
                 this.sync_buddy().then(() => {
                     this.syncError.buddy = false;

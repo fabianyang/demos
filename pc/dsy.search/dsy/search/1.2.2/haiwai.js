@@ -83,39 +83,34 @@ define('dsy/search/1.2.2/haiwai', [
 
     // window.clickHaiwaifangchan(e)
     HaiWaiSearch.prototype.searchByKey = function (pKey, data) {
-        var that = this,
-            key = pKey;
-        var bu = that.backup[key],
+        var key = pKey;
+        var bu = this.backup[key],
             so = null;
 
         if (bu) {
             so = JSON.parse(bu);
         } else if (data) {
             so = data;
-        } else {
-            so = {
-                new: true,
-                key: key,
-                hrefUrl: ''
-            };
         }
 
-        var url = so.hrefUrl;
+        var url = so ? so.hrefUrl : '';
         if (url) {
             url = 'http://world.fang.com/' + url;
-        } else if (key && key !== that.defaultText) {
+        } else if (key && key !== this.defaultText) {
             url = 'http://world.fang.com/house/kw' + key;
         } else {
             url = 'http://world.fang.com/';
         }
 
-        vars.aHref.href = url;
-        vars.aHref.click();
+        this.openUrl(key, url);
 
-        if (so.new) {
-            so.hrefUrl = url;
+        if (!so) {
+            so = {
+                key: key,
+                hrefUrl: url
+            };
         }
-        that.setHistory(key, so);
+        this.setHistory(key, so);
     };
 
     module.exports = new HaiWaiSearch();

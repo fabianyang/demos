@@ -143,7 +143,7 @@ define('dsy/search/1.2.2/zf', [
     };
 
     // window.clickMaiershoufang(e);
-    ZFSearch.prototype.searchByKey = function (key, data) {
+    ZFSearch.prototype.searchByKey = function (key) {
         var that = this;
         var url = that.defaultHref,
             cityCode = vars.cityCode;
@@ -157,18 +157,14 @@ define('dsy/search/1.2.2/zf', [
             }
         }
 
-        vars.aHref.href = url;
-        vars.aHref.click();
+        this.openUrl(key, url);
 
-        // 特价房搜索过来的不添加历史记录
-        if (+data.store) {
-            var so = that.formatSearch({
-                key: key,
-                hrefUrl: url
-            });
+        var so = that.formatSearch({
+            key: key,
+            hrefUrl: url
+        });
 
-            that.setHistory(key, so);
-        }
+        that.setHistory(key, so);
     };
 
     module.exports = new ZFSearch();

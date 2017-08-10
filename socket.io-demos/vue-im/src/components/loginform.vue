@@ -41,14 +41,15 @@ export default {
         if (result.status === 'OK') {
           // this.userLogin(username)
           // CHAT.init(username)
-          this.$router.go('/user/userlist/noconnect')
+          this.$router.push('/user/userlist/noconnect')
         } else {
           alert(result.msg)
         }
       })
     },
     confirm: function () {
-      this.$router.go('/confirm')
+      debugger;
+      this.$router.push('/confirm')
     }
   },
   created: function () {

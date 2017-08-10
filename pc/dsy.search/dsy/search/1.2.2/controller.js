@@ -156,16 +156,21 @@ define('dsy/search/1.2.2/controller', [
      * @return {[type]}      [description]
      */
     Prototype.vwgCallback = function (pvwg) {
-        var that = this;
-        that.adImg.hide();
+        vars.userType = {
+            dsy_D02_02: 'xf',
+            dsy_D02_03: 'esf',
+            dsy_D02_04: 'zf'
+        }[pvwg];
+        console.log('用户身份：' + vars.userType);
+        this.adImg.hide();
         var vwg = pvwg ? pvwg : vars.vwg;
         var index = $('#' + vwg).index();
-        that.clearClass();
-        that.changeClass(index);
-        that.setNavigateTag();
-        var tag = that.navigateTag;
+        this.clearClass();
+        this.changeClass(index);
+        this.setNavigateTag();
+        var tag = this.navigateTag;
         allSearch[tag].setInputValue();
-        that.hoverCallAdvert();
+        this.hoverCallAdvert();
     };
 
     Prototype.bindNavigateEvent = function () {
@@ -227,7 +232,7 @@ define('dsy/search/1.2.2/controller', [
             key = $.trim(key.replace(/\ +/g, ' '));
 
             // 跳转，进行历史记录
-            allSearch[tag].searchByKey(key, 'button');
+            allSearch[tag].searchByKey(key, null, 'button');
             return false;
         });
     };
@@ -349,7 +354,7 @@ define('dsy/search/1.2.2/controller', [
             // 回车等同点击查询按钮，判断 ajax 防止过快点击
             if (keyCode === 13) {
                 var trSelected = wrapper.find('tr.selected');
-                var tdClearHistory = trSelected.find('td.clear_history')
+                var tdClearHistory = trSelected.find('td.clear_history');
                 if (tdClearHistory.length) {
                     tdClearHistory.trigger('click');
                 } else {
@@ -373,7 +378,7 @@ define('dsy/search/1.2.2/controller', [
         that.wrapper.on('click', 'tr', function () {
             clearInterval(that.timer);
             var key = $(this).attr('data-key'),
-                so = $(this).attr('data-') || $(this).attr('data-history');
+                so = $(this).attr('data-search') || $(this).attr('data-history');
             var json = JSON.parse(so);
             allSearch[that.navigateTag].searchByKey(key, json, 'list');
             that.input.val(key);
@@ -512,7 +517,8 @@ define('dsy/search/1.2.2/controller', [
                 q: escape(escape(key)),
                 vv: vv,
                 city: vars.sfsf.city,
-                atype: 4
+                atype: 4,
+                cityEn: vars.cityCode
             };
 
             this.requestSuggest(param);
@@ -625,7 +631,8 @@ define('dsy/search/1.2.2/controller', [
 
         var param = {
             q: '',
-            init: 'true'
+            init: 'true',
+            cityEn: vars.cityCode
         };
         if (tag === 'xf') {
             // 设置新房广告

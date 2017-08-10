@@ -3,15 +3,14 @@
         <!-- 工具栏 -->
         <div class="fbtools clearfix">
             <!-- 工具选中时添加类名 cur -->
-            <div id="im_facebutton" class="bq" :class="{ cur: emoji_show }" @click="emoji_show = !emoji_show"></div>
+            <div id="im_facebutton" class="bq" :class="{ cur: emoji_show }" @click="emoji_show = !emoji_show" title="选择表情"></div>
             <div class="tp" :class="{ cur: upload.state && upload.type === 'img' }">
-                <input type="file" title="发送图片" v-if="upload.state !== 'success' && upload.state !== 'fail'" @change="uploadImage" />
+                <input type="file" title="发送图片" v-if="upload.state !== 'loading'" @change="uploadImage" />
             </div>
-
-            <div class="jl" :class="{ cur: historyContainerOpen }" @click="toggleHistoryContainer"></div>
             <div class="wj" :class="{ cur: upload.state && upload.type === 'file' }">
-                <input type="file" title="发送文件" v-if="upload.state !== 'success' && upload.state !== 'fail'" @change="uploadFile" />
+                <input type="file" title="发送文件" v-if="upload.state !== 'loading'" @change="uploadFile" />
             </div>
+            <div class="jl" :class="{ cur: historyContainerOpen }" @click="toggleHistoryContainer" title="历史记录"></div>
             <!-- 表情 默认隐藏 显示添加 show , yangfan: img 添加个 a 标签-->
             <div class="bqbox" v-show="emoji_show">
                 <div class="bqcon">
@@ -44,7 +43,7 @@
                         <img :src="extension" :alt="upload.name" width="50" height="50">
                     </div>
                 </a>
-                <a @click="sendUpload">发送</a>
+                <a @click="sendUpload" id="im_uploadSuccess" href="javascript:;" @keydown.enter="sendUpload">发送</a>
                 <a @click="clear">删除</a>
             </p>
             <p class="upload fail" v-show="upload.state === 'fail'">图片上传失败，请稍后上传
@@ -63,7 +62,7 @@ import setting from '../setting';
 import events from '../events';
 import util from '../util';
 import { mapState, mapMutations } from 'vuex';
-import { VIEW_CHAT_CHANGE, VIEW_LEFT_OPEN, VIEW_TOGGLE_HISTORY } from '../store/mutation-types';
+import { VIEW_CHAT_CHANGE, VIEW_LEFT_OPEN, VIEW_TOGGLE_HISTORY,VIEW_DRAFT_CHAGE } from '../store/mutation-types';
 
 let config = window.FangChat.config;
 let el_textarea = (function() {
@@ -125,26 +124,32 @@ let scope_errorShow = function (text) {
 
 let scope_uploadComplete = function(data, type) {
     let that = this;
+    let success = () => {
+        that.upload.state = 'success';
+        that.upload.response = data;
+        this.$nextTick(() => {
+            document.getElementById('im_uploadSuccess').focus();
+        });
+    }
+
     if (!data) {
         that.upload.state = 'fail';
-        setTimeout(() => {
-            that.clear();
-        }, 2000);
     } else {
         if (type === 'img') {
             let image = new Image();
             image.src = data;
             image.onload = function (a) {
-                that.upload.state = 'success';
-                that.upload.response = data;
+                success();
             }
         }
         if (type === 'file') {
-            that.upload.state = 'success';
-            that.upload.response = data;
+            success();
         }
         // that.showTip('图片上传成功，请发送。 <a href="' + data + '" target="_blank" data-id="look">\u67e5\u770b</a> <a href="javascript:;" data-id="del">\u5220\u9664</a>');// \u56fe\u7247\u4e0a\u4f20\u6210\u529f\uff0c\u8bf7\u53d1\u9001\u3002
     }
+
+    this.viewDraftChange(this.leftWindow.id);
+    this.clear('chat');
 }
 
 // https://stackoverflow.com/questions/35559097/how-to-add-emoji-in-between-the-letters-in-contenteditable-div
@@ -173,12 +178,26 @@ function getCaretCharacterOffsetWithin(element) {
 }
 
 function moveEnd(element) {
-    var sel = window.getSelection();
-    var range = document.createRange();
-    range.selectNodeContents(element);
-    range.collapse(false);
-    sel.removeAllRanges();
-    sel.addRange(range);
+    // var range = document.createRange();
+    // range.selectNodeContents(element);
+    // range.collapse(false);
+    // var sel = window.getSelection();
+    // sel.removeAllRanges();
+    // sel.addRange(range);
+
+    element.focus(); //解决ff不获取焦点无法定位问题
+    if (window.getSelection) {//ie11 10 9 ff safari
+        var range = window.getSelection();//创建range
+        range.selectAllChildren(element);//range 选择element下所有子内容
+        range.collapseToEnd();//光标移至最后
+    }
+    else if (document.selection) {//ie10 9 8 7 6 5
+        var range = document.selection.createRange();//创建选择对象
+        //var range = document.body.createTextRange();
+        range.moveToElementText(element);//range定位到element
+        range.collapse(false);//光标移至最后
+        range.select();
+    }
 }
 
 function sizeCompute(b) {
@@ -200,10 +219,11 @@ export default {
             }
             let draft = this.draft[id];
             if (draft) {
-                // this.prompt_show = false;
+                this.prompt_show = false;
                 el_textarea().innerText = draft;
-                el_textarea().focus();
-                moveEnd(el_textarea());
+                this.$nextTick(() => {
+                    moveEnd(el_textarea());
+                })
             } else {
                 this.prompt_show = true;
                 this.clear('chat');
@@ -242,8 +262,6 @@ export default {
                     return;
                 }
             }
-            this.prompt_show = true;
-            this.clear('chat');
         },
         sendChat(event) {
             event.preventDefault();
@@ -287,8 +305,6 @@ export default {
         uploadImage: function (ev) {
             let that = this;
             if (ev.type === 'paste') {
-                this.upload.state = 'loading';
-                this.upload.type = 'png';
                 // this.can_paste_upload = true;
                 let _ua = navigator.userAgent.toLowerCase();
                 let WEBKIT = _ua.indexOf('applewebkit') > -1;
@@ -298,6 +314,9 @@ export default {
                     // 可以变成纯文本
                     var file = ev.clipboardData.items[0].getAsFile();
                     if (file) {
+                        this.clear();
+                        this.upload.state = 'loading';
+                        this.upload.type = 'png';
                         var reader = new FileReader();
                         reader.onload = function (evt) {
                             var result = evt.target.result;
@@ -324,11 +343,13 @@ export default {
                     setTimeout(() => {
                         let el = el_textarea();
                         let html = el.innerHTML;
-                        console.log(el.innerHTML);
                         if (html.search(/<img src="data:.+;base64,/) > -1) {
+                            this.clear();
+                            this.upload.state = 'loading';
+                            this.upload.type = 'png';
                             let img = html.match(/src=[\'\"]?([^\'\"]*)[\'\"]?/i)[1];
                             // let text = html.replace(/<img(.*)src=\"([^\"]+)\"[^>]+>/g, '');
-                            el.innerText = html.replace(/<img [^>]*src=['"]([^'"]+)[^>]*>/gi, '');;
+                            el.innerText = html.replace(/<img [^>]*src=['"]([^'"]+)[^>]*>/gi, '');
                             api.pasteUploadImage(img).then((data) => {
                                 scope_uploadComplete.call(that, data, 'img');
                             }).catch(() => {
@@ -353,6 +374,7 @@ export default {
                     alert('不支持文件类型' + fileType + '，支持 jpeg,jpg,gif,png,bmp 图片类型文件！');
                     return;
                 }
+                this.clear();
                 this.upload.state = 'loading';
                 this.upload.type = fileType;
                 let file = files[0];
@@ -401,6 +423,7 @@ export default {
                 alert('不支持文件类型' + fileType + '，支持 doc, xls, ppt, pdf, txt 类型文件！');
                 return;
             }
+            this.clear();
 
             let fileSize = file.size;
             this.upload.state = 'loading';
@@ -430,7 +453,7 @@ export default {
             let position = this.caret_position;
             // innerHtml ie 下空值会多出 <br>
             let text = el.innerText;
-            console.log(text);
+            // console.log(text);
             el.innerText = text.slice(0, position) + '[' + key + ']' + text.slice(position, text.length);
             this.emoji_show = false;
             this.prompt_show = false;
@@ -444,6 +467,7 @@ export default {
             var sel = window.getSelection();
             sel.removeAllRanges();
             sel.addRange(range);
+            this.save_caret_position();
         },
         save_caret_position() {
             this.caret_position = getCaretCharacterOffsetWithin(el_textarea());
@@ -472,15 +496,15 @@ export default {
         },
         ...mapMutations({
             'viewChatMsg': VIEW_CHAT_CHANGE,
-            'toggleHistory': VIEW_TOGGLE_HISTORY
+            'toggleHistory': VIEW_TOGGLE_HISTORY,
+            'viewDraftChange': VIEW_DRAFT_CHAGE
         })
     },
     data() {
         return {
             changeHeight: false,
-            // can_paste_upload: false,
-            prompt_show: true,
             caret_position: 0,
+            prompt_show: true,
             emoji_show: false,
             // emoji_path: setting.EMOJI.path,
             emoji_map: setting.EMOJI,
@@ -508,23 +532,7 @@ export default {
 
             document.getElementById('im_app').addEventListener('click', this.emoji_close);
 
-            // 第一次打开的时候也要判断是否有草稿
-            // this.prompt_show = !el_textarea().innerText;
-
         });
-
-        // events.on('view:clear:chatarea', (draft) => {
-        //     if (draft) {
-        //         // this.prompt_show = false;
-        //         el_textarea().innerText = draft;
-        //         el_textarea().focus();
-        //         moveEnd(el_textarea());
-        //     } else {
-        //         this.prompt_show = true;
-        //         this.clear('chat');
-        //     }
-        //     this.clear();
-        // });
 
         // 干掉IE http之类地址自动加链接
         try {
@@ -773,6 +781,8 @@ p {
     color: #4d90fe;
     // yangfan add
     display: inline-block;
+    vertical-align: middle;
+    outline: none;
 }
 
 .upload.success .image_box img {
@@ -823,18 +833,8 @@ p {
     color: #e01818;
 }
 
-.upload.fail .info {
-    width: 140px;
-    height: 50px;
-    float: left;
-    margin-right: 10px;
-}
-
-.upload.fail .type {
-    width: 50px;
-    height: 50px;
-    border-radius: 5px;
-    overflow: hidden;
+.upload.fail a {
+    color: #4d90fe;
 }
 
 .im_prompt {

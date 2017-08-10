@@ -1,4 +1,7 @@
 export default {
+    welcome_index(state) {
+        return state.welcome[state.leftWindow.id];
+    },
     message_list(state) {
         let list = state.message_lists[state.leftWindow.id];
         list = list ? list.concat().reverse() : [];

@@ -1,3 +1,4 @@
+// 没法配本地环境了，服务器添加了 refer 的限制。
 ;(function (win) {
     'use strict';
     var vars = win._vars || (win._vars = {});

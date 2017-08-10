@@ -1,25 +1,25 @@
 <template>
-<div>
-  <form v-bind:action="url" method="post" enctype="multipart/form-data" id="uploadForm">
-    <div class="user-profile-mini">
-      <img class="profile-img" v-bind:src="fileSrc">
-      <input type="file" class="user-avatar-input" v-on:change="fileChange" name="FileContent">
-      <div class="user-profile-info">
+  <div>
+    <form v-bind:action="url" method="post" enctype="multipart/form-data" id="uploadForm">
+      <div class="user-profile-mini">
+        <img class="profile-img" v-bind:src="fileSrc">
+        <input type="file" class="user-avatar-input" v-on:change="fileChange" name="FileContent">
+        <div class="user-profile-info">
+        </div>
       </div>
+      <input type="submit" class="user-profile-btn" v-bind:value="submitStatus">
+    </form>
+    <div class="confirm-input-content">
+      <input v-model="user" class="user-input" type="text" placeholder="请输入用户名">
+      <input v-model="psd" class="user-input" type="password" placeholder="请输入密码">
+      <input v-model="psd_r" class="user-input" type="password" placeholder="确认密码">
     </div>
-    <input type="submit" class="user-profile-btn" v-bind:value="submitStatus">
-  </form>
-  <div class="confirm-input-content">
-    <input v-model="user" class="user-input" type="text" placeholder="请输入用户名">
-    <input v-model="psd" class="user-input" type="password" placeholder="请输入密码">
-    <input v-model="psd_r" class="user-input" type="password" placeholder="确认密码">
+    <div class="confirm-login-content">
+      <a class="login" @click='login'>
+        注册
+      </a>
+    </div>
   </div>
-  <div class="confirm-login-content">
-    <a class="login" @click='login'>
-      注册
-    </a>
-  </div>
-</div>
 </template>
 <script>
 import axios from 'axios';

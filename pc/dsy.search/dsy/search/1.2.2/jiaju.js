@@ -115,8 +115,7 @@ define('dsy/search/1.2.2/jiaju', [
             url = 'http://home.fang.com/album/search/?page=1&sortid=11';
         }
 
-        vars.aHref.href = url;
-        vars.aHref.click();
+        this.openUrl(key, url);
 
         if (!json) {
             json = that.formatSearch({
