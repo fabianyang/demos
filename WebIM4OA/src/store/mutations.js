@@ -39,11 +39,11 @@ let formatNotSyncInfo = (id, view_name) => {
 /**
  * @param {*} state : vuex state
  * @param {*} id ：用户 id
- * @param {*} view_name : 请求完成后返回的信息，添加到对应 view_name 列表中。
+ * @param {*} view_name : 请求完成后返回的信息，添加到对应 view_name 列表中。没有view_name 参数时，只请求用户信息。
  */
 let infoRequest = (state, id, view_name) => {
     let info = formatNotSyncInfo(id, view_name);
-    if (view_name.split('_')[2] === 'group') {
+    if (view_name && view_name.split('_')[2] === 'group') {
         state.info_group = Object.assign({}, state.info_group, {
             [id]: info
         });
@@ -239,15 +239,17 @@ export default {
                 o[id] = v;
             }
 
-            // 不将登录的信息添加到队列，因为要置顶
-            if (id !== config.username) {
+            // 不将登录的信息添加到队列，因为要置顶；不是组中的未同步成员或初始同步
+            if (id !== config.username && v.view_name !== 'only_request') {
                 bl.push(id);
-            }
-            if (v.follow) {
-                fl.push(id);
+
+                if (v.follow) {
+                    fl.push(id);
+                }
             }
 
-            if (v.view_name) {
+            // 不是组中的未同步成员
+            if (v.view_name && v.view_name !== 'only_request') {
                 addViewList(state, v.view_name, id);
             }
 
@@ -533,6 +535,9 @@ export default {
         if (history) {
             state.historyContainer.loadState = '';
             state.historyContainer.nomore = !history.length;
+            state.welcome = Object.assign({}, state.welcome, {
+                [id]: -100
+            });
 
             let list = [];
             // let recent_new = 0;
@@ -550,7 +555,7 @@ export default {
 
                 if (isGroup) {
                     if (!state.info_user[chat.from]) {
-                        infoRequest(state, chat.from);
+                        infoRequest(state, chat.from, 'only_request');
                     }
                 }
 
@@ -605,6 +610,7 @@ export default {
             }
         } else {
             let leftWindow = state.leftWindow;
+
             // 接收到新消息，没有打开左侧聊天窗口，或者当前窗口不是消息发送人，或者最小化状态，记录新条数
             if (state.app === 'min' || !leftWindow.id || leftWindow.id !== id || leftWindow.signame === 'im_notice') {
                 // 如果没有打开窗口，且没有同步消息时间
@@ -634,7 +640,7 @@ export default {
             }
         }
 
-        if (state.draft[id]) {
+        if (state.draft[id] && data.source === 'send') {
             delete state.draft[id];
             storage.coreSet('draft', state.draft);
         }
@@ -649,7 +655,7 @@ export default {
             }
             // 如果收到消息的群成员没有信息，请求一次
             if (!state.info_user[data.from]) {
-                infoRequest(state, data.from);
+                infoRequest(state, data.from, 'only_request');
             }
         } else {
             // 收到消息的 user 信息不存在

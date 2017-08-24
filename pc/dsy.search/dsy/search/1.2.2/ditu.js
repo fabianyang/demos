@@ -30,7 +30,7 @@ define('dsy/search/1.2.2/ditu', [
     DituSearch.prototype.init = function () {
         this.tpl = [
             '<tr data-key="{{search_key}}" data-search=\'{{search_object}}\'>',
-            '<th><p>{{suggest_word}}&nbsp;<span class="gray9">{{suggest_type}}</span></p></th>',
+            '<th><p>{{suggest_word}}&nbsp;<span class="gray9">{{suggest_type}}</span>&nbsp;<span class="gray9">{{suggest_ext}}</span></p></th>',
             '<td></td>',
             '</tr>'
         ].join('');
@@ -53,7 +53,8 @@ define('dsy/search/1.2.2/ditu', [
             // 搜索跳转 url
             hrefUrl: opts.hrefUrl || '',
             type: opts.type || '',
-            district: opts.district || '',
+            // 扩展字段
+            ext: opts.ext || '',
             tag: this.tag,
             suffix: this.suffix
         };
@@ -68,6 +69,7 @@ define('dsy/search/1.2.2/ditu', [
         tpl = tpl.replace('{{suggest_word}}', obj.key);
 
         tpl = tpl.replace('{{suggest_type}}', this.typeNick[obj.type]);
+        tpl = tpl.replace('{{suggest_ext}}', obj.ext);
         return tpl;
     };
 
@@ -82,12 +84,8 @@ define('dsy/search/1.2.2/ditu', [
                 var row = rows[i];
                 var obj = this.formatSearch({
                     key: row.name,
-                    type: {
-                        新房: 'xf',
-                        二手房: 'esf',
-                        租房: 'zf'
-                    }[row.ywType],
-                    district: row.district
+                    type: row.ywType,
+                    ext: row.ext
                 });
 
                 html += this.replaceTpl(obj);
@@ -128,7 +126,7 @@ define('dsy/search/1.2.2/ditu', [
                     break;
                 case 'esf':
                 case 'zf':
-                    url = this.defaultHref[type] + (key ? 'kw' + this.encode(key) + '/' : '');
+                    url = this.defaultHref[type] + (key ? 'kw' + encodeURIComponent(key) + '/' : '');
                     break;
             }
         }
@@ -136,13 +134,15 @@ define('dsy/search/1.2.2/ditu', [
         // 生成正确的跳转 url
         if (url) {
             this.openUrl(key, url);
+            // 直接进行回车的时候，没有 data 传进来
 
-            var json = this.formatSearch({
+            data = data || this.formatSearch({
                 key: key,
-                hrefUrl: url
+                hrefUrl: url,
+                type: type
             });
 
-            this.setHistory(key, json);
+            this.setHistory(key, data);
         }
     };
 

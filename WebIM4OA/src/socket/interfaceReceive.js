@@ -32,18 +32,27 @@ let formatReceiveJSON = (json) => {
     };
 
     let isGroup = json.command.split('_')[0] === 'group';
+    // 群聊情况
     if (isGroup) {
         result.id = json.houseid;
         result.sendto = json.houseid;
+        // 自己从其他端发送的消息
+        if (result.from === config.username) {
+            result.source = 'send';
+        }
+    // 单聊情况 发送人为当前 oa web 登录用户
     } else if (result.from === config.username) {
         result.id = json.sendto;
-        if (result.from !== result.sendto) {
-            result.source = 'send';
-        }
-        // 历史记录会进行判断是否为自己发送的。
-        if (json.clienttype === config.clienttype) {
-            result.source = 'send';
-        }
+        // 历史记录需要进行判断是否为自己发送的。
+        // if (json.clienttype === config.clienttype) {
+        //     result.source = 'send';
+        // }
+        // 其他端 当前 oa web 登录用户发送给其他人
+        // if (result.from !== result.sendto) {
+        //     result.source = 'send';
+        // }
+        // 更改逻辑 20170810 只要是自己的消息，就在右边啦
+        result.source = 'send';
     } else {
         result.id = result.from;
     }

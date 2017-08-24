@@ -29,7 +29,9 @@ export default {
     LONGPOLLING_CI: longPollingUrl + '/ClientInterface',
     HTTP_CI: httpUrl + '/ClientInterface',
     // UPLOAD_IMG_PATH: 'http://img1u.soufun.com/upload/mchat?channel=webim&city=',
-    UPLOAD_FILE_PATH: 'http://124.251.47.32:8097/upload/image.do',
+    // 测试
+    // UPLOAD_FILE_PATH: 'http://124.251.47.32:8097/upload/image.do',
+    UPLOAD_FILE_PATH: 'http://124.251.46.245:8097/upload/image.do',
     UPLOAD_IMG_BACK_URL_PATH: 'http://activities.m.fang.com/im/?c=imchat',
     PASTE_IMG_PATH: 'http://activities.m.fang.com/im/?c=imgUpload&a=ajaxUploadImg',
     PASTE_IMG_BACK_URL_PREFIX: 'http://static.soufunimg.com/h5',

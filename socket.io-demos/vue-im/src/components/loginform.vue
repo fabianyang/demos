@@ -19,7 +19,8 @@
 import axios from 'axios';
 // import { userLogin } from '../vuex/actions'
 // import vuex from 'vuex'
-// import CHAT from '../client'
+import store from '../vuex/store';
+import CHAT from '../client'
 import settings from '../settings.js'
 export default {
   name: 'login-form',
@@ -36,11 +37,12 @@ export default {
         password: this.psd
       }
       axios.post(settings.server + '/login', user).then((res) => {
-        var result = res.body
-        var username = result.data.user.username
+        var result = res.data;
+        var username = result.data.user.username;
         if (result.status === 'OK') {
           // this.userLogin(username)
-          // CHAT.init(username)
+          CHAT.init(username);
+          store.commit('login', username);
           this.$router.push('/user/userlist/noconnect')
         } else {
           alert(result.msg)
@@ -48,7 +50,6 @@ export default {
       })
     },
     confirm: function () {
-      debugger;
       this.$router.push('/confirm')
     }
   },

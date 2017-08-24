@@ -43,7 +43,8 @@ define('dsy/util/1.1.2/historyUtil', function () {
             adUrl: '',
             type: '',
             tag: '',
-            suffix: ''
+            suffix: '',
+            ext: ''
         };
     };
 
@@ -157,7 +158,6 @@ define('dsy/util/1.1.2/historyUtil', function () {
     historyUtil.prototype.clearHistory = function (key) {
         vars.localStorage && vars.localStorage.removeItem(key);
     };
-
 
     historyUtil.prototype.setSession = function (key, val) {
         if (vars.sessionStorage) {

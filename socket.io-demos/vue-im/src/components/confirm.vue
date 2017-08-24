@@ -23,7 +23,7 @@
 </template>
 <script>
 import axios from 'axios';
-import { userLogin } from '../vuex/actions'
+// import { userLogin } from '../vuex/actions'
 import settings from '../settings.js'
 import vuex from 'vuex'
 export default {
@@ -47,10 +47,9 @@ export default {
 
       if (this.psd !== this.psd_r || !this.psd || !this.psd_r || !this.user) {
         alert('填写信息有误')
-      } else if (!this.download_url) {
-        alert('请上传头像')
+        // } else if (!this.download_url) {
+        //   alert('请上传头像')
       } else {
-        console.log(this.user)
         var user = {
           username: this.user,
           password: this.psd,
@@ -58,9 +57,9 @@ export default {
           url: this.download_url
         }
         axios.post(settings.server + '/addUser', user).then((res) => {
-          var result = res.body
+          var result = res.data;
           if (result.status === 'OK') {
-            this.$router.go('/')
+            this.$router.push('/')
           } else {
             alert(result.msg)
           }

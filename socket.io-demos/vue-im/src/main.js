@@ -23,36 +23,36 @@ var routes = [{
 }, {
     path: '/confirm',
     component: Confirm
-// }, {
-//     path: '/user',
-//     component: User
-// }, {
-//     path: '/user/alivelist',
-//     component: AliveList
-// }, {
-//     path: '/user/alivelist/talk',
-//     component: Talk
-// }, {
-//     path: '/user/alivelist//noperson',
-//     component: Noperson
-// }, {
-//     path: '/user/alivelist//info',
-//     component: Info
-// }, {
-//     path: '/user/account',
-//     component: Account
-// }, {
-//     path: '/user/userlist',
-//     component: UserList
-// }, {
-//     path: '/user/userlist/talk',
-//     component: Talk
-// }, {
-//     path: '/user/userlist/noconnect',
-//     component: Noconnect
-// }, {
-//     path: '/user/new',
-//     component: New
+}, {
+    path: '/user',
+    component: User
+}, {
+    path: '/user/alivelist',
+    component: AliveList
+}, {
+    path: '/user/alivelist/talk',
+    component: Talk
+}, {
+    path: '/user/alivelist/noperson',
+    component: Noperson
+}, {
+    path: '/user/alivelist/info',
+    component: Info
+}, {
+    path: '/user/account',
+    component: Account
+}, {
+    path: '/user/userlist',
+    component: UserList
+}, {
+    path: '/user/userlist/talk',
+    component: Talk
+}, {
+    path: '/user/userlist/noconnect',
+    component: Noconnect
+}, {
+    path: '/user/new',
+    component: New
 }];
 // router.map({
 // });

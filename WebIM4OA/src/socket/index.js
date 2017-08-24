@@ -28,11 +28,6 @@ class IndexSocket {
         this.core.login().then(() => {
             this.sync().then(() => {
                 callback && callback();
-                // 获取登录人信息
-                this.postUserInfo([{
-                    id: config.username
-                }]);
-
                 // 同步联系人完成后，同步未读消息
                 // 不同步未读消息了
                 // let time = storage.getSynctime();
@@ -43,6 +38,11 @@ class IndexSocket {
             }).catch(() => {
                 console.log('sync error');
             });
+
+            // 获取登录人信息
+            this.postUserInfo([{
+                id: config.username
+            }]);
         }).catch(function (error) {
             console.log('login', error);
             events.trigger('socket:state:change', 'error');

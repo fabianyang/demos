@@ -64,8 +64,8 @@ define('dsy/main122', [
         cityName: cityName,
         sfsf: {
             city: escape(window.SFSF.city),
-            url: 'http://124.251.46.37:9402/proxy/sskdropdowndataV8?t=' + Math.random()
-            // url: window.SFSF.info[window.SFSF.city].house.suggest_url + '?t=' + Math.random()
+            // url: 'http://124.251.46.37:9402/proxy/sskdropdowndataV8?t=' + Math.random()
+            url: window.SFSF.info[window.SFSF.city].house.suggest_url + '?t=' + Math.random()
         },
         aHref: $('#pinggu')[0],
         getRequestNumber: function () {

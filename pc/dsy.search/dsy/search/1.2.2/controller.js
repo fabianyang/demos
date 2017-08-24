@@ -210,9 +210,9 @@ define('dsy/search/1.2.2/controller', [
             clearInterval(that.timer);
 
             // 正在请求过程不能跳转
-            if (that.ajax) {
-                return false;
-            }
+            // if (that.ajax) {
+            //     return false;
+            // }
             var input = that.input;
             that.wrapper.empty().hide();
             that.input.blur();
@@ -505,7 +505,7 @@ define('dsy/search/1.2.2/controller', [
             var vv = {
                 tejia: 'tejiafang',
                 fangjia: 'chafangjia',
-                xf: 'maixinfangtest',
+                xf: 'maixinfang',
                 esf: 'maiershoufang',
                 zf: 'zhaozufang',
                 jiaju: 'zhuangxiujiaju',

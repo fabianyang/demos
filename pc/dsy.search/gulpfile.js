@@ -19,7 +19,7 @@ gulp.task('uglify', ['clean'], function() {
     })
         // .pipe(sourcemaps.init())
         .pipe(uglify({
-            mangle: false,
+            mangle: true,
             output: { ascii_only: true }
         }))
         // .pipe(sourcemaps.write())

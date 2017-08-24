@@ -18,7 +18,7 @@ define('dsy/search/1.2.2/interface', [
         this.historyKeySuffix = 'His';
         this.hisTpl = [
             '<tr data-key="{{history_key}}" data-history=\'{{history_object}}\'>',
-            '<th><p>{{history_key}}&nbsp;<span class="gray9">{{history_type}}</span></p></th>',
+            '<th><p>{{history_key}}&nbsp;<span class="gray9">{{history_type}}</span>&nbsp;<span class="gray9">{{history_ext}}</span></p></th>',
             '<td class="remove_history"> X </td>',
             '</tr>'
         ].join('');
@@ -189,11 +189,12 @@ define('dsy/search/1.2.2/interface', [
 
                 tpl = tpl.replace(/{{history_key}}/g, item.key);
 
-                if (item.tag === 'tejia') {
-                    tpl = tpl.replace(/{{history_type}}/, that.typeNick[item.type]);
-                } else {
-                    tpl = tpl.replace(/{{history_type}}/, '');
-                }
+                // 目前只有 dituSearch 会处理该参数
+                tpl = tpl.replace(/{{history_type}}/, that.typeNick[item.type] || '');
+
+                // 目前只有 dituSearch 会处理该参数，以后可以当做区分展示字段，比如：商圈、佣金等。
+                tpl = tpl.replace(/{{history_ext}}/, item.ext || '');
+
 
                 var json = JSON.stringify(item);
                 tpl = tpl.replace(/{{history_object}}/, json);
