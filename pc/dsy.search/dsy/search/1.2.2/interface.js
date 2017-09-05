@@ -59,6 +59,7 @@ define('dsy/search/1.2.2/interface', [
                 key: key,
                 hrefUrl: url,
                 adUrl: that.replaceUrlArg(url),
+                hrefState: '1',
                 store: '0'
             });
 
