@@ -3,7 +3,7 @@
  * @author: yangfan
  * @Create Time: 2016-07-13 15:49:03
  */
-define('dsy/search/1.2.2/interface', [
+define('dsy/search/1.2.3/interface', [
     'jquery',
     'dsy/util/1.1.2/historyUtil'
 ], function (require, exports, module) {

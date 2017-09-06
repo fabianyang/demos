@@ -3,18 +3,18 @@
  * @author: yangfan
  * @Create Time: 2016-05-31 15:30:35
  */
-define('dsy/main122', [
+define('dsy/main123', [
     'jquery',
     'dsy/util/1.1.2/historyUtil',
-    'dsy/search/1.2.2/interface',
-    'dsy/search/1.2.2/xf',
-    'dsy/search/1.2.2/esf',
-    'dsy/search/1.2.2/zf',
-    'dsy/search/1.2.2/jiaju',
-    'dsy/search/1.2.2/kuaixun',
-    'dsy/search/1.2.2/fangjia',
-    'dsy/search/1.2.2/haiwai',
-    'dsy/search/1.2.2/controller'
+    'dsy/search/1.2.3/interface',
+    'dsy/search/1.2.3/xf',
+    'dsy/search/1.2.3/esf',
+    'dsy/search/1.2.3/zf',
+    'dsy/search/1.2.3/jiaju',
+    'dsy/search/1.2.3/kuaixun',
+    'dsy/search/1.2.3/fangjia',
+    'dsy/search/1.2.3/haiwai',
+    'dsy/search/1.2.3/controller'
 ], function (require) {
     'use strict';
     var $ = require('jquery');
@@ -63,7 +63,7 @@ define('dsy/main122', [
         cityName: cityName,
         sfsf: {
             city: escape(window.SFSF.city),
-            url: 'http://124.251.46.37:9402/proxy/sskdropdowndataV8?t=' + Math.random()
+            url: 'http://homepageutil.fang.com/proxy/sskdropdowndataV8?t=' + Math.random()
             // url: window.SFSF.info[window.SFSF.city].house.suggest_url + '?t=' + Math.random()
         },
         aHref: $('#pinggu')[0],
@@ -144,7 +144,7 @@ define('dsy/main122', [
         document.getElementsByTagName('head')[0].appendChild(n);
     }
 
-    var Search = require('dsy/search/1.2.2/controller') || {};
+    var Search = require('dsy/search/1.2.3/controller') || {};
     Search.dropdown = function (html) {
         window.SFSF.makeMenu.apply(window.SFSF, [$('#projnames')[0], window.SFSF.menu, html]);
         $('#SFmenu').find('table').width($('#SFmenu').find('.paneltable').width());

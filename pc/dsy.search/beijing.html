@@ -41,7 +41,7 @@ seajs.use(["http://js.soufunimg.com/count/load.min.js"]);</script> -->
 	<script type="text/javascript">
 		seajs.use(["http://js.soufunimg.com/homepage/js/source/js/lazyload.js"]);
 	</script>
-
+	<script> window.onerror=function(){}</script>
 
 
 </head>
@@ -365,7 +365,7 @@ seajs.use(["http://js.soufunimg.com/count/load.min.js"]);</script> -->
 			<span class="" id="banner_ctr5" style="display:none;"></span>
 			<span class="" id="banner_ctr6" style="display:none;"></span>
 		</div>
-		<div class="banner_show" id="banner_show" style="display:none;">
+		<div class="banner_show" id="banner_show">
 
 			<a href="http://mshow.fang.com/c?z=fang&la=0&si=1&cg=733&c=99135&ci=111332&or=28894&l=125792&bg=125795&b=127347&u=http://xingchuangrongshu.fang.com/"
 			    style="margin-left: -1000px; z-index: 5;" class="bannger_inbox" target="_blank">
@@ -496,7 +496,12 @@ seajs.use(["http://js.soufunimg.com/count/load.min.js"]);</script> -->
 	<script>
 		_vars = {
 			public: '/build',
-			entrance: 'dsy/main122'
+			entrance: 'dsy/main123'
+		}
+		if (!window.SFSF) {
+			window.SFSF = {
+				info: {}
+			};
 		}
 	</script>
 	<script src="pc.js"></script>

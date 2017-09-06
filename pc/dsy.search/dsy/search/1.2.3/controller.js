@@ -3,16 +3,16 @@
  * @author: yangfan
  * @Create Time: 2016-05-19 09:45:38
  */
-define('dsy/search/1.2.2/controller', [
+define('dsy/search/1.2.3/controller', [
     'jquery',
-    'dsy/search/1.2.2/xf',
-    'dsy/search/1.2.2/esf',
-    'dsy/search/1.2.2/zf',
-    'dsy/search/1.2.2/jiaju',
-    'dsy/search/1.2.2/kuaixun',
-    'dsy/search/1.2.2/fangjia',
-    'dsy/search/1.2.2/haiwai',
-    'dsy/search/1.2.2/ditu'
+    'dsy/search/1.2.3/xf',
+    'dsy/search/1.2.3/esf',
+    'dsy/search/1.2.3/zf',
+    'dsy/search/1.2.3/jiaju',
+    'dsy/search/1.2.3/kuaixun',
+    'dsy/search/1.2.3/fangjia',
+    'dsy/search/1.2.3/haiwai',
+    'dsy/search/1.2.3/ditu'
 ], function (require, exports, module) {
     'use strict';
 
@@ -60,14 +60,14 @@ define('dsy/search/1.2.2/controller', [
     };
 
     var allSearch = {
-        fangjia: require('dsy/search/1.2.2/fangjia'),
-        xf: require('dsy/search/1.2.2/xf'),
-        esf: require('dsy/search/1.2.2/esf'),
-        zf: require('dsy/search/1.2.2/zf'),
-        jiaju: require('dsy/search/1.2.2/jiaju'),
-        kuaixun: require('dsy/search/1.2.2/kuaixun'),
-        haiwai: require('dsy/search/1.2.2/haiwai'),
-        ditu: require('dsy/search/1.2.2/ditu')
+        fangjia: require('dsy/search/1.2.3/fangjia'),
+        xf: require('dsy/search/1.2.3/xf'),
+        esf: require('dsy/search/1.2.3/esf'),
+        zf: require('dsy/search/1.2.3/zf'),
+        jiaju: require('dsy/search/1.2.3/jiaju'),
+        kuaixun: require('dsy/search/1.2.3/kuaixun'),
+        haiwai: require('dsy/search/1.2.3/haiwai'),
+        ditu: require('dsy/search/1.2.3/ditu')
     };
 
     /**

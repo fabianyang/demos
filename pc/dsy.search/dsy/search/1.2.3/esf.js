@@ -3,15 +3,15 @@
  * @author: yangfan
  * @Create Time: 2016-07-01 09:50:39
  */
-define('dsy/search/1.2.2/esf', [
+define('dsy/search/1.2.3/esf', [
     'jquery',
-    'dsy/search/1.2.2/interface'
+    'dsy/search/1.2.3/interface'
 ], function (require, exports, module) {
     'use strict';
 
     var $ = require('jquery');
     var vars = seajs.data.vars;
-    var Search = require('dsy/search/1.2.2/interface');
+    var Search = require('dsy/search/1.2.3/interface');
 
     function ESFSearch() {
         Search.call(this);
