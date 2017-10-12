@@ -213,7 +213,7 @@ define('dsy/search/1.2.3/interface', [
         var url = $.trim(pUrl);
         var pattern = 'u=http:([^&]*)';
         if (url.match(pattern)) {
-            url = 'http:' + url.match(pattern)[1].trim();
+            url = 'http:' + $.trim(url.match(pattern)[1]);
         }
         return url;
     };

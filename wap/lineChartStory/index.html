@@ -1,0 +1,171 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>联富假日公寓详情，二手房，租房-上海手机房天下</title>
+    <meta name="keywords" content="联富假日公寓二手房，租房" />
+    <meta name="description" content="上海联富假日公寓小区网，8月参考均价：63223元/㎡，位于上海闸北西藏北路，现有二手房源39套，竣工时间2007年，小区地址是山西北路222弄，占地面积4310平方米，70年住宅产权，由上海招商局物业管理有限公司负责开发。"
+    />
+    <meta name="location" content="province=上海;city=上海;coord=121.48715209960938,31.249914169311523">
+    <link rel="stylesheet" href="//static.test.soufunimg.com/common_m/m_public/201511/css/public.css?v=2016031409">
+    <link rel="stylesheet" href="//static.test.soufunimg.com/common_m/m_public/201511/css/xiaoqu.css?v=2016031409">
+    <link rel="stylesheet" type="text/css" href="//static.test.soufunimg.com/common_m/m_public/201511/css/swiper.css?v=2016031409">
+    <link rel="stylesheet" type="text/css" href="//static.test.soufunimg.com/common_m/m_public/201511/css/swiper1.css?v=2016031409">
+    <style>
+    .trend-pic {
+        margin: 0 8px;
+        padding-bottom: 16px;
+    }
+
+    .chart_tip {
+        height: 160px;
+        width: 160px;
+        font-size: 16px;
+        padding: 0 20px;
+        background-color: rgba(0,0,0,0.8);
+        border-radius: 5px;
+        z-index: 10;
+        color: #fff;
+    }
+
+    .chart_tip h5 {
+        margin-top: 15px;
+    }
+
+    .chart_tip p {
+        margin-top: 12px;
+        line-height: 24px;
+    }
+    </style>
+</head>
+
+<body style="background-color: #fff;overflow-x:hidden;">
+        <div class="trend-pic box" id="hisLine">
+                <div class="trend-out" id="trend" style="left: 224px;top: 24%;display: none;position: absolute;background: rgba(60,63,70,.9);min-width: 120px;border-radius: 5px;padding: 6px 10px;z-index: 1000;"><p style="color: #b3b6be;font-size: 12px;line-height: 20px;">新房成交套数：<span style="color: #ffffff;">120</span>套</p><p style="color: #b3b6be;font-size: 12px;line-height: 20px;">新房成交价：<span style="color: #ffffff;">8566</span>万元/平</p></div>
+            </div>
+    <div id="chartCon_bak"></div>
+    <div id="chartCon"></div>
+
+    <script>
+        var _vars = _vars || new Object();
+        _vars.data =
+            '{"city":{"price":["49631","52659","52620","52879","53473","54021","54149","54517","54908","55153","54779","55396"]},"monthnum":["16-09","16-10","16-11","16-12","17-01","17-02","17-03","17-04","17-05","17-06","17-07","17-08"],"disdata":{"price":["54879","57952","60532","60551","59852","61744","61969","63249","62559","61801","63379","63797"]},"xqcode":{"price":["64674","73310","80298","84172","81463","76794","80715","80706","85089","77735","81418","63223"]}}';
+        _vars.mainSite = "//m.test.fang.com/";
+        _vars.askSite = "//m.test.fang.com/ask/";
+        _vars.bbsSite = "//m.test.fang.com/bbs/";
+        _vars.newsSite = "//m.test.fang.com/news/";
+        _vars.pingguSite = "//m.test.fang.com/fangjia/";
+        _vars.toolsSite = "//m.test.fang.com/tools/";
+        _vars.xfSite = "//m.test.fang.com/xf/";
+        _vars.zfSite = "//m.test.fang.com/zf/";
+        _vars.esfSite = "//m.test.fang.com/esf/";
+        _vars.jiajuSite = "//m.test.fang.com/jiaju/";
+        _vars.jinrongSite = "//m.test.fang.com/8/";
+        _vars.worldSite = "//m.test.fang.com/world/";
+        _vars.xiaoquSite = "//m.test.fang.com/xiaoqu/";
+        _vars.tuangouSite = "//m.test.fang.com/tuangou/";
+        _vars.kanfangtuanSite = "//m.test.fang.com/kanfangtuan/";
+        _vars.imSite = "//m.test.fang.com/im/";
+        _vars.mapSite = "//m.test.fang.com/map/";
+        _vars.publicSite = "//m.test.fang.com/public/";
+        _vars.mySite = "//m.test.fang.com/my/";
+        _vars.vipSite = "//m.test.fang.com/vip/";
+        _vars.jobSite = "//m.test.fang.com/job/";
+        _vars.esfsubwaylistSite = "//m.test.fang.com/esfsubwaylist/";
+        _vars.schoolhouseSite = "//m.test.fang.com/schoolhouse/";
+        _vars.zhishiSite = "//m.test.fang.com/zhishi/";
+        _vars.agentSite = "//m.test.fang.com/agent/";
+        _vars.tudiSite = "//m.test.fang.com/tudi/";
+        _vars.tongjiSite = "//m.test.fang.com/tongji/";
+        _vars.fdcSite = "//m.test.fang.com/fdc/";
+        _vars.passportSite = "https://m.test.fang.com/passport/";
+        _vars.blogSite = "//m.test.fang.com/blog/";
+        _vars.surveySite = "//m.test.fang.com/survey/";
+        _vars.juheSite = "//m.test.fang.com/juhe/";
+        _vars.shopSite = "//m.test.fang.com/shop/";
+        _vars.chengjiaoSite = "//m.test.fang.com/chengjiao/";
+        _vars.topSite = "//m.test.fang.com/top/";
+        _vars.zhuantiSite = "//m.test.fang.com/zhuanti/";
+        // _vars.public = "//static.test.soufunimg.com/common_m/m_public/";
+        _vars.public = "//js.mm.test.fang.com/m_public/";
+        var thisName = 'xiaoqu';
+        _vars.currentChannel = thisName;
+        _vars.imgUrl = "//static.test.soufunimg.com/common_m/m_xiaoqu/";
+        _vars.action = "xqDetail";
+        // _vars.entrance = "modules/xiaoqu/main";
+        _vars.entrance = "modules/mmtestyf/main";
+        _vars.city = "sh";
+        _vars.cityname = "上海";
+        _vars.img_ver = "2016031409";
+        _vars.cd_ver = "a2016030917";
+        _vars.ismvalid = "";
+        _vars.appurl = 'waptoapp/{"destination":"xqdetail","city":"上海","projcode":"1210766642"}';
+        _vars.browser_abnormal = '';
+        _vars.isWeiXin = '';
+        _vars.urlowner = '';
+        _vars.jtname = "";
+        _vars.class_id = "";
+        _vars.bottomHide = "1";
+        _vars.isFangApp = "";
+        if (thisName === 'tools') {
+            /*海外计算器文件路径问题*/
+            _vars.pageType = document.getElementById("page_type").value || 1;
+            _vars.entrance = 'modules/tools/main';
+            var _mconfig = function () {
+                var _paths = {
+                    controller: "modules/tools/mvc/controller",
+                    model: "modules/tools/mvc/model",
+                    view: "modules/tools/mvc/view",
+                    event: "modules/tools/mvc/event",
+                    util: "modules/tools/mvc/util"
+                };
+                delete(this.alias.util);
+                $.extend(this.paths, _paths);
+            };
+        }
+        if (thisName === 'myzf' || thisName === 'myesf') {
+            _vars.entrance = 'modules/' + thisName + '/main';
+            var _mconfig = function () {
+                var _paths = {
+                    model: 'modules/' + thisName + '/mvc/model',
+                    view: 'modules/' + thisName + '/mvc/view'
+                };
+                $.extend(this.paths, _paths);
+            };
+        }
+        if (thisName != 'ask' && thisName != 'zhishi' && thisName != 'jiaju' && thisName != 'jiajuds' && thisName !=
+            'news' && thisName != 'bask' && !_vars.bottomHide && !(thisName == 'my' && _vars.action == 'sendQunRedBag')
+        ) {
+            /*解决app中下载浮层遮挡问题*/
+            window.onload = function () {
+                if ($ && _vars.browser_abnormal) {
+                    $(document.body).append('<div style="padding-bottom:50px;">&nbsp;</div>');
+                }
+            };
+        }
+        var _dctc = _dctc || {};
+        _dctc._account = _dctc._account || [];
+        _dctc.isNorth = _dctc.isNorth || 'Y';
+        if (thisName == 'ask' && _vars.action == 'detail') {
+            if (_vars.class_id == 1) {
+                _dctc.bid = '990090';
+            } else if (_vars.class_id == 2) {
+                _dctc.bid = '990091';
+            } else if (_vars.class_id == 3) {
+                _dctc.bid = '990092';
+            }
+        } else {
+            _dctc.bid = '909001';
+        }
+        if (thisName == 'zhishi' || thisName == 'news' || thisName == 'jiaju') {
+            _dctc.urlowner = _vars.urlowner;
+        }
+        var _dctc_onlyga = _dctc_onlyga || {};
+        _dctc_onlyga._account = _dctc_onlyga._account || ['UA-24140496-1', 'UA-24140496-20'];
+    </script>
+    <script charset="utf-8" src="//static.test.soufunimg.com/common_m/m_public/js/m.js"></script>
+</body>
+</html>

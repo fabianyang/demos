@@ -555,9 +555,7 @@ define('dsy/search/1.2.3/controller', [
             url: url,
             data: param,
             crossDomain: true,
-            dataType: 'jsonp',
             contentType: 'application/x-www-form-urlencoded;charset=utf-8',
-            async: false,
             success: function (data) {
                 that.ajax = 0;
                 // 请求完成后，再次判断请求 navigateTag
@@ -615,7 +613,11 @@ define('dsy/search/1.2.3/controller', [
                 return false;
             },
             error: function (XMLHttpRequest, textStatus, error) {
-                // alert(error);
+                if (console) {
+                    console.log(error);
+                } else {
+                    window.FangSearchError = error;
+                }
             }
         });
     };
@@ -681,6 +683,8 @@ define('dsy/search/1.2.3/controller', [
             type: 'POST',
             url: url,
             data: param,
+            crossDomain: true,
+            contentType: 'application/x-www-form-urlencoded;charset=utf-8',
             success: function (data) {
                 that.ajax = 0;
                 if (!data || data === 'error') {
@@ -695,7 +699,13 @@ define('dsy/search/1.2.3/controller', [
                 }
                 return true;
             },
-            error: function (XMLHttpRequest, textStatus, error) {}
+            error: function (XMLHttpRequest, textStatus, error) {
+                if (console) {
+                    console.log(error);
+                } else {
+                    window.FangSearchError = error;
+                }
+            }
         });
     };
 
