@@ -1,0 +1,27 @@
+<html>
+<head>
+<!--
+    将此内容保存为 html 文件，浏览器允许运行脚本进行测试。
+-->
+
+<script type="text/javascript">
+
+function check()
+{
+    var str;
+
+    str = document.getElementById("txtInput").value;
+
+    alert("替换结果：" + str.replace(/<img[^>]+img\/([^>"]*)"[^>]+\/>/, "12321"));
+}
+
+</script>
+</head>
+
+<body>
+    输入：<input type="text" id="txtInput" value='xxxx <img src="img/fxxx.png" /> xxxx' />
+    <button type="button" onclick="check()">正则替换</button>
+</form>
+
+</body>
+</html>
