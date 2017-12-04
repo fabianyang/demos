@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="flashContent">
+        <object width="550" height="400" id="swf">
+                <param name="movie" value="pload_v_1.swf" />
+                <param name="wmode" value="window" />
+                <param name="allowScriptAccess" value="always" />
+                <embed src="pload_v_1.swf" width="550" height="400"
+                       name="swf" wmode="window" allowscriptaccess="always" type="application/x-shockwave-flash">
+            </object>
+    </div>
+
+    <script src="https://cdn.bootcss.com/jquery/2.2.4/jquery.js"></script>
+    <script>
+        var sfupload = {};
+        sfupload.log = function(data) {
+            console.log(data);
+        }
+        sfupload.onSelect = function(name, size, type) {
+            console.log(name, size, type);
+
+            $.ajax({
+                url: 'http://dev.brofen.cn/bos',
+                jsonp: 'callback',
+                dataType: 'jsonp',
+                timeout: 5000,
+                data: {
+                    httpMethod: 'PUT',
+                    path: new Date().getTime(),
+                    // delay: ~~(Math.random() * 10),
+                    queries: JSON.stringify({} || {}),
+                    headers: JSON.stringify({
+                        'Content-Length': 16450,
+                        'Content-Type': "application/json; charset=UTF-8",
+                        'Host': "bos.bj.baidubce.com",
+                        'x-bce-date': "2017-11-14T02:55:39Z"
+                    } || {})
+                },
+                error: function (data) {
+                    console.log(data);
+                    // deferred.reject(new Error('Get authorization timeout (' + timeout + 'ms).'));
+                },
+                success: function (payload) {
+                    console.log(payload);
+                    document.getElementById('swf').upload({
+                        url: 'http://brofen.bj.bcebos.com/',
+                        signature: payload.signature,
+                        xbceDate: payload.xbceDate
+                    });
+                    // if (payload.statusCode === 200 && payload.signature) {
+                    //     deferred.resolve(payload.signature, payload.xbceDate);
+                    // } else {
+                    //     deferred.reject(new Error('createSignature failed, statusCode = ' + payload.statusCode));
+                    // }
+                }
+            });
+        }
+
+
+    </script>
+</body>
+
+</html>
